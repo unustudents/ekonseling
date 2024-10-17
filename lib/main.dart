@@ -1,6 +1,8 @@
+import 'package:ekonseling/features/auth/presentation/pages/login_screen.dart';
+import 'package:ekonseling/features/auth/presentation/pages/register_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'features/auth/presentation/pages/first_screen.dart';
+import 'features/auth/presentation/pages/welcome_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,9 +19,15 @@ class MyApp extends StatelessWidget {
         // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         primarySwatch: Colors.blue,
         fontFamily: "Urbanist",
+        appBarTheme: const AppBarTheme(
+          titleTextStyle: TextStyle(color: Colors.black, fontFamily: "Urbanist", fontSize: 15, fontWeight: FontWeight.bold),
+          // backgroundColor: Colors.white,
+          // elevation: 0,
+          // iconTheme: IconThemeData(color: Colors.black),
+        ),
         useMaterial3: true,
       ),
-      home: const FirstScreen(),
+      home: const RegisterScreen(),
     );
   }
 }
