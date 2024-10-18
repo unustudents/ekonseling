@@ -1,8 +1,6 @@
-import 'package:ekonseling/features/auth/presentation/pages/login_screen.dart';
-import 'package:ekonseling/features/auth/presentation/pages/register_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'features/auth/presentation/pages/welcome_screen.dart';
+import 'features/auth/presentation/pages/register_screen.dart';
 
 void main() {
   runApp(const MyApp());
