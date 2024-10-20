@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'login_screen.dart';
+import 'register_screen.dart';
+
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
@@ -37,10 +40,14 @@ class WelcomeScreen extends StatelessWidget {
                 foregroundColor: Colors.white,
                 minimumSize: const Size(331, 56),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                padding: const EdgeInsets.symmetric(vertical: 22),
+                // padding: const EdgeInsets.symmetric(vertical: 22),
               ),
               onPressed: () {
                 // Add your button press action here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
               },
               child: const Text('Masuk', style: TextStyle(fontWeight: FontWeight.w600)),
             ),
@@ -51,10 +58,13 @@ class WelcomeScreen extends StatelessWidget {
                 foregroundColor: const Color(0xFF1E232C),
                 minimumSize: const Size(331, 56),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: const BorderSide(color: Color(0xFF1E232C), width: 0.1)),
-                padding: const EdgeInsets.symmetric(vertical: 22),
+                // padding: const EdgeInsets.symmetric(vertical: 22),
               ),
               onPressed: () {
-                // Add your button press action here
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                );
               },
               child: const Text('Daftar', style: TextStyle(fontWeight: FontWeight.w600)),
             ),
