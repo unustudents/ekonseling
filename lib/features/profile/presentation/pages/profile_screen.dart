@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../salomon_bottom_bar.dart';
 import 'ganti_password_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -8,7 +7,6 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int currentIndex = 3;
     var enabled = ValueNotifier<bool>(false);
 
     return Scaffold(
@@ -145,20 +143,6 @@ class ProfileScreen extends StatelessWidget {
               },
             ),
           ),
-        ],
-      ),
-
-      // BOTTOM NAVIGATION BAR
-      bottomNavigationBar: SalomonBottomBar(
-        curve: Curves.bounceIn,
-        backgroundColor: Colors.white,
-        currentIndex: currentIndex,
-        onTap: (index) => currentIndex = index,
-        items: [
-          SalomonBottomBarItem(icon: const Icon(Icons.home_outlined), title: const Text("Home")),
-          SalomonBottomBarItem(icon: const Icon(Icons.article), title: const Text("Artikel")),
-          SalomonBottomBarItem(icon: const Icon(Icons.task), title: const Text("Tugas")),
-          SalomonBottomBarItem(icon: const Icon(Icons.person_outline), title: const Text("Profil")),
         ],
       ),
     );

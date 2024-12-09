@@ -1,8 +1,10 @@
 import 'package:device_preview/device_preview.dart';
+import 'package:ekonseling/navigation_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'features/profile/presentation/pages/profile_screen.dart';
+import 'app.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +35,8 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const ProfileScreen(),
+      // home: const ProfileScreen(),
+      home: BlocProvider(create: (_) => NavigationCubit(), child: const AppScreen()),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-import '../../../../salomon_bottom_bar.dart';
 import 'detail_article_screen.dart';
 
 class ArticleScreen extends StatelessWidget {
@@ -9,7 +8,6 @@ class ArticleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int currentIndex = 1;
     final List<String> choices = ["Semua", "MI - ICBT", "Semangat", "Dedikasi", "Keterlibatan"];
     var selectedChoice = ValueNotifier<String>(choices[0]);
     return DefaultTabController(
@@ -209,16 +207,6 @@ class ArticleScreen extends StatelessWidget {
               ),
             ],
           ),
-        ),
-        bottomNavigationBar: SalomonBottomBar(
-          currentIndex: currentIndex,
-          onTap: (index) => currentIndex = index,
-          items: [
-            SalomonBottomBarItem(icon: const Icon(Icons.home_outlined), title: const Text("Home")),
-            SalomonBottomBarItem(icon: const Icon(Icons.article), title: const Text("Artikel")),
-            SalomonBottomBarItem(icon: const Icon(Icons.task), title: const Text("Tugas")),
-            SalomonBottomBarItem(icon: const Icon(Icons.person_outline), title: const Text("Profil")),
-          ],
         ),
       ),
     );

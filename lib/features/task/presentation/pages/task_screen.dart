@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../../salomon_bottom_bar.dart';
-
 class TaskScreen extends StatelessWidget {
   const TaskScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    int currentIndex = 2;
-
     return Scaffold(
       appBar: AppBar(title: const Text("Tugas")),
       body: SafeArea(
@@ -35,18 +31,6 @@ class TaskScreen extends StatelessWidget {
           },
           separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 10),
         ),
-      ),
-      bottomNavigationBar: SalomonBottomBar(
-        curve: Curves.bounceIn,
-        backgroundColor: Colors.white,
-        currentIndex: currentIndex,
-        onTap: (index) => currentIndex = index,
-        items: [
-          SalomonBottomBarItem(icon: const Icon(Icons.home_outlined), title: const Text("Home")),
-          SalomonBottomBarItem(icon: const Icon(Icons.article), title: const Text("Artikel")),
-          SalomonBottomBarItem(icon: const Icon(Icons.task), title: const Text("Tugas")),
-          SalomonBottomBarItem(icon: const Icon(Icons.person_outline), title: const Text("Profil")),
-        ],
       ),
     );
   }
