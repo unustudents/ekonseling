@@ -45,9 +45,9 @@ class AppScreen extends StatelessWidget {
       onTap: (index) => _onBottomNavTap(context, index),
       items: [
         SalomonBottomBarItem(icon: const Icon(Icons.home_outlined), title: const Text("Home")),
-        SalomonBottomBarItem(icon: const Icon(Icons.article), title: const Text("Artikel")),
-        SalomonBottomBarItem(icon: const Icon(Icons.task), title: const Text("Tugas")),
-        SalomonBottomBarItem(icon: const Icon(Icons.person_outline), title: const Text("Profil")),
+        SalomonBottomBarItem(icon: const Icon(Icons.article), title: const Text("Artikel"), selectedColor: Colors.red),
+        SalomonBottomBarItem(icon: const Icon(Icons.task), title: const Text("Tugas"), selectedColor: Colors.green),
+        SalomonBottomBarItem(icon: const Icon(Icons.person_outline), title: const Text("Profil"), selectedColor: Colors.brown),
       ],
     );
   }
