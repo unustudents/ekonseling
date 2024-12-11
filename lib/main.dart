@@ -1,18 +1,24 @@
 import 'package:device_preview/device_preview.dart';
-import 'package:ekonseling/navigation_cubit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'app.dart';
+import 'dependency_injection.dart';
+import 'features/auth/presentation/pages/welcome_screen.dart';
 import 'firebase_options.dart';
+import 'navigation_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Inisialisasi dependency injection
+  await DependencyInjection.init();
+
   runApp(
     DevicePreview(
       enabled: !kReleaseMode && kIsWeb,
@@ -40,7 +46,38 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: BlocProvider(create: (_) => NavigationCubit(), child: const AppScreen()),
+      // home: BlocProvider(create: (_) => NavigationCubit(), child: const AppScreen()),
+      home: const RootScreen(),
+    );
+  }
+}
+
+class RootScreen extends StatelessWidget {
+  const RootScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // final currentUser = FirebaseAuth.instance.currentUser;
+
+    // // Navigasi otomatis ke layar sesuai status login
+    // return currentUser != null
+    //     ? BlocProvider(
+    //         create: (_) => NavigationCubit(),
+    //         child: const AppScreen(),
+    //       )
+    //     : const WelcomeScreen();
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+        if (snapshot.hasData) {
+          return BlocProvider(create: (context) => NavigationCubit(), child: AppScreen());
+        } else {
+          return WelcomeScreen();
+        }
+      },
     );
   }
 }
