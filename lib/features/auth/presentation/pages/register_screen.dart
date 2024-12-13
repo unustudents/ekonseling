@@ -105,7 +105,7 @@ class RegisterScreen extends StatelessWidget {
 
             // FORM NAMA LENGKAP
             SizedBox(
-              width: 320,
+              // width: 320,
               child: TextFormField(
                 decoration: InputDecoration(
                   filled: true,
@@ -127,7 +127,7 @@ class RegisterScreen extends StatelessWidget {
 
             // FORM NIM
             SizedBox(
-              width: 320,
+              // width: 320,
               child: TextFormField(
                 decoration: InputDecoration(
                   filled: true,
@@ -149,7 +149,7 @@ class RegisterScreen extends StatelessWidget {
 
             // FORM EMAIL
             SizedBox(
-              width: 320,
+              // width: 320,
               child: TextFormField(
                 decoration: InputDecoration(
                   filled: true,
@@ -171,7 +171,7 @@ class RegisterScreen extends StatelessWidget {
 
             // FORM PASSWORD
             SizedBox(
-              width: 320,
+              // width: 320,
               child: TextFormField(
                 decoration: InputDecoration(
                   filled: true,
@@ -193,7 +193,7 @@ class RegisterScreen extends StatelessWidget {
 
             // FORM KONFIRM PASSWORD
             SizedBox(
-              width: 320,
+              // width: 320,
               child: TextFormField(
                 decoration: InputDecoration(
                   filled: true,
@@ -233,21 +233,23 @@ class RegisterScreen extends StatelessWidget {
             const SizedBox(height: 15),
 
             // ATAU
-            const Text("Atau"),
-            const SizedBox(height: 15),
+            // const Text("Atau"),
+            // const SizedBox(height: 15),
 
             // TOMBOL GOOGLE
-            OutlinedButton.icon(
-              icon: Image.asset("assets/images/google.png", width: 15),
-              label: const Text("Daftar Menggunakan Google", style: TextStyle(fontWeight: FontWeight.bold)),
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.black,
-                side: const BorderSide(color: Color(0xFFE8ECF4)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-            ),
-            const SizedBox(height: 20),
+            // OutlinedButton.icon(
+            //   icon: Image.asset("assets/images/google.png", width: 15),
+            //   label: const Text("Daftar Menggunakan Google", style: TextStyle(fontWeight: FontWeight.bold)),
+            //   onPressed: () {},
+            //   style: OutlinedButton.styleFrom(
+            //     foregroundColor: Colors.black,
+            //     side: const BorderSide(color: Color(0xFFE8ECF4)),
+            //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            //   ),
+            // ),
+            // const SizedBox(height: 20),
+
+            // TOMBOL MASUK
             const Text.rich(
               TextSpan(
                 text: 'Sudah punya Akun? ',

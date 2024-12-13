@@ -102,7 +102,7 @@ class LoginScreen extends StatelessWidget {
 
             // FORM LOGIN
             SizedBox(
-              width: 320,
+              // width: 320,
               child: TextFormField(
                 decoration: InputDecoration(
                   filled: true,
@@ -126,7 +126,7 @@ class LoginScreen extends StatelessWidget {
 
             // FORM PASSWORD
             SizedBox(
-              width: 320,
+              // width: 320,
               child: TextFormField(
                 decoration: InputDecoration(
                   filled: true,
@@ -159,7 +159,7 @@ class LoginScreen extends StatelessWidget {
 
             // TOMBOL LUPA KATA SANDI
             SizedBox(
-              width: 331,
+              // width: 331,
               child: Align(
                 alignment: Alignment.centerRight,
                 child: MaterialButton(
@@ -200,21 +200,23 @@ class LoginScreen extends StatelessWidget {
             const SizedBox(height: 15),
 
             // ATAU
-            const Text("Atau"),
-            const SizedBox(height: 15),
+            // const Text("Atau"),
+            // const SizedBox(height: 15),
 
             // TOMBOL GOOGLE
-            OutlinedButton.icon(
-              icon: Image.asset("assets/images/google.png", width: 15),
-              label: const Text("Daftar Menggunakan Google", style: TextStyle(fontWeight: FontWeight.bold)),
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.black,
-                side: const BorderSide(color: Color(0xFFE8ECF4)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-            ),
-            const SizedBox(height: 20),
+            // OutlinedButton.icon(
+            //   icon: Image.asset("assets/images/google.png", width: 15),
+            //   label: const Text("Daftar Menggunakan Google", style: TextStyle(fontWeight: FontWeight.bold)),
+            //   onPressed: () {},
+            //   style: OutlinedButton.styleFrom(
+            //     foregroundColor: Colors.black,
+            //     side: const BorderSide(color: Color(0xFFE8ECF4)),
+            //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            //   ),
+            // ),
+            // const SizedBox(height: 20),
+
+            // TOMBOL MASUK
             const Text.rich(
               TextSpan(
                 text: 'Belum punya Akun? ',
