@@ -1,8 +1,36 @@
 part of 'auth_bloc.dart';
 
-abstract class AuthEvent extends Equatable {
-  const AuthEvent();
+@immutable
+abstract class AuthEvent {}
 
-  @override
-  List<Object> get props => [];
+class NameChanged extends AuthEvent {
+  final String name;
+
+  NameChanged({required this.name});
 }
+
+class NIMChanged extends AuthEvent {
+  final String nim;
+
+  NIMChanged({required this.nim});
+}
+
+class EmailChanged extends AuthEvent {
+  final String email;
+
+  EmailChanged({required this.email});
+}
+
+class PasswordChanged extends AuthEvent {
+  final String password;
+
+  PasswordChanged({required this.password});
+}
+
+class ConfirmPasswordChanged extends AuthEvent {
+  final String confirmPassword;
+
+  ConfirmPasswordChanged({required this.confirmPassword});
+}
+
+class SubmitRegistration extends AuthEvent {}
