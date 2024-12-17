@@ -5,6 +5,7 @@ import '../bloc/auth_bloc.dart';
 import '../widgets/sign_button.dart';
 import '../widgets/sign_textformfield.dart';
 import 'login_screen.dart';
+import 'welcome_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -14,8 +15,18 @@ class RegisterScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => AuthBloc(),
       child: Scaffold(
-        appBar: AppBar(),
-        backgroundColor: const Color(0xFFFFFFFF),
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios_new_rounded),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+                (Route<dynamic> route) => false,
+              );
+            },
+          ),
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
           child: BlocBuilder<AuthBloc, AuthState>(

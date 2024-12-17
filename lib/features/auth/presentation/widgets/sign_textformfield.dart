@@ -24,25 +24,13 @@ class SignTextField extends StatelessWidget {
       decoration: InputDecoration(
         filled: true,
         fillColor: const Color(0xFFF7F8F9),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFE8ECF4)),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFE8ECF4)),
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Color(0xFFE8ECF4)),
-        ),
+        enabledBorder: outlineInputBorder,
+        errorBorder: outlineInputBorder,
+        border: outlineInputBorder,
         labelText: label,
         hintText: hintText,
-        labelStyle: const TextStyle(
-          color: Color(0xFF8391A1),
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
+        labelStyle: hintAndLabelStyle,
+        hintStyle: hintAndLabelStyle,
       ),
       keyboardType: keyboardType,
       obscureText: obscureText,
@@ -51,3 +39,14 @@ class SignTextField extends StatelessWidget {
     );
   }
 }
+
+OutlineInputBorder outlineInputBorder = OutlineInputBorder(
+  borderRadius: BorderRadius.circular(8),
+  borderSide: const BorderSide(color: Color(0xFFE8ECF4)),
+);
+
+TextStyle hintAndLabelStyle = TextStyle(
+  color: Color(0xFF8391A1),
+  fontSize: 14,
+  fontWeight: FontWeight.w500,
+);

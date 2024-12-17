@@ -57,26 +57,12 @@ class RootScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final currentUser = FirebaseAuth.instance.currentUser;
-
-    // // Navigasi otomatis ke layar sesuai status login
-    // return currentUser != null
-    //     ? BlocProvider(
-    //         create: (_) => NavigationCubit(),
-    //         child: const AppScreen(),
-    //       )
-    //     : const WelcomeScreen();
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(body: Center(child: CircularProgressIndicator()));
-        }
-        if (snapshot.hasData) {
-          return BlocProvider(create: (context) => NavigationCubit(), child: AppScreen());
-        } else {
-          return WelcomeScreen();
-        }
+        if (snapshot.connectionState == ConnectionState.waiting) return Scaffold(body: Center(child: CircularProgressIndicator()));
+        if (snapshot.hasData) return BlocProvider(create: (context) => NavigationCubit(), child: AppScreen());
+        return WelcomeScreen();
       },
     );
   }

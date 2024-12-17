@@ -24,25 +24,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final formKey = GlobalKey<FormState>();
 
-  void _onNameChanged(NameChanged event, Emitter<AuthState> emit) {
-    emit(state.copyWith(name: event.name));
-  }
+  void _onNameChanged(NameChanged event, Emitter<AuthState> emit) => emit(state.copyWith(name: event.name));
 
-  void _onNIMChanged(NIMChanged event, Emitter<AuthState> emit) {
-    emit(state.copyWith(nim: event.nim));
-  }
+  void _onNIMChanged(NIMChanged event, Emitter<AuthState> emit) => emit(state.copyWith(nim: event.nim));
 
-  void _onEmailChanged(EmailChanged event, Emitter<AuthState> emit) {
-    emit(state.copyWith(email: event.email));
-  }
+  void _onEmailChanged(EmailChanged event, Emitter<AuthState> emit) => emit(state.copyWith(email: event.email));
 
-  void _onPasswordChanged(PasswordChanged event, Emitter<AuthState> emit) {
-    emit(state.copyWith(password: event.password));
-  }
+  void _onPasswordChanged(PasswordChanged event, Emitter<AuthState> emit) => emit(state.copyWith(password: event.password));
 
-  void _onConfirmPasswordChanged(ConfirmPasswordChanged event, Emitter<AuthState> emit) {
-    emit(state.copyWith(confirmPassword: event.confirmPassword));
-  }
+  void _onConfirmPasswordChanged(ConfirmPasswordChanged event, Emitter<AuthState> emit) =>
+      emit(state.copyWith(confirmPassword: event.confirmPassword));
 
   Future<void> _onSubmitRegistration(SubmitRegistration event, Emitter<AuthState> emit) async {
     if (!formKey.currentState!.validate()) {
