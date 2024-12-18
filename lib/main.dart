@@ -32,22 +32,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
-      title: 'E-Konseling',
-      theme: ThemeData(
-        fontFamily: "Urbanist",
-        scaffoldBackgroundColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.white,
-          titleTextStyle: TextStyle(color: Colors.black, fontFamily: "Urbanist", fontSize: 15, fontWeight: FontWeight.bold),
+    return BlocProvider(
+      create: (context) => NavigationCubit(),
+      child: MaterialApp(
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
+        title: 'E-Konseling',
+        theme: ThemeData(
+          fontFamily: "Urbanist",
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.white,
+            titleTextStyle: TextStyle(color: Colors.black, fontFamily: "Urbanist", fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+          useMaterial3: true,
         ),
-        useMaterial3: true,
+        // home: BlocProvider(create: (_) => NavigationCubit(), child: const AppScreen()),
+        home: const RootScreen(),
       ),
-      // home: BlocProvider(create: (_) => NavigationCubit(), child: const AppScreen()),
-      home: const RootScreen(),
     );
   }
 }
@@ -61,7 +64,7 @@ class RootScreen extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) return Scaffold(body: Center(child: CircularProgressIndicator()));
-        if (snapshot.hasData) return BlocProvider(create: (context) => NavigationCubit(), child: AppScreen());
+        if (snapshot.hasData) return AppScreen();
         return WelcomeScreen();
       },
     );

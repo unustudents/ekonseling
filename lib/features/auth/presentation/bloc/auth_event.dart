@@ -35,3 +35,5 @@ class ConfirmPasswordChanged extends AuthEvent {
 }
 
 class SubmitRegistration extends AuthEvent {}
+
+class SubmitSignIn extends AuthEvent {}

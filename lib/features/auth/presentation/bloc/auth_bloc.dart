@@ -20,6 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<PasswordChanged>(_onPasswordChanged);
     on<ConfirmPasswordChanged>(_onConfirmPasswordChanged);
     on<SubmitRegistration>(_onSubmitRegistration);
+    on<SubmitSignIn>(_onSubmitSignIn);
   }
 
   final formKey = GlobalKey<FormState>();
@@ -53,6 +54,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
     }
+  }
+
+  Future<void> _onSubmitSignIn(SubmitSignIn event, Emitter<AuthState> emit) async {
+    if (!formKey.currentState!.validate()) {
+      emit(AuthFailure(error: 'Form tidak valid.'));
+      return;
+    }
+
+    // try {
+    //   emit(AuthLoading());
+
+    //   // Firebase Authentication untuk login user
+    //   final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+    //     email: state.email,
+    //     password: state.password,
+    //   );
+
+    //   emit(AuthSuccess(user: userCredential.user));
+    // } catch (e) {
+    //   emit(AuthFailure(error: e.toString()));
+    // }
   }
 
   String? validateName(String? nama) {
