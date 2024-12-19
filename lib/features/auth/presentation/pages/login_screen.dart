@@ -33,6 +33,7 @@ class LoginScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(22, 0, 22, 22),
           child: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
+              final authBloc = context.read<AuthBloc>();
               return Form(
                 key: context.read<AuthBloc>().formKey,
                 child: Column(
@@ -51,8 +52,8 @@ class LoginScreen extends StatelessWidget {
                     SignTextField(
                       label: 'Nomor Induk Siswa',
                       hintText: 'Masukkan NIS',
-                      validator: (value) => context.read<AuthBloc>().validateNIS(value),
-                      onChanged: (value) => context.read<AuthBloc>().add(NIMChanged(nim: value)),
+                      validator: (value) => authBloc.validateNIS(value),
+                      onChanged: (value) => authBloc.add(NIMChanged(nim: value)),
                     ),
                     const SizedBox(height: 20),
 
@@ -61,8 +62,8 @@ class LoginScreen extends StatelessWidget {
                       label: 'Kata Sandi',
                       hintText: 'Masukkan kata sandi',
                       obscureText: true,
-                      validator: (value) => context.read<AuthBloc>().validatePassword(value),
-                      onChanged: (value) => context.read<AuthBloc>().add(PasswordChanged(password: value)),
+                      validator: (value) => authBloc.validatePassword(value),
+                      onChanged: (value) => authBloc.add(PasswordChanged(password: value)),
                     ),
                     const SizedBox(height: 5),
 
@@ -95,7 +96,7 @@ class LoginScreen extends StatelessWidget {
                       backgroundColor: Color(0xFF724778),
                       textColor: Colors.white,
                       onPressed: () {
-                        if (context.read<AuthBloc>().formKey.currentState!.validate()) {
+                        if (authBloc.formKey.currentState!.validate()) {
                           // context.read<AuthBloc>().add(SubmitRegistration());
                           Navigator.pushAndRemoveUntil(
                             context,
@@ -107,23 +108,6 @@ class LoginScreen extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 15),
-
-                    // ATAU
-                    const Text("Atau"),
-                    const SizedBox(height: 15),
-
-                    // TOMBOL GOOGLE
-                    OutlinedButton.icon(
-                      icon: Image.asset("assets/images/google.png", width: 15),
-                      label: const Text("Daftar Menggunakan Google", style: TextStyle(fontWeight: FontWeight.bold)),
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        side: const BorderSide(color: Color(0xFFE8ECF4)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
 
                     // TOMBOL MASUK
                     TextButton(
