@@ -9,6 +9,7 @@ environment:
 dependencies:
   bloc: ^8.1.4
   carousel_slider: ^5.0.0
+  crypto: ^3.0.6
   cupertino_icons: ^1.0.8
   dartz: ^0.10.1
   device_preview: ^1.2.0
@@ -18,11 +19,13 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.6
+  flutter_dotenv: ^5.2.1
   flutter_svg: ^2.0.10+1
   gap: ^3.0.1
   get_it: ^8.0.0
   salomon_bottom_bar: ^3.3.2
   shared_preferences: ^2.3.2
+  supabase_flutter: ^2.8.2
 
 dev_dependencies:
   flutter_lints: ^5.0.0
@@ -33,6 +36,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - .env
   fonts:
     - family: Urbanist
       fonts:

@@ -1,7 +1,6 @@
 part of 'auth_bloc.dart';
 // export 'package:flutter_bloc/flutter_bloc.dart';
 
-@immutable
 abstract class AuthEvent {}
 
 class NameChanged extends AuthEvent {
@@ -36,4 +35,9 @@ class ConfirmPasswordChanged extends AuthEvent {
 
 class SubmitRegistration extends AuthEvent {}
 
-class SubmitSignIn extends AuthEvent {}
+class SubmitSignIn extends AuthEvent {
+  final String nim;
+  final String password;
+
+  SubmitSignIn({required this.nim, required this.password});
+}

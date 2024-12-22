@@ -1,6 +1,4 @@
 import 'package:device_preview/device_preview.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,13 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'app.dart';
 import 'dependency_injection.dart';
 import 'features/auth/presentation/pages/welcome_screen.dart';
-import 'firebase_options.dart';
 import 'navigation_cubit.dart';
+import 'supabase_config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await SupabaseConfig.initialize();
   // Inisialisasi dependency injection
   await DependencyInjection.init();
 
@@ -61,10 +60,12 @@ class RootScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseAuth.instance.authStateChanges(),
+      // stream: FirebaseAuth.instance.authStateChanges(),
+      stream: SupabaseConfig.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) return Scaffold(body: Center(child: CircularProgressIndicator()));
-        if (snapshot.hasData) return AppScreen();
+        print('Snapshot hasdata -> ${snapshot.data}');
+        if (snapshot.data?.session != null) return AppScreen();
         return WelcomeScreen();
       },
     );
