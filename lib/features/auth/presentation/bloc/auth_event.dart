@@ -33,7 +33,13 @@ class ConfirmPasswordChanged extends AuthEvent {
   ConfirmPasswordChanged({required this.confirmPassword});
 }
 
-class SubmitRegistration extends AuthEvent {}
+class SubmitRegistration extends AuthEvent {
+  final String name;
+  final String nis;
+  final String password;
+
+  SubmitRegistration({required this.name, required this.nis, required this.password});
+}
 
 class SubmitSignIn extends AuthEvent {
   final String nim;

@@ -7,6 +7,7 @@ class SignTextField extends StatelessWidget {
   final bool obscureText;
   final Function(String) onChanged;
   final String? Function(String?)? validator;
+  final TextEditingController? controller;
 
   const SignTextField({
     super.key,
@@ -16,11 +17,13 @@ class SignTextField extends StatelessWidget {
     this.obscureText = false,
     required this.onChanged,
     this.validator,
+    this.controller,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       decoration: InputDecoration(
         filled: true,
         fillColor: const Color(0xFFF7F8F9),

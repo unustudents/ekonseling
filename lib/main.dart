@@ -64,7 +64,7 @@ class RootScreen extends StatelessWidget {
       stream: SupabaseConfig.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) return Scaffold(body: Center(child: CircularProgressIndicator()));
-        print('Snapshot hasdata -> ${snapshot.data}');
+        print('Snapshot hasdata -> ${snapshot.data!.session}');
         if (snapshot.data?.session != null) return AppScreen();
         return WelcomeScreen();
       },

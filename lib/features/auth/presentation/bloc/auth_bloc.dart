@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:crypto/crypto.dart';
+import 'package:ekonseling/features/auth/data/models/user_model.dart';
 import 'package:ekonseling/supabase_config.dart';
 import 'package:equatable/equatable.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -54,15 +55,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(error: 'Form tidak valid.'));
       return;
     }
+    emit(AuthLoading());
     try {
-      emit(AuthLoading());
+      // ENCRYPT PASSWORD
+      String hashedPassword = hashPassword(event.password);
+
+      // REGISTRATIONS USER TO DATABASE
+      AuthResponse authResponse = await SupabaseConfig.client.auth.signUp(password: hashedPassword, email: 'user${event.nis}@ekonseling.dummy');
+      if (authResponse.user == null) emit(AuthFailure(error: "Pendaftaran gagal"));
+
+      // UPLOAD DATA TO DATABASE
+      await SupabaseConfig.client.from('users').insert(UserModel(name: event.name, nis: event.nis, passHash: event.password).toJson());
 
       // Firebase Authentication untuk registrasi user baru
       // final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       //   email: state.email,
       //   password: state.password,
       // );
-
+      emit(AuthSuccess(user: authResponse.user));
       // emit(AuthSuccess(user: userCredential.user));
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
@@ -74,28 +84,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(error: 'Form tidak valid.'));
       return;
     }
-    try {
-      // Hash password sebelum dikirimkan ke Supabase
-      String hashedPassword = hashPassword(event.password);
+    // try {
+    //   // Hash password sebelum dikirimkan ke Supabase
+    //   String hashedPassword = hashPassword(event.password);
 
-      // Melakukan registrasi pengguna di Supabase
-      final response = await SupabaseConfig.client.auth.signUp(
-        event.email,
-        hashedPassword, // Menggunakan password yang sudah di-hash
-        data: {
-          'nis': event.nis, // Menyimpan NIS sebagai data tambahan
-        },
-        password: '',
-      );
+    //   // Melakukan registrasi pengguna di Supabase
+    //   final response = await SupabaseConfig.client.auth.signUp(
+    //     event.email,
+    //     hashedPassword, // Menggunakan password yang sudah di-hash
+    //     data: {
+    //       'nis': event.nis, // Menyimpan NIS sebagai data tambahan
+    //     },
+    //     password: '',
+    //   );
 
-      if (response.error != null) {
-        emit(AuthError(message: response.error!.message)); // Emit error state jika terjadi kesalahan
-      } else {
-        emit(AuthSuccess(message: 'Registration successful!'));
-      }
-    } catch (e) {
-      emit(AuthError(message: e.toString())); // Emit error state jika exception terjadi
-    }
+    //   if (response.error != null) {
+    //     emit(AuthError(message: response.error!.message)); // Emit error state jika terjadi kesalahan
+    //   } else {
+    //     emit(AuthSuccess(message: 'Registration successful!'));
+    //   }
+    // } catch (e) {
+    //   emit(AuthError(message: e.toString())); // Emit error state jika exception terjadi
+    // }
 
     // try {
     //   emit(AuthLoading());
@@ -114,9 +124,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   // Fungsi untuk hash password
   String hashPassword(String password) {
-    var bytes = utf8.encode(password); // Mengkonversi password ke bytes
-    var digest = sha256.convert(bytes); // Meng-hash password
-    return digest.toString(); // Mengembalikan hasil hash dalam bentuk string
+    //var bytes = utf8.encode(password); // Mengkonversi password ke bytes
+    //var digest = sha256.convert(bytes); // Meng-hash password
+    //return digest.toString();// Mengembalikan hasil hash dalam bentuk string
+    return sha256.convert(utf8.encode(password)).toString();
   }
 
   String? validateName(String? nama) {

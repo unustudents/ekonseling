@@ -12,6 +12,9 @@ class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController nameCtrl = TextEditingController();
+    final TextEditingController nisCtrl = TextEditingController();
+    final TextEditingController passCtrl = TextEditingController();
     return BlocProvider(
       create: (context) => AuthBloc(),
       child: Scaffold(
@@ -49,6 +52,7 @@ class RegisterScreen extends StatelessWidget {
                     // FORM INPUT -- NAMA LENGKAP
                     SignTextField(
                       label: 'Nama Lengkap',
+                      controller: nameCtrl,
                       hintText: 'Masukkan nama lengkap',
                       validator: (value) => context.read<AuthBloc>().validateName(value),
                       onChanged: (value) => context.read<AuthBloc>().add(NameChanged(name: value)),
@@ -58,6 +62,7 @@ class RegisterScreen extends StatelessWidget {
                     // FORM INPUT -- NIS
                     SignTextField(
                       label: 'Nomor Induk Siswa',
+                      controller: nisCtrl,
                       hintText: 'Masukkan NIS',
                       validator: (value) => context.read<AuthBloc>().validateNIS(value),
                       onChanged: (value) => context.read<AuthBloc>().add(NIMChanged(nim: value)),
@@ -65,18 +70,19 @@ class RegisterScreen extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // FORM INPUT -- EMAIL
-                    SignTextField(
-                      label: 'Email',
-                      hintText: 'Masukkan email',
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) => context.read<AuthBloc>().validateEmail(value),
-                      onChanged: (value) => context.read<AuthBloc>().add(EmailChanged(email: value)),
-                    ),
-                    const SizedBox(height: 20),
+                    // SignTextField(
+                    //   label: 'Email',
+                    //   hintText: 'Masukkan email',
+                    //   keyboardType: TextInputType.emailAddress,
+                    //   validator: (value) => context.read<AuthBloc>().validateEmail(value),
+                    //   onChanged: (value) => context.read<AuthBloc>().add(EmailChanged(email: value)),
+                    // ),
+                    // const SizedBox(height: 20),
 
                     // FORM INPUT -- PASSWORD
                     SignTextField(
                       label: 'Kata Sandi',
+                      controller: passCtrl,
                       hintText: 'Masukkan kata sandi',
                       obscureText: true,
                       validator: (value) => context.read<AuthBloc>().validatePassword(value),
@@ -104,7 +110,7 @@ class RegisterScreen extends StatelessWidget {
                       textColor: Colors.white,
                       onPressed: () {
                         if (context.read<AuthBloc>().formKey.currentState!.validate()) {
-                          context.read<AuthBloc>().add(SubmitRegistration());
+                          context.read<AuthBloc>().add(SubmitRegistration(name: nameCtrl.text, nis: nisCtrl.text, password: passCtrl.text));
                         }
                       },
                     ),
