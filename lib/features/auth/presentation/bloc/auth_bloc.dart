@@ -3,12 +3,12 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:crypto/crypto.dart';
-import 'package:ekonseling/features/auth/data/models/user_model.dart';
-import 'package:ekonseling/supabase_config.dart';
 import 'package:equatable/equatable.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../supabase_config.dart';
+import '../../data/models/user_model.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -16,9 +16,8 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   // final FirebaseAuth _firebaseAuth;
 
-  AuthBloc()
-      // : _firebaseAuth = FirebaseAuth.instance,
-      : super(AuthInitial()) {
+  AuthBloc() : super(AuthInitial()) {
+    // : _firebaseAuth = FirebaseAuth.instance,
     on<NameChanged>(_onNameChanged);
     on<NIMChanged>(_onNIMChanged);
     on<EmailChanged>(_onEmailChanged);
@@ -67,13 +66,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // UPLOAD DATA TO DATABASE
       await SupabaseConfig.client.from('users').insert(UserModel(name: event.name, nis: event.nis, passHash: event.password).toJson());
 
-      // Firebase Authentication untuk registrasi user baru
-      // final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-      //   email: state.email,
-      //   password: state.password,
-      // );
       emit(AuthSuccess(user: authResponse.user));
-      // emit(AuthSuccess(user: userCredential.user));
     } catch (e) {
       emit(AuthFailure(error: e.toString()));
     }
@@ -84,42 +77,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailure(error: 'Form tidak valid.'));
       return;
     }
-    // try {
-    //   // Hash password sebelum dikirimkan ke Supabase
-    //   String hashedPassword = hashPassword(event.password);
+    try {
+      // ENCRYPT PASSWORD
+      String hashedPassword = hashPassword(event.password);
 
-    //   // Melakukan registrasi pengguna di Supabase
-    //   final response = await SupabaseConfig.client.auth.signUp(
-    //     event.email,
-    //     hashedPassword, // Menggunakan password yang sudah di-hash
-    //     data: {
-    //       'nis': event.nis, // Menyimpan NIS sebagai data tambahan
-    //     },
-    //     password: '',
-    //   );
+      // QUERY USER FROM DATABASE TO GET EMAIL
+      final Map<String, dynamic>? response = await SupabaseConfig.client.from('users').select('email').eq('nis', event.nis).maybeSingle();
+      if (response!.isEmpty) emit(AuthFailure(error: 'NIS tidak ditemukan'));
 
-    //   if (response.error != null) {
-    //     emit(AuthError(message: response.error!.message)); // Emit error state jika terjadi kesalahan
-    //   } else {
-    //     emit(AuthSuccess(message: 'Registration successful!'));
-    //   }
-    // } catch (e) {
-    //   emit(AuthError(message: e.toString())); // Emit error state jika exception terjadi
-    // }
-
-    // try {
-    //   emit(AuthLoading());
-
-    //   // Firebase Authentication untuk login user
-    //   final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
-    //     email: state.email,
-    //     password: state.password,
-    //   );
-
-    //   emit(AuthSuccess(user: userCredential.user));
-    // } catch (e) {
-    //   emit(AuthFailure(error: e.toString()));
-    // }
+      // SIGN IN USER
+      final authResponse = await SupabaseConfig.client.auth.signInWithPassword(email: response['email'], password: hashedPassword);
+      if (authResponse.session != null) {
+        emit(AuthSuccess(user: authResponse.user));
+      } else {
+        emit(AuthFailure(error: 'Login gagal, maaf akun tidak ditemukan'));
+      }
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
+    }
   }
 
   // Fungsi untuk hash password

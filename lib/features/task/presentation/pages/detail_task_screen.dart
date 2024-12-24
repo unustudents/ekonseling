@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class DetailTaskScreen extends StatelessWidget {
-  const DetailTaskScreen({super.key});
+  final String taskId;
+
+  const DetailTaskScreen({super.key, required this.taskId});
 
   @override
   Widget build(BuildContext context) {

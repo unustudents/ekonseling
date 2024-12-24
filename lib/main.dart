@@ -1,4 +1,5 @@
 import 'package:device_preview/device_preview.dart';
+import 'package:ekonseling/routes/app_pages.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,9 +34,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => NavigationCubit(),
-      child: MaterialApp(
+      child: MaterialApp.router(
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
+        routerConfig: router,
         title: 'E-Konseling',
         theme: ThemeData(
           fontFamily: "Urbanist",
@@ -48,7 +50,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         // home: BlocProvider(create: (_) => NavigationCubit(), child: const AppScreen()),
-        home: const RootScreen(),
+        // home: const RootScreen(),
       ),
     );
   }
@@ -59,8 +61,8 @@ class RootScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('stream: FirebaseAuth.instance.authStateChanges()');
     return StreamBuilder(
-      // stream: FirebaseAuth.instance.authStateChanges(),
       stream: SupabaseConfig.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) return Scaffold(body: Center(child: CircularProgressIndicator()));

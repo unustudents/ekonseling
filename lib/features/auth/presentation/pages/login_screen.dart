@@ -1,39 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../app.dart';
+import '../../../../routes/app_pages.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/sign_button.dart';
 import '../widgets/sign_textformfield.dart';
-import 'forgot_screen.dart';
-import 'register_screen.dart';
-import 'welcome_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // VARIABEL UNTUK MENAMPUNG INPUTAN NIS DAN PASSWORD
+    final nisCtrl = TextEditingController();
+    final passCtrl = TextEditingController();
+
+    // MENGAMBIL BLOC DARI PROVIDER
     return BlocProvider(
       create: (context) => AuthBloc(),
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios_new_rounded),
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-                (Route<dynamic> route) => false,
-              );
-            },
+            onPressed: () => context.goNamed(Routes.welcome),
           ),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(22, 0, 22, 22),
           child: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
+              // VARIABEL UNTUK MENAMPUNG BLOC
               final authBloc = context.read<AuthBloc>();
+
               return Form(
                 key: context.read<AuthBloc>().formKey,
                 child: Column(
@@ -41,10 +39,7 @@ class LoginScreen extends StatelessWidget {
                     // TEKS SELAMAT DATANG
                     const Text(
                       "Selamat Datang, Senang Bertemu Anda !",
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 32),
 
@@ -52,6 +47,7 @@ class LoginScreen extends StatelessWidget {
                     SignTextField(
                       label: 'Nomor Induk Siswa',
                       hintText: 'Masukkan NIS',
+                      controller: nisCtrl,
                       validator: (value) => authBloc.validateNIS(value),
                       onChanged: (value) => authBloc.add(NIMChanged(nim: value)),
                     ),
@@ -61,6 +57,7 @@ class LoginScreen extends StatelessWidget {
                     SignTextField(
                       label: 'Kata Sandi',
                       hintText: 'Masukkan kata sandi',
+                      controller: passCtrl,
                       obscureText: true,
                       validator: (value) => authBloc.validatePassword(value),
                       onChanged: (value) => authBloc.add(PasswordChanged(password: value)),
@@ -73,17 +70,7 @@ class LoginScreen extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: MaterialButton(
-                          onPressed: () {
-                            // ScaffoldMessenger.of(context).showSnackBar(
-                            //   const SnackBar(
-                            //     content: Text("Lupa Password?"),
-                            //   ),
-                            // );
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const ForgotPassScreen()),
-                            );
-                          },
+                          onPressed: () => context.pushNamed(Routes.forgotPassword),
                           child: const Text("Lupa Kata Sandi?"),
                         ),
                       ),
@@ -97,12 +84,7 @@ class LoginScreen extends StatelessWidget {
                       textColor: Colors.white,
                       onPressed: () {
                         if (authBloc.formKey.currentState!.validate()) {
-                          // context.read<AuthBloc>().add(SubmitRegistration());
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => const AppScreen()),
-                            (Route<dynamic> route) => false,
-                          );
+                          context.read<AuthBloc>().add(SubmitSignIn(nis: nisCtrl.text, password: passCtrl.text));
                         }
                       },
                     ),
@@ -111,12 +93,7 @@ class LoginScreen extends StatelessWidget {
 
                     // TOMBOL MASUK
                     TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                        );
-                      },
+                      onPressed: () => context.goNamed(Routes.register),
                       child: const Text.rich(
                         TextSpan(
                           text: 'Belum punya Akun? ',

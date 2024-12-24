@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../routes/app_pages.dart';
 import '../widgets/welcome_button.dart';
-import 'login_screen.dart';
-import 'register_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -18,7 +17,7 @@ class WelcomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // Spacer untuk memberikan jarak responsif
+            // GAMBAR WELLCOMING
             Spacer(flex: 2),
             SvgPicture.asset(
               'assets/images/undraw_welcoming.svg',
@@ -26,6 +25,8 @@ class WelcomeScreen extends StatelessWidget {
               height: size.height * 0.3,
             ),
             Spacer(flex: 1),
+
+            // TEKS EKONSELING
             Text.rich(
               TextSpan(
                 text: 'E - ',
@@ -43,28 +44,22 @@ class WelcomeScreen extends StatelessWidget {
             ),
             SizedBox(height: size.height * 0.04),
 
-            // Tombol Masuk
+            // TOMBOl MASUK
             WelcomeButton(
               text: 'Masuk',
               backgroundColor: const Color(0xFF724778),
               textColor: Colors.white,
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-              ),
+              onPressed: () => context.goNamed(Routes.login),
             ),
             SizedBox(height: size.height * 0.02),
 
-            // Tombol Daftar
+            // TOMBOL DAFTAR
             WelcomeButton(
               text: 'Daftar',
               backgroundColor: Colors.white,
               textColor: const Color(0xFF1E232C),
               borderColor: const Color(0xFF1E232C),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const RegisterScreen()),
-              ),
+              onPressed: () => context.goNamed(Routes.register),
             ),
             Spacer(flex: 3),
           ],

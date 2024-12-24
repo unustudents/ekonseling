@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../routes/app_pages.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/sign_button.dart';
 import '../widgets/sign_textformfield.dart';
-import 'login_screen.dart';
-import 'welcome_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -21,13 +20,7 @@ class RegisterScreen extends StatelessWidget {
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios_new_rounded),
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-                (Route<dynamic> route) => false,
-              );
-            },
+            onPressed: () => context.goNamed(Routes.welcome),
           ),
         ),
         body: SingleChildScrollView(
@@ -119,12 +112,7 @@ class RegisterScreen extends StatelessWidget {
                     // TEXT -- SUDAH PUNYA AKUN
                     Center(
                       child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const LoginScreen()),
-                          );
-                        },
+                        onPressed: () => context.goNamed(Routes.login),
                         child: const Text.rich(
                           TextSpan(
                             text: 'Sudah punya Akun? ',

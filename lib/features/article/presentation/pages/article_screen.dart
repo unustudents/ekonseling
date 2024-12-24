@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-import 'detail_article_screen.dart';
+import '../../../../routes/app_pages.dart';
 
 class ArticleScreen extends StatelessWidget {
   const ArticleScreen({super.key});
@@ -111,14 +111,7 @@ class ArticleScreen extends StatelessWidget {
                             ),
                             const Gap(10),
                             GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DetailArticleScreen(),
-                                  ),
-                                );
-                              },
+                              onTap: () => context.goNamed(Routes.detailArticle),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

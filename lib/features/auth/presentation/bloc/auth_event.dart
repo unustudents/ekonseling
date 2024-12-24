@@ -42,8 +42,8 @@ class SubmitRegistration extends AuthEvent {
 }
 
 class SubmitSignIn extends AuthEvent {
-  final String nim;
+  final String nis;
   final String password;
 
-  SubmitSignIn({required this.nim, required this.password});
+  SubmitSignIn({required this.nis, required this.password});
 }
