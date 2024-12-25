@@ -6,6 +6,7 @@ class DetailArticleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(articleId);
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -14,7 +15,8 @@ class DetailArticleScreen extends StatelessWidget {
             Row(
               children: [
                 const CircleAvatar(
-                  backgroundImage: NetworkImage('https://picsum.photos/250?image=1'), // Replace with your image asset
+                  backgroundImage: NetworkImage(
+                      'https://picsum.photos/250?image=1'), // Replace with your image asset
                   radius: 20,
                 ),
                 const SizedBox(width: 10),
@@ -27,7 +29,8 @@ class DetailArticleScreen extends StatelessWidget {
                     ),
                     Text(
                       'Konselor',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),

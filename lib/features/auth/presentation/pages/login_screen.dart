@@ -1,3 +1,4 @@
+import 'package:ekonseling/core/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -32,6 +33,19 @@ class LoginScreen extends StatelessWidget {
               // VARIABEL UNTUK MENAMPUNG BLOC
               final authBloc = context.read<AuthBloc>();
 
+              if (state is AuthSuccess) {
+                // JIKA BERHASIL LOGIN
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>
+                    AppSnackbar.show(context,
+                        message: "Yeay, Berhasil Masuk!", isSuccess: true));
+                context.goNamed(Routes.app);
+              }
+              if (state is AuthFailure) {
+                // JIKA GAGAL LOGIN
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>
+                    AppSnackbar.show(context, message: "Sorry ${state.error}"));
+              }
+
               return Form(
                 key: context.read<AuthBloc>().formKey,
                 child: Column(
@@ -39,7 +53,8 @@ class LoginScreen extends StatelessWidget {
                     // TEKS SELAMAT DATANG
                     const Text(
                       "Selamat Datang, Senang Bertemu Anda !",
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 32),
 
@@ -49,7 +64,8 @@ class LoginScreen extends StatelessWidget {
                       hintText: 'Masukkan NIS',
                       controller: nisCtrl,
                       validator: (value) => authBloc.validateNIS(value),
-                      onChanged: (value) => authBloc.add(NIMChanged(nim: value)),
+                      onChanged: (value) =>
+                          authBloc.add(NIMChanged(nim: value)),
                     ),
                     const SizedBox(height: 20),
 
@@ -60,7 +76,8 @@ class LoginScreen extends StatelessWidget {
                       controller: passCtrl,
                       obscureText: true,
                       validator: (value) => authBloc.validatePassword(value),
-                      onChanged: (value) => authBloc.add(PasswordChanged(password: value)),
+                      onChanged: (value) =>
+                          authBloc.add(PasswordChanged(password: value)),
                     ),
                     const SizedBox(height: 5),
 
@@ -70,7 +87,8 @@ class LoginScreen extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: MaterialButton(
-                          onPressed: () => context.pushNamed(Routes.forgotPassword),
+                          onPressed: () =>
+                              context.pushNamed(Routes.forgotPassword),
                           child: const Text("Lupa Kata Sandi?"),
                         ),
                       ),
@@ -84,7 +102,8 @@ class LoginScreen extends StatelessWidget {
                       textColor: Colors.white,
                       onPressed: () {
                         if (authBloc.formKey.currentState!.validate()) {
-                          context.read<AuthBloc>().add(SubmitSignIn(nis: nisCtrl.text, password: passCtrl.text));
+                          context.read<AuthBloc>().add(SubmitSignIn(
+                              nis: nisCtrl.text, password: passCtrl.text));
                         }
                       },
                     ),
@@ -97,7 +116,10 @@ class LoginScreen extends StatelessWidget {
                       child: const Text.rich(
                         TextSpan(
                           text: 'Belum punya Akun? ',
-                          style: TextStyle(color: Color(0xFF8391A1), fontSize: 14, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                              color: Color(0xFF8391A1),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500),
                           children: [
                             TextSpan(
                               text: 'Daftar',

@@ -13,4 +13,5 @@ abstract class Routes {
   static const changePassword = "changePassword";
   static const task = "task";
   static const detailTask = "detailTask";
+  static const app = "app";
 }

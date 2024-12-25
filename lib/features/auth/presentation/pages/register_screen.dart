@@ -1,19 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/snackbar.dart';
 import '../../../../routes/app_pages.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/sign_button.dart';
 import '../widgets/sign_textformfield.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController _nameCtrl = TextEditingController();
+
+  final TextEditingController _nisCtrl = TextEditingController();
+
+  final TextEditingController _passCtrl = TextEditingController();
+
+  final TextEditingController _passConfirmCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _nisCtrl.dispose();
+    _passCtrl.dispose();
+    _passConfirmCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController nameCtrl = TextEditingController();
-    final TextEditingController nisCtrl = TextEditingController();
-    final TextEditingController passCtrl = TextEditingController();
     return BlocProvider(
       create: (context) => AuthBloc(),
       child: Scaffold(
@@ -27,6 +47,17 @@ class RegisterScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
           child: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
+              if (state is AuthSuccess) {
+                // JIKA BERHASIL LOGIN
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>
+                    AppSnackbar.show(context,
+                        message: "Yeay, Berhasil Masuk!", isSuccess: true));
+              }
+              if (state is AuthFailure) {
+                // JIKA GAGAL LOGIN
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>
+                    AppSnackbar.show(context, message: "Sorry ${state.error}"));
+              }
               return Form(
                 key: context.read<AuthBloc>().formKey,
                 child: Column(
@@ -45,20 +76,25 @@ class RegisterScreen extends StatelessWidget {
                     // FORM INPUT -- NAMA LENGKAP
                     SignTextField(
                       label: 'Nama Lengkap',
-                      controller: nameCtrl,
+                      controller: _nameCtrl,
                       hintText: 'Masukkan nama lengkap',
-                      validator: (value) => context.read<AuthBloc>().validateName(value),
-                      onChanged: (value) => context.read<AuthBloc>().add(NameChanged(name: value)),
+                      validator: (value) =>
+                          context.read<AuthBloc>().validateName(value),
+                      onChanged: (value) => context
+                          .read<AuthBloc>()
+                          .add(NameChanged(name: value)),
                     ),
                     const SizedBox(height: 20),
 
                     // FORM INPUT -- NIS
                     SignTextField(
                       label: 'Nomor Induk Siswa',
-                      controller: nisCtrl,
+                      controller: _nisCtrl,
                       hintText: 'Masukkan NIS',
-                      validator: (value) => context.read<AuthBloc>().validateNIS(value),
-                      onChanged: (value) => context.read<AuthBloc>().add(NIMChanged(nim: value)),
+                      validator: (value) =>
+                          context.read<AuthBloc>().validateNIS(value),
+                      onChanged: (value) =>
+                          context.read<AuthBloc>().add(NIMChanged(nim: value)),
                     ),
                     const SizedBox(height: 20),
 
@@ -75,11 +111,14 @@ class RegisterScreen extends StatelessWidget {
                     // FORM INPUT -- PASSWORD
                     SignTextField(
                       label: 'Kata Sandi',
-                      controller: passCtrl,
+                      controller: _passCtrl,
                       hintText: 'Masukkan kata sandi',
                       obscureText: true,
-                      validator: (value) => context.read<AuthBloc>().validatePassword(value),
-                      onChanged: (value) => context.read<AuthBloc>().add(PasswordChanged(password: value)),
+                      validator: (value) =>
+                          context.read<AuthBloc>().validatePassword(value),
+                      onChanged: (value) => context
+                          .read<AuthBloc>()
+                          .add(PasswordChanged(password: value)),
                     ),
                     const SizedBox(height: 20),
 
@@ -87,12 +126,16 @@ class RegisterScreen extends StatelessWidget {
                     SignTextField(
                       label: 'Konfirmasi Kata Sandi',
                       hintText: 'Masukkan ulang kata sandi',
+                      controller: _passConfirmCtrl,
                       obscureText: true,
-                      validator: (value) => context.read<AuthBloc>().validateConfirmPassword(
-                            value,
-                            state.password,
-                          ),
-                      onChanged: (value) => context.read<AuthBloc>().add(ConfirmPasswordChanged(confirmPassword: value)),
+                      validator: (value) =>
+                          context.read<AuthBloc>().validateConfirmPassword(
+                                value,
+                                state.password,
+                              ),
+                      onChanged: (value) => context
+                          .read<AuthBloc>()
+                          .add(ConfirmPasswordChanged(confirmPassword: value)),
                     ),
                     const SizedBox(height: 32),
 
@@ -102,8 +145,15 @@ class RegisterScreen extends StatelessWidget {
                       backgroundColor: Color(0xFF724778),
                       textColor: Colors.white,
                       onPressed: () {
-                        if (context.read<AuthBloc>().formKey.currentState!.validate()) {
-                          context.read<AuthBloc>().add(SubmitRegistration(name: nameCtrl.text, nis: nisCtrl.text, password: passCtrl.text));
+                        if (context
+                            .read<AuthBloc>()
+                            .formKey
+                            .currentState!
+                            .validate()) {
+                          context.read<AuthBloc>().add(SubmitRegistration(
+                              name: _nameCtrl.text,
+                              nis: _nisCtrl.text,
+                              password: _passCtrl.text));
                         }
                       },
                     ),
@@ -116,7 +166,10 @@ class RegisterScreen extends StatelessWidget {
                         child: const Text.rich(
                           TextSpan(
                             text: 'Sudah punya Akun? ',
-                            style: TextStyle(color: Color(0xFF8391A1), fontSize: 14, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                                color: Color(0xFF8391A1),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500),
                             children: [
                               TextSpan(
                                 text: 'Masuk',

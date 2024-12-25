@@ -42,14 +42,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onPasswordChanged(PasswordChanged event, Emitter<AuthState> emit) {
+    validatePassword(event.password);
     emit(state.copyWith(password: event.password));
   }
 
-  void _onConfirmPasswordChanged(ConfirmPasswordChanged event, Emitter<AuthState> emit) {
+  void _onConfirmPasswordChanged(
+      ConfirmPasswordChanged event, Emitter<AuthState> emit) {
     emit(state.copyWith(confirmPassword: event.confirmPassword));
   }
 
-  Future<void> _onSubmitRegistration(SubmitRegistration event, Emitter<AuthState> emit) async {
+  Future<void> _onSubmitRegistration(
+      SubmitRegistration event, Emitter<AuthState> emit) async {
     if (!formKey.currentState!.validate()) {
       emit(AuthFailure(error: 'Form tidak valid.'));
       return;
@@ -60,19 +63,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String hashedPassword = hashPassword(event.password);
 
       // REGISTRATIONS USER TO DATABASE
-      AuthResponse authResponse = await SupabaseConfig.client.auth.signUp(password: hashedPassword, email: 'user${event.nis}@ekonseling.dummy');
-      if (authResponse.user == null) emit(AuthFailure(error: "Pendaftaran gagal"));
-
+      AuthResponse authResponse = await SupabaseConfig.client.auth.signUp(
+          password: hashedPassword, email: 'user${event.nis}@ekonseling.dummy');
+      if (authResponse.user == null)
+        emit(AuthFailure(error: "Maaf pendaftaran gagal"));
       // UPLOAD DATA TO DATABASE
-      await SupabaseConfig.client.from('users').insert(UserModel(name: event.name, nis: event.nis, passHash: event.password).toJson());
+      await SupabaseConfig.client.from('users').insert(UserModel(
+              name: event.name,
+              email: authResponse.user!.email,
+              nis: event.nis,
+              passHash: hashedPassword)
+          .toJson());
 
       emit(AuthSuccess(user: authResponse.user));
     } catch (e) {
+      print(e);
       emit(AuthFailure(error: e.toString()));
     }
   }
 
-  Future<void> _onSubmitSignIn(SubmitSignIn event, Emitter<AuthState> emit) async {
+  Future<void> _onSubmitSignIn(
+      SubmitSignIn event, Emitter<AuthState> emit) async {
     if (!formKey.currentState!.validate()) {
       emit(AuthFailure(error: 'Form tidak valid.'));
       return;
@@ -82,18 +93,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String hashedPassword = hashPassword(event.password);
 
       // QUERY USER FROM DATABASE TO GET EMAIL
-      final Map<String, dynamic>? response = await SupabaseConfig.client.from('users').select('email').eq('nis', event.nis).maybeSingle();
+      final Map<String, dynamic>? response = await SupabaseConfig.client
+          .from('users')
+          .select('email')
+          .eq('nis', event.nis)
+          .maybeSingle();
+      print(response.hashCode);
+      print(event.nis);
       if (response!.isEmpty) emit(AuthFailure(error: 'NIS tidak ditemukan'));
 
       // SIGN IN USER
-      final authResponse = await SupabaseConfig.client.auth.signInWithPassword(email: response['email'], password: hashedPassword);
+      final authResponse = await SupabaseConfig.client.auth.signInWithPassword(
+          email: response['email'], password: hashedPassword);
       if (authResponse.session != null) {
         emit(AuthSuccess(user: authResponse.user));
       } else {
         emit(AuthFailure(error: 'Login gagal, maaf akun tidak ditemukan'));
       }
     } catch (e) {
-      emit(AuthFailure(error: e.toString()));
+      emit(AuthFailure(error: 'Sepertinya anda belum registrasi'));
     }
   }
 
@@ -124,13 +142,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   String? validatePassword(String? password) {
-    if (password == null || password.isEmpty) return 'Password tidak boleh kosong';
+    if (password == null || password.isEmpty)
+      return 'Password tidak boleh kosong';
     if (password.length < 6) return 'Password minimal 6 karakter';
     return null;
   }
 
   String? validateConfirmPassword(String? confirmPassword, String? password) {
-    if (confirmPassword == null || confirmPassword.isEmpty) return 'Konfirmasi password tidak boleh kosong';
+    if (confirmPassword == null || confirmPassword.isEmpty)
+      return 'Konfirmasi password tidak boleh kosong';
     if (confirmPassword != password) return 'Konfirmasi password tidak sesuai';
     return null;
   }
