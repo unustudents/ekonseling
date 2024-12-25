@@ -14,7 +14,6 @@ import '../features/profile/presentation/pages/ganti_password_screen.dart';
 import '../features/profile/presentation/pages/profile_screen.dart';
 import '../features/task/presentation/pages/detail_task_screen.dart';
 import '../features/task/presentation/pages/task_screen.dart';
-import '../supabase_config.dart';
 
 export 'package:go_router/go_router.dart';
 
@@ -22,19 +21,6 @@ part 'app_routes.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/welcome',
-  redirect: (context, state) {
-    // Ambil session dari Supabase
-    final session = SupabaseConfig.client.auth.currentSession;
-
-    // Jika session null, arahkan ke halaman welcome/login
-    if (session == null || session.isExpired == true) return '/welcome';
-
-    // Jika session ada dan mencoba ke halaman login/register, arahkan ke home
-    if (session.isExpired == false) return '/app';
-
-    // Tetap di halaman yang diminta
-    return null;
-  },
   routes: [
     GoRoute(
       path: '/welcome',
@@ -69,8 +55,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/article/:id',
       name: Routes.detailArticle,
-      builder: (context, state) =>
-          DetailArticleScreen(articleId: state.pathParameters['id']!),
+      builder: (context, state) => DetailArticleScreen(articleId: state.pathParameters['id']!),
     ),
     GoRoute(
       path: '/profile',
@@ -90,8 +75,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/task/:id',
       name: Routes.detailTask,
-      builder: (context, state) =>
-          DetailTaskScreen(taskId: state.pathParameters['id']!),
+      builder: (context, state) => DetailTaskScreen(taskId: state.pathParameters['id']!),
     ),
     GoRoute(
       path: '/app',
