@@ -1,3 +1,4 @@
+import 'package:ekonseling/supabase_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -49,7 +50,10 @@ class WelcomeScreen extends StatelessWidget {
               text: 'Masuk',
               backgroundColor: const Color(0xFF724778),
               textColor: Colors.white,
-              onPressed: () => context.goNamed(Routes.login),
+              onPressed: () {
+                print(SupabaseConfig.client.auth.currentUser);
+                context.goNamed(Routes.login);
+              },
             ),
             SizedBox(height: size.height * 0.02),
 

@@ -2,6 +2,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
+import '../../../../routes/app_pages.dart';
+import '../../../../supabase_config.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -178,7 +181,12 @@ class HomeScreen extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF64558E)),
                   ),
                   GestureDetector(
-                    onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Lihat semua"))),
+                    onTap: () async {
+                      await SupabaseConfig.client.auth.signOut();
+                      if (context.mounted) {
+                        context.go(Routes.welcome);
+                      }
+                    },
                     child: const Text(
                       "Lihat semua",
                       style: TextStyle(color: Color(0xFF64558E), fontSize: 16),

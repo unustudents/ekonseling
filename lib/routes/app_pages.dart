@@ -1,4 +1,5 @@
 // Professional Router Implementation in Flutter
+import 'package:ekonseling/supabase_config.dart';
 import 'package:go_router/go_router.dart';
 
 // Screens Import
@@ -20,8 +21,18 @@ export 'package:go_router/go_router.dart';
 part 'app_routes.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: '/welcome',
+  // initialLocation: '/',
+  redirect: (context, state) async {
+    final session = SupabaseConfig.client.auth.currentSession;
+
+    return session == null ? '/login' : null;
+  },
   routes: [
+    GoRoute(
+      path: '/',
+      name: Routes.app,
+      builder: (context, state) => AppScreen(),
+    ),
     GoRoute(
       path: '/welcome',
       name: Routes.welcome,
@@ -76,11 +87,6 @@ final GoRouter router = GoRouter(
       path: '/task/:id',
       name: Routes.detailTask,
       builder: (context, state) => DetailTaskScreen(taskId: state.pathParameters['id']!),
-    ),
-    GoRoute(
-      path: '/app',
-      name: Routes.app,
-      builder: (context, state) => AppScreen(),
     ),
   ],
 );
