@@ -1,9 +1,9 @@
 // Professional Router Implementation in Flutter
-import 'package:ekonseling/supabase_config.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 // Screens Import
-import '../app.dart';
 import '../features/article/presentation/pages/article_screen.dart';
 import '../features/article/presentation/pages/detail_article_screen.dart';
 import '../features/auth/presentation/pages/forgot_screen.dart';
@@ -21,20 +21,52 @@ export 'package:go_router/go_router.dart';
 part 'app_routes.dart';
 
 final GoRouter router = GoRouter(
-  // initialLocation: '/',
-  redirect: (context, state) async {
-    final session = SupabaseConfig.client.auth.currentSession;
-
-    return session == null ? '/login' : null;
-  },
   routes: [
+    ShellRoute(
+        builder: (context, state, child) {
+          return Scaffold(
+            body: SafeArea(child: child),
+            bottomNavigationBar: SalomonBottomBar(
+              currentIndex: _getSelectedIndex(state.uri.toString()),
+              onTap: (index) {
+                if (index == 0) context.goNamed(Routes.home);
+                if (index == 1) context.goNamed(Routes.article);
+                if (index == 2) context.goNamed(Routes.task);
+                if (index == 3) context.goNamed(Routes.profile);
+              },
+              items: [
+                SalomonBottomBarItem(icon: const Icon(Icons.home_outlined), title: const Text("Home")),
+                SalomonBottomBarItem(icon: const Icon(Icons.article), title: const Text("Artikel"), selectedColor: Colors.red),
+                SalomonBottomBarItem(icon: const Icon(Icons.task), title: const Text("Tugas"), selectedColor: Colors.green),
+                SalomonBottomBarItem(icon: const Icon(Icons.person_outline), title: const Text("Profil"), selectedColor: Colors.brown),
+              ],
+            ),
+          );
+        },
+        routes: [
+          GoRoute(
+            path: '/home',
+            name: Routes.home,
+            builder: (context, state) => const HomeScreen(),
+          ),
+          GoRoute(
+            path: '/article',
+            name: Routes.article,
+            builder: (context, state) => const ArticleScreen(),
+          ),
+          GoRoute(
+            path: '/task',
+            name: Routes.task,
+            builder: (context, state) => const TaskScreen(),
+          ),
+          GoRoute(
+            path: '/profile',
+            name: Routes.profile,
+            builder: (context, state) => const ProfileScreen(),
+          ),
+        ]),
     GoRoute(
       path: '/',
-      name: Routes.app,
-      builder: (context, state) => AppScreen(),
-    ),
-    GoRoute(
-      path: '/welcome',
       name: Routes.welcome,
       builder: (context, state) => const WelcomeScreen(),
     ),
@@ -54,34 +86,14 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const ForgotPassScreen(),
     ),
     GoRoute(
-      path: '/home',
-      name: Routes.home,
-      builder: (context, state) => const HomeScreen(),
-    ),
-    GoRoute(
-      path: '/article',
-      name: Routes.article,
-      builder: (context, state) => const ArticleScreen(),
-    ),
-    GoRoute(
       path: '/article/:id',
       name: Routes.detailArticle,
       builder: (context, state) => DetailArticleScreen(articleId: state.pathParameters['id']!),
     ),
     GoRoute(
-      path: '/profile',
-      name: Routes.profile,
-      builder: (context, state) => const ProfileScreen(),
-    ),
-    GoRoute(
       path: '/change-password',
       name: Routes.changePassword,
       builder: (context, state) => const GantiPasswordScreen(),
-    ),
-    GoRoute(
-      path: '/task',
-      name: Routes.task,
-      builder: (context, state) => const TaskScreen(),
     ),
     GoRoute(
       path: '/task/:id',
@@ -90,3 +102,11 @@ final GoRouter router = GoRouter(
     ),
   ],
 );
+
+int _getSelectedIndex(String location) {
+  if (location.startsWith('/home')) return 0;
+  if (location.startsWith('/article')) return 1;
+  if (location.startsWith('/task')) return 2;
+  if (location.startsWith('/profile')) return 3;
+  return 0;
+}

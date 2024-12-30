@@ -1,10 +1,8 @@
-import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'navigation_cubit.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'routes/app_pages.dart';
 import 'supabase_config.dart';
 
@@ -14,22 +12,46 @@ Future<void> main() async {
   await SupabaseConfig.initialize();
 
   runApp(
-    DevicePreview(
-      enabled: !kReleaseMode && kIsWeb,
-      builder: (BuildContext context) => const MyApp(),
-    ),
+    // DevicePreview(
+    //   enabled: !kReleaseMode && kIsWeb,
+    //   builder: (BuildContext context) => const MyApp(),
+    // ),
+    MyApp(),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    SupabaseConfig.client.auth.onAuthStateChange.listen(
+      (event) {
+        if (event.event == AuthChangeEvent.signedOut) {
+          print('onAuthStateChange: signedOut');
+          router.goNamed(Routes.login);
+        }
+        ;
+        if (event.event == AuthChangeEvent.signedIn) print('onAuthStateChange: signedIn');
+      },
+    );
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => NavigationCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => AuthBloc()..add(AuthCheckRequested())),
+      ],
       child: MaterialApp.router(
-        locale: DevicePreview.locale(context),
-        builder: DevicePreview.appBuilder,
+        // locale: DevicePreview.locale(context),
+        // builder: DevicePreview.appBuilder,
         routerConfig: router,
         title: 'E-Konseling',
         theme: ThemeData(

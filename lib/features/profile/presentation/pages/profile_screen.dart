@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../supabase_config.dart';
 import 'ganti_password_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -127,21 +128,32 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 20),
 
           // TOMBOL - KELUAR
-          OutlinedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () => enabled.value = false,
-            child: ValueListenableBuilder(
-              valueListenable: enabled,
-              builder: (context, value, _) {
-                return Text(
+          ValueListenableBuilder<bool>(
+            valueListenable: enabled,
+            builder: (BuildContext context, bool value, Widget? child) {
+              return OutlinedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () async {
+                  if (value) enabled.value = false;
+                  if (!value) {
+                    try {
+                      await SupabaseConfig.client.auth.signOut();
+                    } catch (e) {
+                      print('error signout = $e');
+                    }
+                    // WidgetsBinding.instance.addPostFrameCallback((_) => context.goNamed(Routes.welcome));
+                  }
+                  value ? enabled.value = false : SupabaseConfig.client.auth.signOut();
+                },
+                child: Text(
                   value ? 'Batal' : 'Keluar',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ],
       ),

@@ -10,6 +10,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../supabase_config.dart';
 import '../../data/models/user_model.dart';
 
+export 'package:flutter_bloc/flutter_bloc.dart';
+
 part 'auth_event.dart';
 part 'auth_state.dart';
 
@@ -25,6 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ConfirmPasswordChanged>(_onConfirmPasswordChanged);
     on<SubmitRegistration>(_onSubmitRegistration);
     on<SubmitSignIn>(_onSubmitSignIn);
+    on<AuthCheckRequested>(_onAuthCheckRequested);
   }
 
   final formKey = GlobalKey<FormState>();
@@ -46,15 +49,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(state.copyWith(password: event.password));
   }
 
-  void _onConfirmPasswordChanged(
-      ConfirmPasswordChanged event, Emitter<AuthState> emit) {
+  void _onConfirmPasswordChanged(ConfirmPasswordChanged event, Emitter<AuthState> emit) {
     emit(state.copyWith(confirmPassword: event.confirmPassword));
   }
 
-  Future<void> _onSubmitRegistration(
-      SubmitRegistration event, Emitter<AuthState> emit) async {
+  Future<void> _onSubmitRegistration(SubmitRegistration event, Emitter<AuthState> emit) async {
     if (!formKey.currentState!.validate()) {
-      emit(AuthFailure(error: 'Form tidak valid.'));
+      emit(AuthError(error: 'Form tidak valid.'));
       return;
     }
     emit(AuthLoading());
@@ -63,29 +64,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String hashedPassword = hashPassword(event.password);
 
       // REGISTRATIONS USER TO DATABASE
-      AuthResponse authResponse = await SupabaseConfig.client.auth.signUp(
-          password: hashedPassword, email: 'user${event.nis}@ekonseling.dummy');
-      if (authResponse.user == null)
-        emit(AuthFailure(error: "Maaf pendaftaran gagal"));
+      AuthResponse authResponse = await SupabaseConfig.client.auth.signUp(password: hashedPassword, email: 'user${event.nis}@ekonseling.dummy');
+      if (authResponse.user == null) emit(AuthError(error: "Maaf pendaftaran gagal"));
       // UPLOAD DATA TO DATABASE
-      await SupabaseConfig.client.from('users').insert(UserModel(
-              name: event.name,
-              email: authResponse.user!.email,
-              nis: event.nis,
-              passHash: hashedPassword)
-          .toJson());
+      await SupabaseConfig.client
+          .from('users')
+          .insert(UserModel(name: event.name, email: authResponse.user!.email, nis: event.nis, passHash: hashedPassword).toJson());
 
       emit(AuthSuccess(user: authResponse.user));
     } catch (e) {
       print(e);
-      emit(AuthFailure(error: e.toString()));
+      emit(AuthError(error: e.toString()));
     }
   }
 
-  Future<void> _onSubmitSignIn(
-      SubmitSignIn event, Emitter<AuthState> emit) async {
+  Future<void> _onSubmitSignIn(SubmitSignIn event, Emitter<AuthState> emit) async {
     if (!formKey.currentState!.validate()) {
-      emit(AuthFailure(error: 'Form tidak valid.'));
+      emit(AuthError(error: 'Form tidak valid.'));
       return;
     }
     try {
@@ -93,26 +88,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String hashedPassword = hashPassword(event.password);
 
       // QUERY USER FROM DATABASE TO GET EMAIL
-      final Map<String, dynamic>? response = await SupabaseConfig.client
-          .from('users')
-          .select('email')
-          .eq('nis', event.nis)
-          .maybeSingle();
+      final Map<String, dynamic>? response = await SupabaseConfig.client.from('users').select('email').eq('nis', event.nis).maybeSingle();
       print(response.hashCode);
       print(event.nis);
-      if (response!.isEmpty) emit(AuthFailure(error: 'NIS tidak ditemukan'));
+      if (response!.isEmpty) emit(AuthError(error: 'NIS tidak ditemukan'));
 
       // SIGN IN USER
-      final authResponse = await SupabaseConfig.client.auth.signInWithPassword(
-          email: response['email'], password: hashedPassword);
+      final authResponse = await SupabaseConfig.client.auth.signInWithPassword(email: response['email'], password: hashedPassword);
       if (authResponse.session != null) {
         emit(AuthSuccess(user: authResponse.user));
       } else {
-        emit(AuthFailure(error: 'Login gagal, maaf akun tidak ditemukan'));
+        emit(AuthError(error: 'Login gagal, maaf akun tidak ditemukan'));
       }
     } catch (e) {
-      emit(AuthFailure(error: 'Sepertinya anda belum registrasi'));
+      emit(AuthError(error: 'Sepertinya anda belum registrasi'));
     }
+  }
+
+  Future<void> _onAuthCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    final session = SupabaseConfig.client.auth.currentSession;
+
+    await Future.delayed(const Duration(seconds: 2)); // Simulasi Splash
+    session == null ? emit(AuthUnauthenticated()) : emit(AuthAuthenticated());
   }
 
   // Fungsi untuk hash password
@@ -142,15 +140,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   String? validatePassword(String? password) {
-    if (password == null || password.isEmpty)
-      return 'Password tidak boleh kosong';
+    if (password == null || password.isEmpty) return 'Password tidak boleh kosong';
     if (password.length < 6) return 'Password minimal 6 karakter';
     return null;
   }
 
   String? validateConfirmPassword(String? confirmPassword, String? password) {
-    if (confirmPassword == null || confirmPassword.isEmpty)
-      return 'Konfirmasi password tidak boleh kosong';
+    if (confirmPassword == null || confirmPassword.isEmpty) return 'Konfirmasi password tidak boleh kosong';
     if (confirmPassword != password) return 'Konfirmasi password tidak sesuai';
     return null;
   }

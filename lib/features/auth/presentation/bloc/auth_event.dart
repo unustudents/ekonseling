@@ -47,3 +47,5 @@ class SubmitSignIn extends AuthEvent {
 
   SubmitSignIn({required this.nis, required this.password});
 }
+
+class AuthCheckRequested extends AuthEvent {}

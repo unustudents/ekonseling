@@ -56,11 +56,13 @@ class AuthSuccess extends AuthState {
   List<Object?> get props => [user];
 }
 
-class AuthFailure extends AuthState {
-  final String error;
-
-  const AuthFailure({required this.error});
+class AuthError extends AuthState {
+  const AuthError({required String error});
 
   @override
   List<Object?> get props => [error];
 }
+
+class AuthAuthenticated extends AuthState {}
+
+class AuthUnauthenticated extends AuthState {}
