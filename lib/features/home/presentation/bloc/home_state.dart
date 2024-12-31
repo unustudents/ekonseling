@@ -14,14 +14,14 @@ class HomeLoading extends HomeState {}
 
 class HomeLoaded extends HomeState {
   final String userName;
-  final List<Map<String, dynamic>> videoUrls;
+  // final List<Map<String, dynamic>> videoUrls;
   final List<Map<String, dynamic>> konselorProfiles;
   final Map<String, dynamic> latestArticle;
 
-  const HomeLoaded({required this.userName, required this.videoUrls, required this.konselorProfiles, required this.latestArticle});
+  const HomeLoaded({required this.userName, required this.konselorProfiles, required this.latestArticle});
 
   @override
-  List<Object> get props => [userName, videoUrls, konselorProfiles, latestArticle];
+  List<Object> get props => [userName, konselorProfiles, latestArticle];
 }
 
 class HomeError extends HomeState {
@@ -31,4 +31,13 @@ class HomeError extends HomeState {
 
   @override
   List<Object> get props => [message];
+}
+
+class HomeVideoDataStream extends HomeState {
+  final List<Map<String, dynamic>> dataVideo;
+
+  const HomeVideoDataStream({required this.dataVideo});
+
+  @override
+  List<Object> get props => [dataVideo];
 }

@@ -89,8 +89,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       // QUERY USER FROM DATABASE TO GET EMAIL
       final Map<String, dynamic>? response = await SupabaseConfig.client.from('users').select('email').eq('nis', event.nis).maybeSingle();
-      print(response.hashCode);
-      print(event.nis);
+      print('Response data SignIn = $response');
       if (response!.isEmpty) emit(AuthError(error: 'NIS tidak ditemukan'));
 
       // SIGN IN USER
@@ -101,6 +100,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthError(error: 'Login gagal, maaf akun tidak ditemukan'));
       }
     } catch (e) {
+      print('Error SignIn = $e');
       emit(AuthError(error: 'Sepertinya anda belum registrasi'));
     }
   }

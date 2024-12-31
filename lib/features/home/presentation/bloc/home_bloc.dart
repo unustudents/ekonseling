@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../supabase_config.dart';
 
@@ -11,7 +12,35 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeInitial()) {
     on<FetchDataEvent>(_onFetchUserData);
-    // on<HomeEvent>();
+    on<StreamVideoDataEvent>(_onStreamVideoData);
+  }
+
+  @override
+  void onChange(Change<HomeState> change) {
+    print(change);
+    super.onChange(change);
+  }
+
+  _onStreamVideoData(StreamVideoDataEvent event, Emitter<HomeState> emit) async {
+    try {
+      // emit(HomeLoading());
+      final response = SupabaseConfig.client.from('videos').stream(primaryKey: ['id']).order('url_video').order('title').order('subtitle');
+      SupabaseConfig.client
+          .channel('public:videos')
+          .onPostgresChanges(
+              event: PostgresChangeEvent.all,
+              schema: 'public',
+              table: 'videos',
+              callback: (PostgresChangePayload payload) => print('Payload: $payload'))
+          .subscribe();
+      await emit.forEach(
+        response,
+        onData: (data) => HomeVideoDataStream(dataVideo: data),
+        onError: (error, stackTrace) => HomeError(error.toString()),
+      );
+    } catch (e) {
+      emit(HomeError(e.toString()));
+    }
   }
 
   Future<void> _onFetchUserData(FetchDataEvent event, Emitter<HomeState> emit) async {
@@ -24,17 +53,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       // FETCH VIDEOS URLS
       // final videoResponse = await SupabaseConfig.client.from('videos').select('url_video, title, subtitle');
-      final videoResponse = await SupabaseConfig.client.from('videos').select('url_video, title, subtitle');
-      print("HomeBloc - Video Response: $videoResponse");
-      final videoUrls = List<Map<String, dynamic>>.from(
-        videoResponse.map(
-          (video) => {
-            'url_video': video['url_video'],
-            'title': video['title'],
-            'subtitle': video['subtitle'],
-          },
-        ),
-      );
+      // final videoResponse = await SupabaseConfig.client.from('videos').select('url_video, title, subtitle');
+      // print("HomeBloc - Video Response: $videoResponse");
+      // final videoUrls = List<Map<String, dynamic>>.from(
+      //   videoResponse.map(
+      //     (video) => {
+      //       'url_video': video['url_video'],
+      //       'title': video['title'],
+      //       'subtitle': video['subtitle'],
+      //     },
+      //   ),
+      // );
 
       // FETCH KONSELOR PROFILES
       final konselorResponse = await SupabaseConfig.client.from('users_admin').select('name, profile_url');
@@ -65,7 +94,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         'read_time_minutes': articleResponse?['read_time_minutes'] ?? '-',
       };
 
-      emit(HomeLoaded(userName: userName, videoUrls: videoUrls, konselorProfiles: konselorProfiles, latestArticle: latestArticle));
+      emit(HomeLoaded(userName: userName, konselorProfiles: konselorProfiles, latestArticle: latestArticle));
     } catch (e) {
       print('Error HomeBloc: $e');
       emit(HomeError('Error fetching name: $e'));

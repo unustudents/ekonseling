@@ -8,3 +8,5 @@ abstract class HomeEvent extends Equatable {
 }
 
 class FetchDataEvent extends HomeEvent {}
+
+class StreamVideoDataEvent extends HomeEvent {}

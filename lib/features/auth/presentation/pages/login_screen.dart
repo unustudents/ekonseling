@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.fromLTRB(22, 0, 22, 22),
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
-              if (state is AuthSuccess) context.goNamed(Routes.home);
+              // if (state is AuthSuccess) context.goNamed(Routes.home);
               if (state is AuthError) AppSnackbar.show(context, message: state.error.toString());
             },
             builder: (context, state) {

@@ -32,12 +32,15 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     SupabaseConfig.client.auth.onAuthStateChange.listen(
       (event) {
-        if (event.event == AuthChangeEvent.signedOut) {
+        if (event.event == AuthChangeEvent.signedOut || event.event == AuthChangeEvent.passwordRecovery) {
           print('onAuthStateChange: signedOut');
           router.goNamed(Routes.login);
         }
-        ;
-        if (event.event == AuthChangeEvent.signedIn) print('onAuthStateChange: signedIn');
+
+        if (event.event == AuthChangeEvent.signedIn) {
+          print('onAuthStateChange: sigednIn');
+          router.goNamed(Routes.home);
+        }
       },
     );
     super.initState();
