@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import '../bloc/home_bloc.dart';
@@ -7,7 +9,7 @@ class ProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // BlocProvider.of<HomeBloc>(context).add(FetchDataEvent());
+    log(name: 'Home_Screen', 'Building Profile_Widget');
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Row(
@@ -20,15 +22,12 @@ class ProfileWidget extends StatelessWidget {
               Row(
                 children: [
                   Text('Halo! ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                  BlocBuilder<HomeBloc, HomeState>(
-                    buildWhen: (previous, current) => current is HomeLoaded,
+                  BlocSelector<HomeBloc, HomeState, String>(
+                    selector: (state) => state.userName,
                     builder: (context, state) {
-                      if (state is HomeLoading) return Text('....');
-
-                      if (state is HomeError) print('Error = ${state.message}');
-
-                      if (state is HomeLoaded) {
-                        return Text(state.userName.toUpperCase().toString(), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16));
+                      log(name: 'Home_Screen', 'Building Profile_Widget - BlocSelector');
+                      if (state.isNotEmpty) {
+                        return Text('${state.toUpperCase()} 👋', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16));
                       }
                       return Text('....');
                     },
