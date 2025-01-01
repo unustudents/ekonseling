@@ -9,4 +9,8 @@ abstract class HomeEvent extends Equatable {
 
 class FetchDataEvent extends HomeEvent {}
 
-class StreamVideoDataEvent extends HomeEvent {}
+class LoadStreamVideoEvent extends HomeEvent {}
+
+class LoadDataKonselorEvent extends HomeEvent {}
+
+class LoadDataArtikelEvent extends HomeEvent {}

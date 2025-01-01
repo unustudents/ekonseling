@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,16 +14,18 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(HomeInitial()) {
     on<FetchDataEvent>(_onFetchUserData);
-    on<StreamVideoDataEvent>(_onStreamVideoData);
+    on<LoadStreamVideoEvent>(_onStreamVideoData);
+    add(FetchDataEvent());
+    add(LoadStreamVideoEvent());
   }
 
   @override
   void onChange(Change<HomeState> change) {
-    print(change);
+    log(name: 'onChange()', change.toString());
     super.onChange(change);
   }
 
-  _onStreamVideoData(StreamVideoDataEvent event, Emitter<HomeState> emit) async {
+  _onStreamVideoData(LoadStreamVideoEvent event, Emitter<HomeState> emit) async {
     try {
       // emit(HomeLoading());
       final response = SupabaseConfig.client.from('videos').stream(primaryKey: ['id']).order('url_video').order('title').order('subtitle');
@@ -51,20 +55,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final userResponse = await SupabaseConfig.client.from('users').select('name').eq('id', userId).single();
       final String userName = userResponse['name'].toString();
 
-      // FETCH VIDEOS URLS
-      // final videoResponse = await SupabaseConfig.client.from('videos').select('url_video, title, subtitle');
-      // final videoResponse = await SupabaseConfig.client.from('videos').select('url_video, title, subtitle');
-      // print("HomeBloc - Video Response: $videoResponse");
-      // final videoUrls = List<Map<String, dynamic>>.from(
-      //   videoResponse.map(
-      //     (video) => {
-      //       'url_video': video['url_video'],
-      //       'title': video['title'],
-      //       'subtitle': video['subtitle'],
-      //     },
-      //   ),
-      // );
-
       // FETCH KONSELOR PROFILES
       final konselorResponse = await SupabaseConfig.client.from('users_admin').select('name, profile_url');
       final konselorProfiles = List<Map<String, dynamic>>.from(
@@ -83,7 +73,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           .order('created_at', ascending: false)
           .limit(1)
           .maybeSingle();
-      print("HomeBloc - Data Artikel: $articleResponse");
       final latestArticle = {
         'title': articleResponse?['title'] ?? '-',
         'author': articleResponse?['users_admin']?['name'] ?? '-',
@@ -96,7 +85,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       emit(HomeLoaded(userName: userName, konselorProfiles: konselorProfiles, latestArticle: latestArticle));
     } catch (e) {
-      print('Error HomeBloc: $e');
+      log(name: 'Home_Bloc', 'Error HomeBloc: $e');
       emit(HomeError('Error fetching name: $e'));
     }
   }

@@ -7,7 +7,7 @@ class ProfileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<HomeBloc>(context).add(FetchDataEvent());
+    // BlocProvider.of<HomeBloc>(context).add(FetchDataEvent());
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Row(
