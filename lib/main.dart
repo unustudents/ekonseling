@@ -32,7 +32,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     SupabaseConfig.client.auth.onAuthStateChange.listen(
       (event) {
-        if (event.event == AuthChangeEvent.signedOut || event.event == AuthChangeEvent.passwordRecovery) {
+        if (event.event == AuthChangeEvent.signedOut ||
+            event.event == AuthChangeEvent.passwordRecovery) {
           print('onAuthStateChange: signedOut');
           router.goNamed(Routes.login);
         }
@@ -50,7 +51,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AuthBloc()..add(AuthCheckRequested())),
+        BlocProvider(
+            create: (context) => AuthBloc()..add(AuthCheckRequested())),
       ],
       child: MaterialApp.router(
         // locale: DevicePreview.locale(context),
@@ -63,7 +65,11 @@ class _MyAppState extends State<MyApp> {
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
             surfaceTintColor: Colors.white,
-            titleTextStyle: TextStyle(color: Colors.black, fontFamily: "Urbanist", fontSize: 15, fontWeight: FontWeight.bold),
+            titleTextStyle: TextStyle(
+                color: Colors.black,
+                fontFamily: "Urbanist",
+                fontSize: 15,
+                fontWeight: FontWeight.bold),
           ),
           useMaterial3: true,
         ),

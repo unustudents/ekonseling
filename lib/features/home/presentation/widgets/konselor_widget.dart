@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/snackbar.dart';
 import '../bloc/home_bloc.dart';
 
 class KonselorWidget extends StatelessWidget {
@@ -20,10 +21,14 @@ class KonselorWidget extends StatelessWidget {
             children: [
               const Text(
                 "Konselor",
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF64558E)),
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Color(0xFF64558E)),
               ),
               GestureDetector(
-                onTap: () async {},
+                onTap: () => AppSnackbar.show(context,
+                    message: 'Sedang dalam pengembangan ...'),
                 child: const Text(
                   "Lihat semua",
                   style: TextStyle(color: Color(0xFF64558E), fontSize: 16),
@@ -39,7 +44,8 @@ class KonselorWidget extends StatelessWidget {
             return CarouselSlider.builder(
               itemCount: state.length,
               itemBuilder: (context, index, realIndex) {
-                if (state.isEmpty) return Center(child: const Text('Belum ada konselor ...'));
+                if (state.isEmpty)
+                  return Center(child: const Text('Belum ada konselor ...'));
 
                 return SizedBox.square(
                   dimension: 120,
@@ -53,8 +59,11 @@ class KonselorWidget extends StatelessWidget {
                           width: 90,
                           // height: 50,
                           fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) => CircularProgressIndicator(),
-                          errorBuilder: (context, error, stackTrace) => Image.asset('assets/images/user.png', width: 90, fit: BoxFit.scaleDown),
+                          loadingBuilder: (context, child, loadingProgress) =>
+                              CircularProgressIndicator(),
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.asset('assets/images/user.png',
+                                  width: 90, fit: BoxFit.scaleDown),
                         ),
                       ),
                       const SizedBox(height: 5),

@@ -14,7 +14,10 @@ class ArtikelWidget extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Text(
             "Artikel Terbaru",
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF64558E)),
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                color: Color(0xFF64558E)),
           ),
         ),
         Container(
@@ -24,6 +27,7 @@ class ArtikelWidget extends StatelessWidget {
             builder: (context, state) {
               return Column(
                 children: [
+                  // PROFILE AUTHOR
                   Row(
                     children: [
                       ClipRRect(
@@ -33,21 +37,28 @@ class ArtikelWidget extends StatelessWidget {
                           width: 30,
                           height: 30,
                           fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) => CircularProgressIndicator(),
+                          loadingBuilder: (context, child, loadingProgress) =>
+                              CircularProgressIndicator(),
                           errorBuilder: (context, error, stackTrace) =>
-                              Image.asset('assets/images/user.png', width: 30, height: 30, fit: BoxFit.scaleDown),
+                              Image.asset('assets/images/user.png',
+                                  width: 30, height: 30, fit: BoxFit.scaleDown),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(width: 10),
                       Text(
                         state['author'].toString(),
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 13),
                       ),
                       const Spacer(),
-                      IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz_outlined))
+                      IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.more_horiz_outlined))
                     ],
                   ),
                   const SizedBox(height: 10),
+
+                  // ARTICLE CONTENT
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -62,23 +73,30 @@ class ArtikelWidget extends StatelessWidget {
                             SizedBox(height: 10),
                             Text(
                               state['content'].toString(),
-                              overflow: TextOverflow.clip,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 3,
                               softWrap: true,
                               textAlign: TextAlign.justify,
                             ),
                             SizedBox(height: 10),
-                            Text("${state['created_at']} - ${state['read_time_minutes']} min read", style: TextStyle(color: Colors.black54)),
+                            Text(
+                                "${state['created_at']} - ${state['read_time_minutes']} min read",
+                                style: TextStyle(color: Colors.black54)),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Image.network(
-                        state['image_url'].toString(),
-                        width: MediaQuery.of(context).size.width / 2 - 40,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Text(
-                          "Tidak dapat memuat gambar",
-                          overflow: TextOverflow.ellipsis,
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Image.network(
+                          state['image_url'].toString(),
+                          width: MediaQuery.of(context).size.width / 2 - 40,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) =>
+                              Center(child: CircularProgressIndicator()),
+                          errorBuilder: (context, error, stackTrace) => Text(
+                            "Tidak dapat memuat gambar",
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ],
