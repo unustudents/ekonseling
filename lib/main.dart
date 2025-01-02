@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -11,13 +13,7 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await SupabaseConfig.initialize();
 
-  runApp(
-    // DevicePreview(
-    //   enabled: !kReleaseMode && kIsWeb,
-    //   builder: (BuildContext context) => const MyApp(),
-    // ),
-    MyApp(),
-  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -32,14 +28,13 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     SupabaseConfig.client.auth.onAuthStateChange.listen(
       (event) {
-        if (event.event == AuthChangeEvent.signedOut ||
-            event.event == AuthChangeEvent.passwordRecovery) {
-          print('onAuthStateChange: signedOut');
+        if (event.event == AuthChangeEvent.signedOut || event.event == AuthChangeEvent.passwordRecovery) {
+          log(name: "Auth", 'Go to Login');
           router.goNamed(Routes.login);
         }
 
         if (event.event == AuthChangeEvent.signedIn) {
-          print('onAuthStateChange: sigednIn');
+          log(name: "Auth", 'Login Success');
           router.goNamed(Routes.home);
         }
       },
@@ -51,12 +46,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-            create: (context) => AuthBloc()..add(AuthCheckRequested())),
+        BlocProvider(create: (context) => AuthBloc()..add(AuthCheckRequested())),
       ],
       child: MaterialApp.router(
-        // locale: DevicePreview.locale(context),
-        // builder: DevicePreview.appBuilder,
         routerConfig: router,
         title: 'E-Konseling',
         theme: ThemeData(
@@ -65,11 +57,7 @@ class _MyAppState extends State<MyApp> {
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
             surfaceTintColor: Colors.white,
-            titleTextStyle: TextStyle(
-                color: Colors.black,
-                fontFamily: "Urbanist",
-                fontSize: 15,
-                fontWeight: FontWeight.bold),
+            titleTextStyle: TextStyle(color: Colors.black, fontFamily: "Urbanist", fontSize: 15, fontWeight: FontWeight.bold),
           ),
           useMaterial3: true,
         ),

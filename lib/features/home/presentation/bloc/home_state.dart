@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'home_bloc.dart';
 
 class HomeState extends Equatable {
@@ -50,16 +49,16 @@ class HomeState extends Equatable {
   List<Object> get props => [userName, konselorProfiles, latestArticle, dataVideo, dataVideoError, messageError];
 }
 
-class HomeInitialState extends HomeState {
-  const HomeInitialState({
-    required super.userName,
-    required super.konselorProfiles,
-    required super.latestArticle,
-    required super.dataVideo,
-    required super.dataVideoError,
-    required super.messageError,
-  });
-}
+// class HomeInitialState extends HomeState {
+//   const HomeInitialState({
+//     required super.userName,
+//     required super.konselorProfiles,
+//     required super.latestArticle,
+//     required super.dataVideo,
+//     required super.dataVideoError,
+//     required super.messageError,
+//   });
+// }
 
 // class HomeLoading extends HomeState {}
 

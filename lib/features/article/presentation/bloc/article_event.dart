@@ -6,3 +6,9 @@ abstract class ArticleEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class LoadDataArtikelEvent extends ArticleEvent {}
+
+class LoadDataFilterEvent extends ArticleEvent {}
+
+class LoadDataVideoEvent extends ArticleEvent {}

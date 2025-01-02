@@ -29,16 +29,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     super.onChange(change);
   }
 
-  Future<void> _onFetchUserData(
-      LoadDataUserEvent event, Emitter<HomeState> emit) async {
+  Future<void> _onFetchUserData(LoadDataUserEvent event, Emitter<HomeState> emit) async {
     try {
       final userId = SupabaseConfig.client.auth.currentUser!.id;
       // FETCH USER NAME
-      final userResponse = await SupabaseConfig.client
-          .from('users')
-          .select('name')
-          .eq('id', userId)
-          .single();
+      final userResponse = await SupabaseConfig.client.from('users').select('name').eq('id', userId).single();
       emit(state.copyWith(userName: userResponse['name'].toString()));
       log('User Name: ${userResponse['name']}');
     } catch (e) {
@@ -49,12 +44,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  void _onStreamVideoData(
-      LoadStreamVideoEvent event, Emitter<HomeState> emit) async {
+  void _onStreamVideoData(LoadStreamVideoEvent event, Emitter<HomeState> emit) async {
     try {
       // Membuat stream dari tabel 'videos'
-      final response =
-          SupabaseConfig.client.from('videos').stream(primaryKey: ['id']);
+      final response = SupabaseConfig.client.from('videos').stream(primaryKey: ['id']);
 
       // Subscribe ke perubahan real-time
       // SupabaseConfig.client
@@ -70,8 +63,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       await emit.forEach(
         response,
         onData: (data) => state.copyWith(dataVideo: data),
-        onError: (error, stackTrace) =>
-            state.copyWith(dataVideoError: error.toString()),
+        onError: (error, stackTrace) => state.copyWith(dataVideoError: error.toString()),
       );
     } catch (e) {
       log(name: 'Home_Bloc', 'Error _onStreamVideoData: $e');
@@ -80,12 +72,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _onFetchKonselorData(
-      LoadDataKonselorEvent event, Emitter<HomeState> emit) async {
+  Future<void> _onFetchKonselorData(LoadDataKonselorEvent event, Emitter<HomeState> emit) async {
     try {
-      final konselorResponse = await SupabaseConfig.client
-          .from('users_admin')
-          .select('name, profile_url');
+      final konselorResponse = await SupabaseConfig.client.from('users_admin').select('name, profile_url');
       final konselorProfiles = List<Map<String, dynamic>>.from(
         konselorResponse.map(
           (profile) => {
@@ -101,19 +90,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _onFetchArtikelData(
-      LoadDataArtikelEvent event, Emitter<HomeState> emit) async {
+  Future<void> _onFetchArtikelData(LoadDataArtikelEvent event, Emitter<HomeState> emit) async {
     try {
       // Membuat stream dari tabel 'article'
       final response = await SupabaseConfig.client
           .from('article')
-          .select(
-              'title, content, image_url, created_at, read_time_minutes, users_admin(name, profile_url)')
+          .select('title, content, image_url, created_at, read_time_minutes, users_admin(name, profile_url)')
           .order('created_at')
           .limit(1)
           .maybeSingle();
-      String date =
-          DateFormat('d/M/y').format(DateTime.parse(response?['created_at']));
+      String date = DateFormat('d/M/y').format(DateTime.parse(response?['created_at']));
       final data = {
         'title': response?['title'] ?? '-',
         'author': response?['users_admin']?['name'] ?? '-',

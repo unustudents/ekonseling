@@ -14,10 +14,7 @@ class ArtikelWidget extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Text(
             "Artikel Terbaru",
-            style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-                color: Color(0xFF64558E)),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF64558E)),
           ),
         ),
         Container(
@@ -30,30 +27,19 @@ class ArtikelWidget extends StatelessWidget {
                   // PROFILE AUTHOR
                   Row(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          state['profile_url'].toString(),
-                          width: 30,
-                          height: 30,
-                          fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) =>
-                              CircularProgressIndicator(),
-                          errorBuilder: (context, error, stackTrace) =>
-                              Image.asset('assets/images/user.png',
-                                  width: 30, height: 30, fit: BoxFit.scaleDown),
-                        ),
+                      CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: NetworkImage(state['profile_url'].toString()),
+                        onBackgroundImageError: (exception, stackTrace) => AssetImage('assets/images/user.png'),
                       ),
                       const SizedBox(width: 10),
                       Text(
                         state['author'].toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 13),
+                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                       ),
                       const Spacer(),
-                      IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.more_horiz_outlined))
+                      IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz_outlined))
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -79,9 +65,7 @@ class ArtikelWidget extends StatelessWidget {
                               textAlign: TextAlign.justify,
                             ),
                             SizedBox(height: 10),
-                            Text(
-                                "${state['created_at']} - ${state['read_time_minutes']} min read",
-                                style: TextStyle(color: Colors.black54)),
+                            Text("${state['created_at']} - ${state['read_time_minutes']} min read", style: TextStyle(color: Colors.black54)),
                           ],
                         ),
                       ),
@@ -89,10 +73,10 @@ class ArtikelWidget extends StatelessWidget {
                       Expanded(
                         child: Image.network(
                           state['image_url'].toString(),
+                          height: 120,
                           width: MediaQuery.of(context).size.width / 2 - 40,
                           fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) =>
-                              Center(child: CircularProgressIndicator()),
+                          // loadingBuilder: (context, child, loadingProgress) => Center(child: CircularProgressIndicator()),
                           errorBuilder: (context, error, stackTrace) => Text(
                             "Tidak dapat memuat gambar",
                             overflow: TextOverflow.ellipsis,
