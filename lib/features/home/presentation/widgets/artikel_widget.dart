@@ -1,3 +1,4 @@
+import 'package:ekonseling/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 
 import '../bloc/home_bloc.dart';
@@ -45,45 +46,48 @@ class ArtikelWidget extends StatelessWidget {
                   const SizedBox(height: 10),
 
                   // ARTICLE CONTENT
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              state['title'].toString(),
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              state['content'].toString(),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
-                              softWrap: true,
-                              textAlign: TextAlign.justify,
-                            ),
-                            SizedBox(height: 10),
-                            Text("${state['created_at']} - ${state['read_time_minutes']} min read", style: TextStyle(color: Colors.black54)),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Image.network(
-                          state['image_url'].toString(),
-                          height: 120,
-                          width: MediaQuery.of(context).size.width / 2 - 40,
-                          fit: BoxFit.cover,
-                          // loadingBuilder: (context, child, loadingProgress) => Center(child: CircularProgressIndicator()),
-                          errorBuilder: (context, error, stackTrace) => Text(
-                            "Tidak dapat memuat gambar",
-                            overflow: TextOverflow.ellipsis,
+                  GestureDetector(
+                    onTap: () => context.pushNamed(Routes.detailArticle, extra: state),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                state['title'].toString(),
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                state['content'].toString(),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 3,
+                                softWrap: true,
+                                textAlign: TextAlign.justify,
+                              ),
+                              SizedBox(height: 10),
+                              Text("${state['created_at']} - ${state['read_time_minutes']} min read", style: TextStyle(color: Colors.black54)),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Image.network(
+                            state['image_url'].toString(),
+                            height: 120,
+                            width: MediaQuery.of(context).size.width / 2 - 40,
+                            fit: BoxFit.cover,
+                            // loadingBuilder: (context, child, loadingProgress) => Center(child: CircularProgressIndicator()),
+                            errorBuilder: (context, error, stackTrace) => Text(
+                              "Tidak dapat memuat gambar",
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               );

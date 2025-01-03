@@ -86,9 +86,15 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const ForgotPassScreen(),
     ),
     GoRoute(
-      path: '/article/:id',
+      path: '/detail-artikel',
       name: Routes.detailArticle,
-      builder: (context, state) => DetailArticleScreen(articleId: state.pathParameters['id']!),
+      builder: (context, state) {
+        final article = state.extra as Map<String, dynamic>?;
+        if (article == null || article.isEmpty) {
+          throw Exception('Data artikel harus dikirim melalui extra');
+        }
+        return DetailArticleScreen(articleMap: article);
+      },
     ),
     GoRoute(
       path: '/change-password',

@@ -14,7 +14,7 @@ class SuasanaHatiWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     log(name: 'Home_Screen', 'Building SuasanaHati_Widget');
-    return Container(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,23 +28,26 @@ class SuasanaHatiWidget extends StatelessWidget {
             color: Colors.white,
             elevation: 5,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: suasana.map((e) {
-                return Column(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(e["icon"], size: 50),
-                      color: const Color(0xFF64558E),
-                    ),
-                    Text(
-                      e["teks"],
-                      style: const TextStyle(color: Color(0xFF64558E)),
-                    ),
-                  ],
-                );
-              }).toList(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: suasana.map((e) {
+                  return Column(
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(e["icon"], size: 50),
+                        color: const Color(0xFF64558E),
+                      ),
+                      Text(
+                        e["teks"],
+                        style: const TextStyle(color: Color(0xFF64558E)),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
             ),
           ),
           const SizedBox(height: 20),
