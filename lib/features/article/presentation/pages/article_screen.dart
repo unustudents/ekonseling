@@ -8,7 +8,13 @@ class ArticleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> choices = ["Semua", "MI - ICBT", "Semangat", "Dedikasi", "Keterlibatan"];
+    final List<String> choices = [
+      "Semua",
+      "MI - ICBT",
+      "Semangat",
+      "Dedikasi",
+      "Keterlibatan"
+    ];
     var selectedChoice = ValueNotifier<String>(choices[0]);
     return BlocProvider(
       create: (context) => ArticleBloc(),
@@ -41,9 +47,11 @@ class ArticleScreen extends StatelessWidget {
                             ),
                           ),
                           selected: isSelected,
-                          selectedColor: const Color(0xFF64558E), // Warna chip saat dipilih
+                          selectedColor: const Color(
+                              0xFF64558E), // Warna chip saat dipilih
                           showCheckmark: false,
-                          onSelected: (selected) => selectedChoice.value = selected ? choice : selectedChoice.value,
+                          onSelected: (selected) => selectedChoice.value =
+                              selected ? choice : selectedChoice.value,
 
                           // if(selected)  selectedChoice.value = choice,
                         );
@@ -90,7 +98,8 @@ class ArticleScreen extends StatelessWidget {
 
                     // ARTIKEL -- KONTEN
                     Expanded(
-                      child: BlocSelector<ArticleBloc, ArticleState, List<Map<String, dynamic>>>(
+                      child: BlocSelector<ArticleBloc, ArticleState,
+                          List<Map<String, dynamic>>>(
                         selector: (state) => state.artikelData,
                         builder: (context, state) {
                           return ListView.separated(
@@ -103,35 +112,55 @@ class ArticleScreen extends StatelessWidget {
                                       CircleAvatar(
                                         radius: 15,
                                         backgroundColor: Colors.grey,
-                                        backgroundImage: NetworkImage(state[index]['profile_url'].toString()),
-                                        onBackgroundImageError: (exception, stackTrace) => AssetImage('assets/images/user.png'),
+                                        backgroundImage: NetworkImage(
+                                            state[index]['profile_url']
+                                                .toString()),
+                                        onBackgroundImageError:
+                                            (exception, stackTrace) =>
+                                                AssetImage(
+                                                    'assets/images/user.png'),
                                       ),
                                       const SizedBox(width: 10),
                                       Text(
                                         state[index]['author'].toString(),
-                                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 13),
                                       ),
                                       const Spacer(),
-                                      IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz_outlined))
+                                      IconButton(
+                                          onPressed: () {},
+                                          icon: const Icon(
+                                              Icons.more_horiz_outlined))
                                     ],
                                   ),
                                   const SizedBox(height: 10),
                                   GestureDetector(
-                                    onTap: () => context.pushNamed(Routes.detailArticle, pathParameters: {'id': '1'}),
+                                    onTap: () => context.pushNamed(
+                                        Routes.detailArticle,
+                                        pathParameters: {
+                                          'id': state[index]['id'].toString()
+                                        }),
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                state[index]['title'].toString(),
-                                                style: TextStyle(fontWeight: FontWeight.w600),
+                                                state[index]['title']
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.w600),
                                               ),
                                               SizedBox(height: 10),
                                               Text(
-                                                state[index]['content'].toString(),
+                                                state[index]['content']
+                                                    .toString(),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 3,
                                                 softWrap: true,
@@ -140,7 +169,8 @@ class ArticleScreen extends StatelessWidget {
                                               SizedBox(height: 10),
                                               Text(
                                                 "${state[index]['created_at']} - ${state[index]['read_time_minutes']} min read",
-                                                style: TextStyle(color: Colors.black54),
+                                                style: TextStyle(
+                                                    color: Colors.black54),
                                               ),
                                             ],
                                           ),
@@ -149,9 +179,15 @@ class ArticleScreen extends StatelessWidget {
                                         Image.network(
                                           state[index]['image_url'].toString(),
                                           height: 120,
-                                          width: MediaQuery.of(context).size.width / 2 - 40,
+                                          width: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  2 -
+                                              40,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) => Text(
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Text(
                                             "Tidak dapat memuat gambar",
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -162,7 +198,12 @@ class ArticleScreen extends StatelessWidget {
                                 ],
                               );
                             },
-                            separatorBuilder: (BuildContext context, int index) => const Divider(height: 50, thickness: 0.1, color: Colors.black),
+                            separatorBuilder:
+                                (BuildContext context, int index) =>
+                                    const Divider(
+                                        height: 50,
+                                        thickness: 0.1,
+                                        color: Colors.black),
                             itemCount: state.length,
                           );
                         },
@@ -176,7 +217,8 @@ class ArticleScreen extends StatelessWidget {
                   children: [
                     Container(
                       // height: 350 * 9 / 16,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
                       child: Stack(
                         children: [
                           AspectRatio(
@@ -195,19 +237,24 @@ class ArticleScreen extends StatelessWidget {
                             left: 0,
                             right: 0,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
                               height: 52,
-                              decoration: const BoxDecoration(color: Colors.white70),
+                              decoration:
+                                  const BoxDecoration(color: Colors.white70),
                               child: const Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     'Seputar konseling',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                   Text(
                                     'Apa itu konseling ? pentingkah konseling ?',
-                                    style: TextStyle(fontSize: 12, color: Colors.black87),
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.black87),
                                   ),
                                 ],
                               ),
