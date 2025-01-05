@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 // Screens Import
+import '../features/article/presentation/bloc/article_bloc.dart';
 import '../features/article/presentation/pages/article_screen.dart';
 import '../features/article/presentation/pages/detail_article_screen.dart';
 import '../features/auth/presentation/pages/forgot_screen.dart';
@@ -52,7 +53,12 @@ final GoRouter router = GoRouter(
           GoRoute(
             path: '/article',
             name: Routes.article,
-            builder: (context, state) => const ArticleScreen(),
+            builder: (context, state) {
+              return BlocProvider(
+                create: (context) => ArticleBloc(),
+                child: const ArticleScreen(),
+              );
+            },
           ),
           GoRoute(
             path: '/task',

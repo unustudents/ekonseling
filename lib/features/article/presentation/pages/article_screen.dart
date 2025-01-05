@@ -1,241 +1,119 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
-import '../../../../routes/app_pages.dart';
 import '../bloc/article_bloc.dart';
+import '../widgets/artikel_tab_widget.dart';
+import '../widgets/video_tab_widget.dart';
 
-class ArticleScreen extends StatelessWidget {
+class ArticleScreen extends StatefulWidget {
   const ArticleScreen({super.key});
 
   @override
+  State<ArticleScreen> createState() => _ArticleScreenState();
+}
+
+class _ArticleScreenState extends State<ArticleScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  late ValueNotifier<String> selectedChoice;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedChoice = ValueNotifier<String>("Semua");
+
+    // Inisialisasi TabController
+    _tabController = TabController(length: 2, vsync: this);
+
+    // Tambahkan listener untuk reset fillter ketika tab diubah
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        selectedChoice.value = "Semua";
+        context.read<ArticleBloc>().add(LoadKategoriDataArtikelEvent(kategori: 'Semua')); // Reset filter ke default
+      } // Reset filter ke default
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    selectedChoice.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<String> choices = ["Semua", "MI - ICBT", "Semangat", "Dedikasi", "Keterlibatan"];
-    var selectedChoice = ValueNotifier<String>(choices[0]);
-    return BlocProvider(
-      create: (context) => ArticleBloc(),
-      child: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const TabBar(
-              tabs: [
-                Tab(text: "Artikel"),
-                Tab(text: "Video"),
-              ],
-              padding: EdgeInsets.zero,
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(100),
-              child: ValueListenableBuilder(
-                valueListenable: selectedChoice,
-                builder: (BuildContext context, String value, Widget? child) {
-                  return Wrap(
-                    spacing: 8,
-                    children: choices.map(
-                      (choice) {
-                        final isSelected = value == choice;
-                        return ChoiceChip(
-                          label: Text(
-                            choice,
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black,
-                            ),
-                          ),
-                          selected: isSelected,
-                          selectedColor: const Color(0xFF64558E), // Warna chip saat dipilih
-                          showCheckmark: false,
-                          onSelected: (selected) => selectedChoice.value = selected ? choice : selectedChoice.value,
+    // final List<String> choices = ["Semua", "MI - ICBT", "Semangat", "Dedikasi", "Keterlibatan"];
+    // var selectedChoice = ValueNotifier<String>(choices[0]);
+    // var selectedChoice = ValueNotifier<String>("Semua");
 
-                          // if(selected)  selectedChoice.value = choice,
-                        );
-                      },
-                    ).toList(),
-                  );
-                },
-              ),
-            ),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: TabBar(
+            controller: _tabController, // Hubungkan TabController
+            tabs: const [
+              Tab(text: "Artikel"),
+              Tab(text: "Video"),
+            ],
+            padding: EdgeInsets.zero,
           ),
-          body: SafeArea(
-            child: TabBarView(
-              children: [
-                // ARTIKEL -- KONTEN
-                Column(
-                  children: [
-                    // ValueListenableBuilder(
-                    //   valueListenable: selectedChoice,
-                    //   builder: (BuildContext context, String value, Widget? child) {
-                    //     return Wrap(
-                    //       spacing: 8,
-                    //       children: choices.map(
-                    //         (choice) {
-                    //           final isSelected = value == choice;
-                    //           return ChoiceChip(
-                    //             label: Text(
-                    //               choice,
-                    //               style: TextStyle(
-                    //                 color: isSelected ? Colors.white : Colors.black,
-                    //               ),
-                    //             ),
-                    //             selected: isSelected,
-                    //             selectedColor: const Color(0xFF64558E), // Warna chip saat dipilih
-                    //             showCheckmark: false,
-                    //             onSelected: (selected) => selectedChoice.value = selected ? choice : selectedChoice.value,
-
-                    //             // if(selected)  selectedChoice.value = choice,
-                    //           );
-                    //         },
-                    //       ).toList(),
-                    //     );
-                    //   },
-                    // ),
-
-                    // ARTIKEL -- KONTEN
-                    Expanded(
-                      child: BlocSelector<ArticleBloc, ArticleState, List<Map<String, dynamic>>>(
-                        selector: (state) => state.artikelData,
-                        builder: (context, state) {
-                          if (state.isEmpty) return Center(child: Text("Admin belum mengunggah artikel"));
-
-                          return ListView.separated(
-                            padding: const EdgeInsets.all(20),
-                            itemBuilder: (BuildContext context, int index) {
-                              return Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 15,
-                                        backgroundColor: Colors.grey,
-                                        backgroundImage: NetworkImage(state[index]['profile_url'].toString()),
-                                        onBackgroundImageError: (exception, stackTrace) => AssetImage('assets/images/user.png'),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        state[index]['author'].toString(),
-                                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                                      ),
-                                      const Spacer(),
-                                      IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz_outlined))
-                                    ],
-                                  ),
-                                  const SizedBox(height: 10),
-                                  GestureDetector(
-                                    onTap: () => context.pushNamed(Routes.detailArticle, extra: state[index]),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                state[index]['title'].toString(),
-                                                style: TextStyle(fontWeight: FontWeight.w600),
-                                              ),
-                                              SizedBox(height: 10),
-                                              Text(
-                                                state[index]['content'].toString(),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 3,
-                                                softWrap: true,
-                                                textAlign: TextAlign.justify,
-                                              ),
-                                              SizedBox(height: 10),
-                                              Text(
-                                                "${state[index]['created_at']} - ${state[index]['read_time_minutes']} min read",
-                                                style: TextStyle(color: Colors.black54),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(width: 20),
-                                        Image.network(
-                                          state[index]['image_url'].toString(),
-                                          height: 120,
-                                          width: MediaQuery.of(context).size.width / 2 - 40,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) => Text(
-                                            "Tidak dapat memuat gambar",
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              );
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(50),
+            child: BlocBuilder<ArticleBloc, ArticleState>(
+              builder: (context, state) {
+                if (state.kategoriIsLoading) return Center(child: const CircularProgressIndicator());
+                if (state.kategoriDataError.isNotEmpty) return const Center(child: Text("Gagal memuat kategori"));
+                return ValueListenableBuilder(
+                  valueListenable: selectedChoice,
+                  builder: (BuildContext context, String value, Widget? child) {
+                    /* SIzeBox wajib digunakan untuk membungkus dan menentukan ketinggian ListView dengan scroll Horizontal */
+                    return SizedBox(
+                      height: 50,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.kategoriData.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          String kategori = state.kategoriData[index]['name'].toString();
+                          return ChoiceChip(
+                            label: Text(
+                              kategori.toString(),
+                              style: TextStyle(
+                                color: value == kategori ? Colors.white : Colors.black,
+                              ),
+                            ),
+                            selected: value == kategori,
+                            selectedColor: const Color(0xFF64558E),
+                            onSelected: (selected) {
+                              if (selected) {
+                                /* selectedChoice.value harus di taruh di atas sebelum context.read (event) dipanggil. jika dibalik, mka error */
+                                selectedChoice.value = kategori;
+                                log(name: 'Article_Screen', 'Kategori: ${selectedChoice.value}');
+                                context.read<ArticleBloc>().add(LoadKategoriDataArtikelEvent(kategori: kategori));
+                              }
                             },
-                            separatorBuilder: (BuildContext context, int index) => const Divider(height: 50, thickness: 0.1, color: Colors.black),
-                            itemCount: state.length,
                           );
                         },
+                        separatorBuilder: (BuildContext context, int index) => const SizedBox(width: 8),
                       ),
-                    ),
-                  ],
-                ),
-
-                // VIDEO -- KONTEN
-                BlocSelector<ArticleBloc, ArticleState, List<Map<String, dynamic>>>(
-                  selector: (state) => state.videoData,
-                  builder: (context, state) {
-                    return ListView.separated(
-                      itemBuilder: (BuildContext context, int index) {
-                        if (state.isEmpty) return const Center(child: Text("Admin belum mengunggah video"));
-                        return Container(
-                          // height: 350 * 9 / 16,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          child: Stack(
-                            children: [
-                              AspectRatio(
-                                aspectRatio: 16 / 9,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    state[index]['url_video'].toString(),
-                                    width: 1000,
-                                    fit: BoxFit.cover,
-                                    loadingBuilder: (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return Center(child: CircularProgressIndicator());
-                                    },
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                  // height: 52,
-                                  decoration: const BoxDecoration(color: Colors.white70),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        state[index]['title'].toString(),
-                                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        state[index]['subtitle'].toString(),
-                                        style: TextStyle(fontSize: 12, color: Colors.black87),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) => SizedBox.shrink(),
-                      itemCount: state.length,
                     );
                   },
-                ),
-              ],
+                );
+              },
             ),
+          ),
+        ),
+        body: SafeArea(
+          child: TabBarView(
+            controller: _tabController, // Hubungkan TabController
+            children: [
+              // ARTIKEL -- KONTEN
+              ArtikelTabWidget(),
+
+              // VIDEO -- KONTEN
+              VideoTabWidget(),
+            ],
           ),
         ),
       ),

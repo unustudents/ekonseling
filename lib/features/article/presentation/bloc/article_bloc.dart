@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
@@ -13,21 +15,35 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   ArticleBloc() : super(ArticleState.initial()) {
     on<LoadDataArtikelEvent>(_onFetchArtikelData);
     on<LoadDataVideoEvent>(_onFetchVideoData);
+    on<LoadDataKategoriEvent>(_onKategoriData);
+    on<LoadKategoriDataArtikelEvent>(_onFetchArtikelDataKategori);
     add(LoadDataArtikelEvent());
     add(LoadDataVideoEvent());
+    add(LoadDataKategoriEvent());
   }
 
+  @override
+  void onChange(Change<ArticleState> change) {
+    // Always call super.onChange with the current change
+    super.onChange(change);
+
+    // Custom onChange logic goes here
+    // log(change.toString(), name: 'Article Bloc');
+  }
+
+  // FOR ARTIKEL TAB
   Future<void> _onFetchArtikelData(LoadDataArtikelEvent event, Emitter<ArticleState> emit) async {
+    emit(state.copyWith(artikelIsLoading: true));
     try {
       // Membuat stream dari tabel 'article'
       final List<Map<String, dynamic>> response = await SupabaseConfig.client
           .from('article')
-          .select('title, content, image_url, created_at, read_time_minutes, users_admin(name, profile_url)')
+          .select('title, content, image_url, created_at, read_time_minutes, users_admin(name, profile_url), categories(name)')
           .order('created_at');
 
       // Periksa apakah response valid
       if (response.isEmpty) {
-        emit(state.copyWith(messageError: 'No articles found.'));
+        emit(state.copyWith(artikelDataError: 'Admin belum menambahkan artikel.'));
         return;
       }
 
@@ -36,22 +52,29 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
         final date = DateFormat('d, MMM y').format(DateTime.parse(article['created_at']));
         return {
           'title': article['title'] ?? '-',
-          'author': article['users_admin']['name'] ?? '-',
-          'profile_url': article['users_admin']['profile_url'] ?? '-',
+          'author': article['users_admin']?['name'] ?? '-',
+          'categories': article['categories']?['name'] ?? '',
+          'profile_url': article['users_admin']?['profile_url'] ?? '-',
           'content': article['content'] ?? '-',
           'image_url': article['image_url'] ?? '-',
           'created_at': date,
           'read_time_minutes': article['read_time_minutes'] ?? '-',
         };
       }).toList();
-
-      emit(state.copyWith(artikelData: data));
+      log(name: 'Article_Bloc', data.toString());
+      emit(state.copyWith(artikelData: data, artikelDataKategori: data));
+      log(name: 'Article_Bloc', state.artikelData.toString());
+      log(name: 'Article_Bloc', state.artikelDataKategori.toString());
     } catch (e) {
-      emit(state.copyWith(messageError: e.toString()));
+      emit(state.copyWith(artikelDataError: e.toString()));
+    } finally {
+      emit(state.copyWith(artikelIsLoading: false));
     }
   }
 
+  // FOR VIDEO TAB
   Future<void> _onFetchVideoData(LoadDataVideoEvent event, Emitter<ArticleState> emit) async {
+    emit(state.copyWith(videoIsLoading: true));
     try {
       // Membuat stream dari tabel 'video'
       final List<Map<String, dynamic>> response =
@@ -59,7 +82,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
 
       // Periksa apakah response valid
       if (response.isEmpty) {
-        emit(state.copyWith(messageError: 'Admin belum menambahkan video.'));
+        emit(state.copyWith(videoDataError: 'Admin belum menambahkan video.'));
         return;
       }
 
@@ -74,7 +97,35 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
 
       emit(state.copyWith(videoData: data));
     } catch (e) {
-      emit(state.copyWith(messageError: e.toString()));
+      emit(state.copyWith(videoDataError: e.toString()));
+    } finally {
+      emit(state.copyWith(videoIsLoading: false));
     }
+  }
+
+  // FOR FILTERING
+  void _onKategoriData(LoadDataKategoriEvent event, Emitter<ArticleState> emit) async {
+    emit(state.copyWith(kategoriIsLoading: true));
+    try {
+      final response = await SupabaseConfig.client.from('categories').select('name');
+      final data = response.map((kategori) => {'name': kategori['name']}).toList();
+      final mergeData = [
+        {'name': 'Semua'},
+        ...data
+      ];
+      emit(state.copyWith(kategoriData: mergeData));
+    } catch (e) {
+      emit(state.copyWith(kategoriDataError: e.toString()));
+    } finally {
+      emit(state.copyWith(kategoriIsLoading: false));
+    }
+  }
+
+  // FOR AFTER FILTERING
+  void _onFetchArtikelDataKategori(LoadKategoriDataArtikelEvent event, Emitter<ArticleState> emit) async {
+    // emit(state.copyWith(artikelIsLoading: true));
+    final List<Map<String, dynamic>> filteredArtikel =
+        state.artikelData.where((element) => event.kategori == 'Semua' || element['categories'] == event.kategori).toList();
+    emit(state.copyWith(artikelDataKategori: filteredArtikel));
   }
 }
