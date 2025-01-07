@@ -23,3 +23,12 @@ class LoadKategoriDataArtikelEvent extends ArticleEvent {
   @override
   List<Object> get props => [kategori];
 }
+
+class LoadKategoriDataVideoEvent extends ArticleEvent {
+  final String kategori;
+
+  const LoadKategoriDataVideoEvent({required this.kategori});
+
+  @override
+  List<Object> get props => [kategori];
+}

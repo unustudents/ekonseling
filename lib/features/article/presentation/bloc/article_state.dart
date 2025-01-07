@@ -9,6 +9,7 @@ class ArticleState extends Equatable {
   final List<Map<String, dynamic>> videoData;
   final List<Map<String, dynamic>> kategoriData;
   final List<Map<String, dynamic>> artikelDataKategori;
+  final List<Map<String, dynamic>> videoDataKategori;
 
   final String kategoriDataError;
   final String videoDataError;
@@ -27,6 +28,7 @@ class ArticleState extends Equatable {
     required this.videoData,
     required this.kategoriData,
     this.artikelDataKategori = const [],
+    this.videoDataKategori = const [],
   });
 
   factory ArticleState.initial() {
@@ -42,6 +44,7 @@ class ArticleState extends Equatable {
       videoIsLoading: false,
       kategoriIsLoading: false,
       artikelDataKategori: [],
+      videoDataKategori: [],
     );
   }
 
@@ -53,6 +56,7 @@ class ArticleState extends Equatable {
     final List<Map<String, dynamic>>? videoData,
     final List<Map<String, dynamic>>? kategoriData,
     final List<Map<String, dynamic>>? artikelDataKategori,
+    final List<Map<String, dynamic>>? videoDataKategori,
     final String? kategoriDataError,
     final String? videoDataError,
     final String? artikelDataError,
@@ -66,6 +70,7 @@ class ArticleState extends Equatable {
       videoData: videoData ?? this.videoData,
       kategoriData: kategoriData ?? this.kategoriData,
       artikelDataKategori: artikelDataKategori ?? this.artikelDataKategori,
+      videoDataKategori: videoDataKategori ?? this.videoDataKategori,
       messageError: messageError ?? this.messageError,
       videoDataError: videoDataError ?? this.videoDataError,
       artikelDataError: artikelDataError ?? this.artikelDataError,
@@ -82,6 +87,7 @@ class ArticleState extends Equatable {
         videoData,
         kategoriData,
         artikelDataKategori,
+        videoDataKategori,
         messageError,
         videoDataError,
         artikelDataError,
