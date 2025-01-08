@@ -8,7 +8,7 @@ class DetailTaskScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Tugas Minggu ke 1")),
+      appBar: AppBar(title: Text("Tugas Minggu $taskId")),
       body: ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemCount: 5,
@@ -22,7 +22,8 @@ class DetailTaskScreen extends StatelessWidget {
                   children: [
                     Text(
                       'Pertanyaan ${index + 1}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     const TextField(
@@ -45,7 +46,8 @@ class DetailTaskScreen extends StatelessWidget {
                     },
                   ),
                   const Expanded(
-                    child: Text('Saya menyadari bahwa jawaban yang saya berikan adalah benar.'),
+                    child: Text(
+                        'Saya menyadari bahwa jawaban yang saya berikan adalah benar.'),
                   ),
                 ],
               ),

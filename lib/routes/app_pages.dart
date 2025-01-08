@@ -14,6 +14,7 @@ import '../features/auth/presentation/pages/welcome_screen.dart';
 import '../features/home/presentation/pages/home_screen.dart';
 import '../features/profile/presentation/pages/ganti_password_screen.dart';
 import '../features/profile/presentation/pages/profile_screen.dart';
+import '../features/task/presentation/bloc/task_bloc.dart';
 import '../features/task/presentation/pages/detail_task_screen.dart';
 import '../features/task/presentation/pages/task_screen.dart';
 
@@ -36,10 +37,21 @@ final GoRouter router = GoRouter(
                 if (index == 3) context.goNamed(Routes.profile);
               },
               items: [
-                SalomonBottomBarItem(icon: const Icon(Icons.home_outlined), title: const Text("Home")),
-                SalomonBottomBarItem(icon: const Icon(Icons.article), title: const Text("Artikel"), selectedColor: Colors.red),
-                SalomonBottomBarItem(icon: const Icon(Icons.task), title: const Text("Tugas"), selectedColor: Colors.green),
-                SalomonBottomBarItem(icon: const Icon(Icons.person_outline), title: const Text("Profil"), selectedColor: Colors.brown),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.home_outlined),
+                    title: const Text("Home")),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.article),
+                    title: const Text("Artikel"),
+                    selectedColor: Colors.red),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.task),
+                    title: const Text("Tugas"),
+                    selectedColor: Colors.green),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.person_outline),
+                    title: const Text("Profil"),
+                    selectedColor: Colors.brown),
               ],
             ),
           );
@@ -53,17 +65,18 @@ final GoRouter router = GoRouter(
           GoRoute(
             path: '/article',
             name: Routes.article,
-            builder: (context, state) {
-              return BlocProvider(
-                create: (context) => ArticleBloc(),
-                child: const ArticleScreen(),
-              );
-            },
+            builder: (context, state) => BlocProvider(
+              create: (context) => ArticleBloc(),
+              child: const ArticleScreen(),
+            ),
           ),
           GoRoute(
             path: '/task',
             name: Routes.task,
-            builder: (context, state) => const TaskScreen(),
+            builder: (context, state) => BlocProvider(
+              create: (context) => TaskBloc(),
+              child: const TaskScreen(),
+            ),
           ),
           GoRoute(
             path: '/profile',
@@ -108,9 +121,15 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const GantiPasswordScreen(),
     ),
     GoRoute(
-      path: '/task/:id',
+      path: '/detail-task',
       name: Routes.detailTask,
-      builder: (context, state) => DetailTaskScreen(taskId: state.pathParameters['id']!),
+      builder: (context, state) {
+        final task = state.extra as String?;
+        if (task == null || task.isEmpty) {
+          throw Exception('Data task harus dikirim melalui extra');
+        }
+        return DetailTaskScreen(taskId: task);
+      },
     ),
   ],
 );
