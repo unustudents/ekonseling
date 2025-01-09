@@ -9,60 +9,33 @@ class DetailTaskScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Tugas Minggu $taskId")),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: 5,
-        itemBuilder: (BuildContext context, int index) {
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Pertanyaan ${index + 1}',
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    const TextField(
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Jawaban...',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Checkbox(
-                    value: false,
-                    onChanged: (bool? value) {
-                      // Handle checkbox state change
-                    },
-                  ),
-                  const Expanded(
-                    child: Text(
-                        'Saya menyadari bahwa jawaban yang saya berikan adalah benar.'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Handle submit action
-                  },
-                  child: const Text('Selesai'),
-                ),
-              ),
-            ],
-          );
-        },
+      body: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        children: [
+          Text(
+            'Silahkan di unduh soal dibawah ini !',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              backgroundColor: const Color(0xFF64558E),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {},
+            child: Text(
+              'Klik untuk unduh soal',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Kerjakan soal yang anda unduh sesuai intruksi yang tertera pada soal tersebut !',
+            style: const TextStyle(fontSize: 18),
+          ),
+        ],
       ),
     );
   }

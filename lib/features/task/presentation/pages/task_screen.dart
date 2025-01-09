@@ -15,7 +15,6 @@ class TaskScreen extends StatelessWidget {
           if (state is TaskLoading) {
             return const Center(child: Text('Memuat data ...'));
           }
-          print('object');
           if (state is TaskError) return Center(child: Text(state.message));
           if (state is TaskEmpty) return Center(child: Text(state.message));
           if (state is TaskLoaded) {
@@ -25,13 +24,10 @@ class TaskScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 return ListTile(
                   onTap: () {
-                    context.pushNamed(Routes.detailTask,
-                        extra: state.tasks[index]['week'].toString());
+                    context.pushNamed(Routes.detailTask, extra: state.tasks[index]['week'].toString());
                   },
                   dense: true,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: Colors.grey.shade300)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: Colors.grey.shade300)),
                   leading: CircleAvatar(
                     backgroundColor: const Color(0xFF64558E),
                     child: Text(
@@ -46,8 +42,7 @@ class TaskScreen extends StatelessWidget {
                   subtitle: const Text('Isi tugas anda dan akan kami review'),
                 );
               },
-              separatorBuilder: (BuildContext context, int index) =>
-                  const SizedBox(height: 10),
+              separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 10),
             );
           }
           return const SizedBox.shrink();
