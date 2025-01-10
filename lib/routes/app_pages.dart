@@ -12,6 +12,7 @@ import '../features/auth/presentation/pages/login_screen.dart';
 import '../features/auth/presentation/pages/register_screen.dart';
 import '../features/auth/presentation/pages/welcome_screen.dart';
 import '../features/home/presentation/pages/home_screen.dart';
+import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/pages/ganti_password_screen.dart';
 import '../features/profile/presentation/pages/profile_screen.dart';
 import '../features/task/presentation/bloc/task_bloc.dart';
@@ -37,21 +38,10 @@ final GoRouter router = GoRouter(
                 if (index == 3) context.goNamed(Routes.profile);
               },
               items: [
-                SalomonBottomBarItem(
-                    icon: const Icon(Icons.home_outlined),
-                    title: const Text("Home")),
-                SalomonBottomBarItem(
-                    icon: const Icon(Icons.article),
-                    title: const Text("Artikel"),
-                    selectedColor: Colors.red),
-                SalomonBottomBarItem(
-                    icon: const Icon(Icons.task),
-                    title: const Text("Tugas"),
-                    selectedColor: Colors.green),
-                SalomonBottomBarItem(
-                    icon: const Icon(Icons.person_outline),
-                    title: const Text("Profil"),
-                    selectedColor: Colors.brown),
+                SalomonBottomBarItem(icon: const Icon(Icons.home_outlined), title: const Text("Home")),
+                SalomonBottomBarItem(icon: const Icon(Icons.article), title: const Text("Artikel"), selectedColor: Colors.red),
+                SalomonBottomBarItem(icon: const Icon(Icons.task), title: const Text("Tugas"), selectedColor: Colors.green),
+                SalomonBottomBarItem(icon: const Icon(Icons.person_outline), title: const Text("Profil"), selectedColor: Colors.brown),
               ],
             ),
           );
@@ -81,7 +71,10 @@ final GoRouter router = GoRouter(
           GoRoute(
             path: '/profile',
             name: Routes.profile,
-            builder: (context, state) => const ProfileScreen(),
+            builder: (context, state) => BlocProvider(
+              create: (context) => ProfileBloc(),
+              child: const ProfileScreen(),
+            ),
           ),
         ]),
     GoRoute(
