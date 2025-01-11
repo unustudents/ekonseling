@@ -1,105 +1,132 @@
 import 'package:flutter/material.dart';
 
-class GantiPasswordScreen extends StatelessWidget {
+import '../bloc/profile_bloc.dart';
+
+class GantiPasswordScreen extends StatefulWidget {
   const GantiPasswordScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    var enabled = ValueNotifier<bool>(true);
+  State<GantiPasswordScreen> createState() => _GantiPasswordScreenState();
+}
 
+class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _currentPassController = TextEditingController();
+  final _newPassController = TextEditingController();
+  final _confirmPassController = TextEditingController();
+
+  @override
+  void dispose() {
+    _formKey.currentState?.dispose();
+    _currentPassController.dispose();
+    _newPassController.dispose();
+    _confirmPassController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Ganti Kata Sandi")),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        children: [
-          const SizedBox(height: 20),
+      body: BlocProvider(
+        create: (context) => ProfileBloc(),
+        child: BlocBuilder<ProfileBloc, ProfileState>(
+          builder: (context, state) {
+            return Form(
+              key: _formKey,
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  const SizedBox(height: 20),
 
-          // KATA SANDI LAMA
-          const Text(
-            "Kata Sandi Lama",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 12),
-          ValueListenableBuilder(
-            valueListenable: enabled,
-            builder: (BuildContext context, bool value, Widget? child) => TextFormField(
-              decoration: InputDecoration(
-                hintText: "Masukkan kata sandi lama",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                suffixIcon: InkWell(
-                    onTap: () => enabled.value = !enabled.value, child: Icon(value ? Icons.visibility_off_outlined : Icons.visibility_outlined)),
+                  // KATA SANDI LAMA
+                  const Text(
+                    "Kata Sandi Sekarang",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _currentPassController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                      suffixIcon: InkWell(
+                          onTap: () => context.read<ProfileBloc>().add(TogglePasswordVisibilityEvent(showPassword: 1)),
+                          child: Icon(state.showCurrentPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined)),
+                    ),
+                    obscureText: state.showCurrentPassword,
+                  ),
+                  const SizedBox(height: 15),
+
+                  // KATA SANDI BARU
+                  const Text(
+                    "Kata Sandi Baru",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _newPassController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                      suffixIcon: InkWell(
+                          onTap: () => context.read<ProfileBloc>().add(TogglePasswordVisibilityEvent(showPassword: 2)),
+                          child: Icon(state.showNewPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined)),
+                    ),
+                    obscureText: state.showNewPassword,
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // KONFIRMASI KATA SANDI BARU
+                  const Text(
+                    "Konfirmasi Kata Sandi Baru",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _confirmPassController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                      suffixIcon: InkWell(
+                          onTap: () => context.read<ProfileBloc>().add(TogglePasswordVisibilityEvent(showPassword: 3)),
+                          child: Icon(state.showConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined)),
+                    ),
+                    obscureText: state.showConfirmPassword,
+                  ),
+                  const SizedBox(height: 20),
+
+                  // TOMBOL SIMPAN
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      backgroundColor: const Color(0xFF64558E),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    onPressed: () {},
+                    child: const Text(
+                      'Simpan',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // TOMBOL - KELUAR
+                  OutlinedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    onPressed: () {},
+                    child: const Text(
+                      'Batal',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
               ),
-              obscureText: value,
-            ),
-          ),
-          const SizedBox(height: 15),
-
-          // KATA SANDI BARU
-          const Text(
-            "Kata Sandi Baru",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            decoration: InputDecoration(
-              hintText: "Masukkan kata sandi baru",
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              suffixIcon: const Icon(Icons.visibility_off_outlined),
-            ),
-            obscureText: true,
-          ),
-          const SizedBox(height: 15),
-
-          // KONFIRMASI KATA SANDI BARU
-          const Text(
-            "Konfirmasi Kata Sandi Baru",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            decoration: InputDecoration(
-              hintText: "Masukkan konfirmasi kata sandi baru",
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              suffixIcon: const Icon(Icons.visibility_off_outlined),
-            ),
-            obscureText: true,
-          ),
-          const SizedBox(height: 20),
-
-          // TOMBOL SIMPAN
-          ValueListenableBuilder(
-            valueListenable: enabled,
-            builder: (BuildContext context, bool value, Widget? child) {
-              return ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  backgroundColor: const Color(0xFF64558E),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                onPressed: () => enabled.value = !enabled.value,
-                child: const Text(
-                  'Simpan',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-
-          // TOMBOL - KELUAR
-          OutlinedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () => enabled.value = false,
-            child: const Text(
-              'Batal',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }

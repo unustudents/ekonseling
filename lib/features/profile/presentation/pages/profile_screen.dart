@@ -1,15 +1,38 @@
 import 'package:flutter/material.dart';
 
+import '../../../../routes/app_pages.dart';
 import '../bloc/profile_bloc.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _nisController = TextEditingController();
+
+  @override
+  void dispose() {
+    _formKey.currentState?.dispose();
+    _nameController.dispose();
+    _nisController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
         final isEditMode = state.isEditMode;
+        final data = state.data;
+
+        if (state.isLoading) return const Center(child: Text('Memuat data ...'));
+        if (state.error.isNotEmpty) return Center(child: Text(state.error));
+        if (data.isEmpty) return const Center(child: Text('Data tidak ditemukan'));
 
         return ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -30,9 +53,9 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             TextFormField(
+              controller: _nameController..text = data['name'] ?? "",
               decoration: InputDecoration(
                 enabled: isEditMode,
-                hintText: "Xi La",
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
             ),
@@ -45,20 +68,24 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             TextFormField(
+              controller: _nisController..text = data['nis'] ?? "",
               decoration: InputDecoration(
                 enabled: isEditMode,
-                hintText: "202231000",
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 30),
 
             // GANTI KATA SANDI
+            GestureDetector(
+              onTap: () => context.pushNamed(Routes.changePassword),
+              child: const Text(
+                "Ganti Kata Sandi",
+                style: TextStyle(color: Color(0xFF64558E), fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+
             // if (isEditMode) ...[
-            //   const Text(
-            //     "Kata Sandi",
-            //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            //   ),
             //   const SizedBox(height: 12),
             //   TextFormField(
             //     decoration: InputDecoration(
@@ -102,8 +129,13 @@ class ProfileScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               onPressed: () {
-                // enabled.value = !enabled.value;
-                context.read<ProfileBloc>().add(ToggleEditModeEvent());
+                if (!isEditMode) context.read<ProfileBloc>().add(ToggleEditModeEvent());
+                if (isEditMode) {
+                  context.read<ProfileBloc>().add(EditProfileEvent({
+                        'name': _nameController.text,
+                        'nis': _nisController.text,
+                      }));
+                }
               },
               child: Text(
                 isEditMode ? 'Simpan' : 'Edit Profil',
