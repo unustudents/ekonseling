@@ -8,3 +8,13 @@ abstract class TaskEvent extends Equatable {
 }
 
 class TaskLoadEvent extends TaskEvent {}
+
+class UploadTaskEvent extends TaskEvent {
+  final String taskId;
+  final String filePath;
+
+  const UploadTaskEvent({required this.taskId, required this.filePath});
+
+  @override
+  List<Object> get props => [taskId, filePath];
+}

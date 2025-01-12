@@ -14,20 +14,22 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     add(TaskLoadEvent());
   }
 
-  @override
-  onChange(change) {
-    super.onChange(change);
-    print(change);
-  }
+  // @override
+  // onChange(change) {
+  //   super.onChange(change);
+  //   print(change);
+  // }
 
+  // FUNCTION - LOAD TASK
   Future<void> _onLoadTask(TaskLoadEvent event, Emitter<TaskState> emit) async {
     emit(TaskLoading());
+    // pengujian
     try {
-      List<Map<String, dynamic>> response = await SupabaseConfig.client
-          .from('tasks')
-          .select('week')
-          .order('created_at');
+      // load data minggu
+      List<Map<String, dynamic>> response = await SupabaseConfig.client.from('tasks').select('week').order('created_at');
+      // jika response tidak ada isinya
       if (response.isEmpty) return emit(TaskEmpty());
+      // jika response ada isinya
       if (response.isNotEmpty) return emit(TaskLoaded(tasks: response));
       emit(TaskLoading(false));
     } catch (e) {
