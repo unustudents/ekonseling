@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/snackbar.dart';
 import '../bloc/profile_bloc.dart';
 
 class GantiPasswordScreen extends StatefulWidget {
@@ -30,8 +31,14 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
       appBar: AppBar(title: const Text("Ganti Kata Sandi")),
       body: BlocProvider(
         create: (context) => ProfileBloc(),
-        child: BlocBuilder<ProfileBloc, ProfileState>(
+        child: BlocConsumer<ProfileBloc, ProfileState>(
+          listener: (context, state) {
+            if (state.errorForSnackbar.isNotEmpty) AppSnackbar.show(context, message: state.errorForSnackbar, isError: true);
+            if (state.successChangePassword.isNotEmpty) AppSnackbar.show(context, message: state.successChangePassword, isSuccess: true);
+          },
           builder: (context, state) {
+            if (state.isLoading) Center(child: Text("Memperbarui password ..."));
+
             return Form(
               key: _formKey,
               child: ListView(
@@ -46,6 +53,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: _currentPassController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
@@ -54,6 +62,11 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                           child: Icon(state.showCurrentPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined)),
                     ),
                     obscureText: state.showCurrentPassword,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'Kata sandi tidak boleh kosong';
+                      if (value.length < 6) return 'Kata sandi minimal 6 karakter';
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 15),
 
@@ -64,6 +77,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: _newPassController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
@@ -72,6 +86,11 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                           child: Icon(state.showNewPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined)),
                     ),
                     obscureText: state.showNewPassword,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'Kata sandi tidak boleh kosong';
+                      if (value.length < 6) return 'Kata sandi minimal 6 karakter';
+                      return null;
+                    },
                   ),
 
                   const SizedBox(height: 15),
@@ -83,6 +102,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: _confirmPassController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
@@ -91,6 +111,11 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                           child: Icon(state.showConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined)),
                     ),
                     obscureText: state.showConfirmPassword,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'Kata sandi tidak boleh kosong';
+                      if (value.length < 6) return 'Kata sandi minimal 6 karakter';
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
 
@@ -102,7 +127,17 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        context.read<ProfileBloc>().add(
+                              ChangePasswordEvent(
+                                oldPassword: _currentPassController.text,
+                                newPassword: _newPassController.text,
+                                confirmPassword: _confirmPassController.text,
+                              ),
+                            );
+                      }
+                    },
                     child: const Text(
                       'Simpan',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -116,7 +151,7 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    onPressed: () {},
+                    onPressed: () => Navigator.pop(context),
                     child: const Text(
                       'Batal',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),

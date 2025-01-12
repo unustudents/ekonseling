@@ -1,12 +1,12 @@
 class UserModel {
+  dynamic id;
   String? name;
   String? nis;
   String? email;
   String? passHash;
   String? updatedAt;
-  String? lastSigninAt;
 
-  UserModel({this.name, this.nis, this.email, this.passHash, this.updatedAt, this.lastSigninAt});
+  UserModel({this.name, this.nis, this.email, this.passHash, this.updatedAt});
 
   // Method untuk membuat instance dari JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -16,7 +16,6 @@ class UserModel {
       email: json['email'],
       passHash: json['pass_hash'],
       updatedAt: json['updated_at'],
-      lastSigninAt: json['last_signin_at'],
     );
   }
 
@@ -28,7 +27,6 @@ class UserModel {
       'email': email,
       'pass_hash': passHash,
       'updated_at': updatedAt,
-      'last_signin_at': lastSigninAt,
     };
   }
 }

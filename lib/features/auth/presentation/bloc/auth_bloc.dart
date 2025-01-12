@@ -65,15 +65,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       // REGISTRATIONS USER TO DATABASE
       AuthResponse authResponse = await SupabaseConfig.client.auth.signUp(password: hashedPassword, email: 'user${event.nis}@ekonseling.dummy');
-      if (authResponse.user == null) emit(AuthError(error: "Maaf pendaftaran gagal"));
-      // UPLOAD DATA TO DATABASE
       await SupabaseConfig.client
           .from('users')
-          .insert(UserModel(name: event.name, email: authResponse.user!.email, nis: event.nis, passHash: hashedPassword).toJson());
+          .insert(UserModel(name: event.name, email: 'user${event.nis}@ekonseling.dummy', nis: event.nis, passHash: hashedPassword).toJson());
 
       emit(AuthSuccess(user: authResponse.user));
     } catch (e) {
-      print(e);
       emit(AuthError(error: e.toString()));
     }
   }
@@ -89,7 +86,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       // QUERY USER FROM DATABASE TO GET EMAIL
       final Map<String, dynamic>? response = await SupabaseConfig.client.from('users').select('email').eq('nis', event.nis).maybeSingle();
-      print('Response data SignIn = $response');
       if (response!.isEmpty) emit(AuthError(error: 'NIS tidak ditemukan'));
 
       // SIGN IN USER
@@ -100,7 +96,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthError(error: 'Login gagal, maaf akun tidak ditemukan'));
       }
     } catch (e) {
-      print('Error SignIn = $e');
       emit(AuthError(error: 'Sepertinya anda belum registrasi'));
     }
   }

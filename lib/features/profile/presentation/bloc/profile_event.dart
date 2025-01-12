@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'profile_bloc.dart';
 
 sealed class ProfileEvent extends Equatable {
@@ -29,4 +30,19 @@ class TogglePasswordVisibilityEvent extends ProfileEvent {
 
   @override
   List<Object> get props => [showPassword];
+}
+
+class ChangePasswordEvent extends ProfileEvent {
+  final String oldPassword;
+  final String newPassword;
+  final String confirmPassword;
+
+  const ChangePasswordEvent({
+    required this.oldPassword,
+    required this.newPassword,
+    required this.confirmPassword,
+  });
+
+  @override
+  List<Object> get props => [oldPassword, newPassword, confirmPassword];
 }

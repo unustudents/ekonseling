@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       label: 'Kata Sandi',
                       hintText: 'Masukkan kata sandi',
                       controller: _passCtrl,
-                      obscureText: true,
+                      obscureText: false,
                       validator: (value) => authBloc.validatePassword(value),
                       onChanged: (value) => authBloc.add(PasswordChanged(password: value)),
                     ),

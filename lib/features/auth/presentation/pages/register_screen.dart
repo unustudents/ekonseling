@@ -39,8 +39,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         appBar: AppBar(),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
-          child: BlocBuilder<AuthBloc, AuthState>(
-            builder: (context, state) {
+          child: BlocConsumer<AuthBloc, AuthState>(
+            listener: (context, state) {
               if (state is AuthSuccess) {
                 // JIKA BERHASIL LOGIN
 
@@ -50,6 +50,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // JIKA GAGAL LOGIN
                 AppSnackbar.show(context, message: state.error.toString(), isError: true);
               }
+            },
+            builder: (context, state) {
               return Form(
                 key: context.read<AuthBloc>().formKey,
                 child: Column(
@@ -100,7 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       label: 'Kata Sandi',
                       controller: _passCtrl,
                       hintText: 'Masukkan kata sandi',
-                      obscureText: true,
+                      obscureText: false,
                       validator: (value) => context.read<AuthBloc>().validatePassword(value),
                       onChanged: (value) => context.read<AuthBloc>().add(PasswordChanged(password: value)),
                     ),
@@ -111,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       label: 'Konfirmasi Kata Sandi',
                       hintText: 'Masukkan ulang kata sandi',
                       controller: _passConfirmCtrl,
-                      obscureText: true,
+                      obscureText: false,
                       validator: (value) => context.read<AuthBloc>().validateConfirmPassword(
                             value,
                             state.password,
