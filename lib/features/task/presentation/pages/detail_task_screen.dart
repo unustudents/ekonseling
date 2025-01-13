@@ -35,6 +35,19 @@ class DetailTaskScreen extends StatelessWidget {
             'Kerjakan soal yang anda unduh sesuai intruksi yang tertera pada soal tersebut !',
             style: const TextStyle(fontSize: 18),
           ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              backgroundColor: const Color(0xFF64558E),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () {},
+            child: Text(
+              'Upload jawaban',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ),
         ],
       ),
     );

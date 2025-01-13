@@ -31,8 +31,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final data = state.data;
 
         if (state.isLoading) return const Center(child: Text('Memuat data ...'));
-        // if (state.error.isNotEmpty) return Center(child: Text(state.error));
-        // if (data.isEmpty) return const Center(child: Text('Data tidak ditemukan'));
+        if (state.error.isNotEmpty) return Center(child: Text(state.error));
+        if (data.isEmpty) return const Center(child: Text('Data tidak ditemukan'));
 
         return ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20),

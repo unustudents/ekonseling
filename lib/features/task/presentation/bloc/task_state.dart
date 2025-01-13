@@ -1,44 +1,37 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'task_bloc.dart';
 
 class TaskState extends Equatable {
-  const TaskState();
-
-  @override
-  List<Object> get props => [];
-}
-
-class TaskInitial extends TaskState {}
-
-class TaskEmpty extends TaskState {
-  final String message;
-
-  const TaskEmpty([this.message = 'Admin belum menambahkan tugas']);
-
-  @override
-  List<Object> get props => [message];
-}
-
-class TaskLoaded extends TaskState {
-  final List<Map<String, dynamic>> tasks;
-  const TaskLoaded({required this.tasks});
-
-  @override
-  List<Object> get props => [tasks];
-}
-
-class TaskError extends TaskState {
-  final String message;
-  const TaskError({required this.message});
-
-  @override
-  List<Object> get props => [message];
-}
-
-class TaskLoading extends TaskState {
   final bool isLoading;
+  final String error;
+  final List<Map<String, dynamic>> week;
 
-  const TaskLoading([this.isLoading = true]);
+  const TaskState({
+    required this.isLoading,
+    required this.error,
+    required this.week,
+  });
+
+  factory TaskState.initial() {
+    return TaskState(
+      error: '',
+      week: [],
+      isLoading: false,
+    );
+  }
+
+  TaskState copyWith({
+    bool? isLoading,
+    String? error,
+    List<Map<String, dynamic>>? week,
+  }) {
+    return TaskState(
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+      week: week ?? this.week,
+    );
+  }
 
   @override
-  List<Object> get props => [isLoading];
+  List<Object> get props => [error];
 }
