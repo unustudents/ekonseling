@@ -7,7 +7,7 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
-  bloc: ^8.1.4
+  bloc: ^9.0.0
   carousel_slider: ^5.0.0
   crypto: ^3.0.6
   cupertino_icons: ^1.0.8
@@ -16,7 +16,7 @@ dependencies:
   file_picker: ^8.1.7
   flutter:
     sdk: flutter
-  flutter_bloc: ^8.1.6
+  flutter_bloc: ^9.0.0
   flutter_dotenv: ^5.2.1
   flutter_svg: ^2.0.10+1
   gap: ^3.0.1
