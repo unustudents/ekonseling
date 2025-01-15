@@ -10,7 +10,7 @@ abstract class TaskEvent extends Equatable {
 class TaskLoadEvent extends TaskEvent {}
 
 class UploadFileEvent extends TaskEvent {
-  final List<File> files;
+  final List<PlatformFile> files;
 
   const UploadFileEvent({
     required this.files,

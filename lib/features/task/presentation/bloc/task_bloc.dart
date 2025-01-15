@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:file_picker/file_picker.dart';
 
 // import 'package:file_picker/file_picker.dart';
 
@@ -29,14 +30,24 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   // FUNCTION - LOAD TASK
   Future<void> _onLoadTask(TaskLoadEvent event, Emitter<TaskState> emit) async {
     emit(state.copyWith(isLoading: true));
+    print(SupabaseConfig.client.auth.currentUser!.id);
     // pengujian
     try {
       // load data minggu
-      List<Map<String, dynamic>> response = await SupabaseConfig.client.from('tasks').select('week').order('created_at');
+      List<Map<String, dynamic>> response = await SupabaseConfig.client
+          .from('tasks')
+          .select('week')
+          .order('created_at');
       // jika response tidak ada isinya
-      if (response.isEmpty) emit(state.copyWith(error: 'Data tidak ditemukan'));
+      if (response.isEmpty) {
+        emit(state.copyWith(error: 'Data tidak ditemukan'));
+        return;
+      }
       // jika response ada isinya
-      if (response.isNotEmpty) emit(state.copyWith(week: response));
+      if (response.isNotEmpty) {
+        emit(state.copyWith(week: response));
+        return;
+      }
     } catch (e) {
       emit(state.copyWith(error: 'Terjadi kesalahan : $e'));
     } finally {
@@ -44,15 +55,30 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     }
   }
 
-  Future<void> _onUploadTask(UploadFileEvent event, Emitter<TaskState> emit) async {
+  Future<void> _onUploadTask(
+      UploadFileEvent event, Emitter<TaskState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
       for (var file in event.files) {
-        final String fullPath = await SupabaseConfig.client.storage.from('jawaban-tugas').upload(
-              'public/${file.path.split('/').last}',
-              file,
-              fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
-            );
+        final fileBytes = file.bytes;
+        final filePath =
+            '/submissions/${SupabaseConfig.client.auth.currentUser!.id}/${file.name}';
+        // mengunggah file ke storage
+        final uploadResponse = await SupabaseConfig.client.storage
+            .from('jawaban-tugas')
+            .uploadBinary(filePath, fileBytes!);
+        // jika upload gagal
+        if (uploadResponse. != null) {
+          emit(state.copyWith(error: 'Gagal mengunggah file'));
+          return;
+        }
+        final String fullPath =
+            await SupabaseConfig.client.storage.from('jawaban-tugas').upload(
+                  'public/${file.path.split('/').last}',
+                  file,
+                  fileOptions:
+                      const FileOptions(cacheControl: '3600', upsert: false),
+                );
       }
     } catch (e) {
       emit(state.copyWith(error: 'Terjadi kesalahan : $e'));
