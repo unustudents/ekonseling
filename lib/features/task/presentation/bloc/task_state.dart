@@ -6,12 +6,16 @@ class TaskState extends Equatable {
   final String error;
   final List<Map<String, dynamic>> week;
   final List<String> uploadUrl;
+  final List<Map<String, dynamic>> question;
+  final String successUpload;
 
   const TaskState({
     required this.isLoading,
     required this.error,
     required this.week,
     required this.uploadUrl,
+    required this.question,
+    required this.successUpload,
   });
 
   factory TaskState.initial() {
@@ -20,6 +24,8 @@ class TaskState extends Equatable {
       week: [],
       isLoading: false,
       uploadUrl: [],
+      question: [],
+      successUpload: '',
     );
   }
 
@@ -28,15 +34,19 @@ class TaskState extends Equatable {
     String? error,
     List<Map<String, dynamic>>? week,
     List<String>? uploadUrl,
+    List<Map<String, dynamic>>? question,
+    String? successUpload,
   }) {
     return TaskState(
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
       week: week ?? this.week,
       uploadUrl: uploadUrl ?? this.uploadUrl,
+      question: question ?? this.question,
+      successUpload: successUpload ?? this.successUpload,
     );
   }
 
   @override
-  List<Object> get props => [isLoading, error, week, uploadUrl];
+  List<Object> get props => [isLoading, error, week, uploadUrl, question, successUpload];
 }

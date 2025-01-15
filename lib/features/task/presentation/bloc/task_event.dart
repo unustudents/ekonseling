@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'task_bloc.dart';
 
 abstract class TaskEvent extends Equatable {
@@ -7,12 +8,34 @@ abstract class TaskEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class TaskLoadEvent extends TaskEvent {}
+class LoadWeekEvent extends TaskEvent {}
 
-class UploadFileEvent extends TaskEvent {
+class LoadQuestionsEvent extends TaskEvent {
+  final String weekId;
+
+  const LoadQuestionsEvent({
+    required this.weekId,
+  });
+
+  @override
+  List<Object> get props => [weekId];
+}
+
+class DownloadSoalEvent extends TaskEvent {
+  final String url;
+
+  const DownloadSoalEvent({
+    required this.url,
+  });
+
+  @override
+  List<Object> get props => [url];
+}
+
+class UploadJawabanEvent extends TaskEvent {
   final List<PlatformFile> files;
 
-  const UploadFileEvent({
+  const UploadJawabanEvent({
     required this.files,
   });
 

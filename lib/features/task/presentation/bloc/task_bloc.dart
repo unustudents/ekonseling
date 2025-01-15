@@ -16,9 +16,11 @@ part 'task_state.dart';
 
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   TaskBloc() : super(TaskState.initial()) {
-    on<TaskLoadEvent>(_onLoadTask);
-    on<UploadFileEvent>(_onUploadTask);
-    add(TaskLoadEvent());
+    on<LoadWeekEvent>(_onLoadTask);
+    on<LoadQuestionsEvent>(_onLoadQuestion);
+    on<DownloadSoalEvent>(_onDownloadTask);
+    on<UploadJawabanEvent>(_onUploadTask);
+    add(LoadWeekEvent());
   }
 
   @override
@@ -28,16 +30,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   // FUNCTION - LOAD TASK
-  Future<void> _onLoadTask(TaskLoadEvent event, Emitter<TaskState> emit) async {
+  Future<void> _onLoadTask(LoadWeekEvent event, Emitter<TaskState> emit) async {
     emit(state.copyWith(isLoading: true));
-    print(SupabaseConfig.client.auth.currentUser!.id);
     // pengujian
     try {
       // load data minggu
-      List<Map<String, dynamic>> response = await SupabaseConfig.client
-          .from('tasks')
-          .select('week')
-          .order('created_at');
+      List<Map<String, dynamic>> response = await SupabaseConfig.client.from('tasks').select('week').order('created_at');
       // jika response tidak ada isinya
       if (response.isEmpty) {
         emit(state.copyWith(error: 'Data tidak ditemukan'));
@@ -55,30 +53,90 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     }
   }
 
-  Future<void> _onUploadTask(
-      UploadFileEvent event, Emitter<TaskState> emit) async {
+  // FUNCTION - LOAD QUESTION
+  Future<void> _onLoadQuestion(LoadQuestionsEvent event, Emitter<TaskState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
+      // load data soal
+      final List<Map<String, dynamic>> response = await SupabaseConfig.client.from('questions').select('questions_text').eq('id_task', event.weekId);
+      // jika response tidak ada isinya
+      if (response.isEmpty) {
+        emit(state.copyWith(error: 'Data tidak ditemukan'));
+        return;
+      }
+      // jika response ada isinya
+      if (response.isNotEmpty) {
+        emit(state.copyWith(question: response));
+        return;
+      }
+    } catch (e) {
+      emit(state.copyWith(error: 'Terjadi kesalahan : $e'));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  // FUNCTION - DOWNLOAD FILE
+  _onDownloadTask(DownloadSoalEvent event, Emitter<TaskState> emit) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      // download soal dengan tipe data Uint8List
+      final response = await SupabaseConfig.client.storage.from('jawaban-tugas').download(event.url);
+      // jika response tidak ada isinya
+      // if (response.isEmpty) {
+      //   emit(state.copyWith(error: 'Data tidak ditemukan'));
+      //   return;
+      // }
+      // // jika response ada isinya
+      // if (response.isNotEmpty) {
+      //   emit(state.copyWith(question: response));
+      //   return;
+      // }
+    } catch (e) {
+      emit(state.copyWith(error: 'Terjadi kesalahan : $e'));
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  // FUNCTION - UPLOAD FILE
+  Future<void> _onUploadTask(UploadJawabanEvent event, Emitter<TaskState> emit) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      // perulangan karena menggunakan multiple file
       for (var file in event.files) {
+        // mengambil bytes file
         final fileBytes = file.bytes;
-        final filePath =
-            '/submissions/${SupabaseConfig.client.auth.currentUser!.id}/${file.name}';
+        // membuat path file ke folder submissions/id_user/nama_file
+        final filePath = '/submissions/${SupabaseConfig.client.auth.currentUser!.id}/${file.name}';
         // mengunggah file ke storage
-        final uploadResponse = await SupabaseConfig.client.storage
-            .from('jawaban-tugas')
-            .uploadBinary(filePath, fileBytes!);
+        final uploadResponse = await SupabaseConfig.client.storage.from('jawaban-tugas').uploadBinary(filePath, fileBytes!);
         // jika upload gagal
-        if (uploadResponse. != null) {
+        if (uploadResponse.isEmpty) {
           emit(state.copyWith(error: 'Gagal mengunggah file'));
           return;
         }
-        final String fullPath =
-            await SupabaseConfig.client.storage.from('jawaban-tugas').upload(
-                  'public/${file.path.split('/').last}',
-                  file,
-                  fileOptions:
-                      const FileOptions(cacheControl: '3600', upsert: false),
-                );
+        if (uploadResponse.contains(filePath)) {
+          // mengambil url file yang diunggah
+          final publicURL = SupabaseConfig.client.storage.from('jawaban-tugas').getPublicUrl(filePath);
+          // menyimpan url file ke database
+          final response = await SupabaseConfig.client.from('submissions').insert([
+            {
+              'id_user': SupabaseConfig.client.auth.currentUser!.id,
+              'file_uploaded': publicURL,
+              // 'id_question': event.taskId,
+            }
+          ]);
+          emit(state.copyWith(successUpload: 'Sukses mengunggah ${file.name}'));
+          return;
+        }
+        // final String fullPath =
+        //     await SupabaseConfig.client.storage.from('jawaban-tugas').upload(
+        //           'public/${file.path.split('/').last}',
+        //           file,
+        //           fileOptions:
+        //               const FileOptions(cacheControl: '3600', upsert: false),
+        //         );
       }
     } catch (e) {
       emit(state.copyWith(error: 'Terjadi kesalahan : $e'));
