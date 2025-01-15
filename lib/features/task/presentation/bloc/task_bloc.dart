@@ -21,6 +21,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     on<DownloadSoalEvent>(_onDownloadTask);
     on<UploadJawabanEvent>(_onUploadTask);
     add(LoadWeekEvent());
+    // add(LoadQuestionsEvent(weekId: '1'));
   }
 
   @override
@@ -61,11 +62,13 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       final List<Map<String, dynamic>> response = await SupabaseConfig.client.from('questions').select('questions_text').eq('id_task', event.weekId);
       // jika response tidak ada isinya
       if (response.isEmpty) {
+        print('Tidak ada respon');
         emit(state.copyWith(error: 'Data tidak ditemukan'));
         return;
       }
       // jika response ada isinya
       if (response.isNotEmpty) {
+        print('response = $response');
         emit(state.copyWith(question: response));
         return;
       }
@@ -111,11 +114,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         final filePath = '/submissions/${SupabaseConfig.client.auth.currentUser!.id}/${file.name}';
         // mengunggah file ke storage
         final uploadResponse = await SupabaseConfig.client.storage.from('jawaban-tugas').uploadBinary(filePath, fileBytes!);
-        // jika upload gagal
+        // jika respon upload kosong / tidak sama denga filePath / gagal
         if (uploadResponse.isEmpty) {
           emit(state.copyWith(error: 'Gagal mengunggah file'));
           return;
         }
+        // jika respon upload sama dengan filePath
         if (uploadResponse.contains(filePath)) {
           // mengambil url file yang diunggah
           final publicURL = SupabaseConfig.client.storage.from('jawaban-tugas').getPublicUrl(filePath);

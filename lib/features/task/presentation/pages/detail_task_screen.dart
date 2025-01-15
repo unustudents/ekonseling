@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../bloc/task_bloc.dart';
+
 class DetailTaskScreen extends StatelessWidget {
   final String taskId;
 
@@ -9,46 +11,49 @@ class DetailTaskScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Tugas Minggu $taskId")),
-      body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        children: [
-          Text(
-            'Silahkan di unduh soal dibawah ini !',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              backgroundColor: const Color(0xFF64558E),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      body: BlocProvider<TaskBloc>(
+        create: (context) => TaskBloc(),
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          children: [
+            Text(
+              'Silahkan di unduh soal dibawah ini !',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            onPressed: () {},
-            child: Text(
-              'Klik untuk unduh soal',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                backgroundColor: const Color(0xFF64558E),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () => context.read<TaskBloc>().add(LoadQuestionsEvent(weekId: taskId)),
+              child: Text(
+                'Klik untuk unduh soal',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Kerjakan soal yang anda unduh sesuai intruksi yang tertera pada soal tersebut !',
-            style: const TextStyle(fontSize: 18),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              backgroundColor: const Color(0xFF64558E),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            const SizedBox(height: 10),
+            Text(
+              'Kerjakan soal yang anda unduh sesuai intruksi yang tertera pada soal tersebut !',
+              style: const TextStyle(fontSize: 18),
             ),
-            onPressed: () {},
-            child: Text(
-              'Upload jawaban',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                backgroundColor: const Color(0xFF64558E),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () {},
+              child: Text(
+                'Upload jawaban',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
