@@ -9,11 +9,14 @@ class DetailTaskScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Tugas Minggu $taskId")),
-      body: BlocProvider<TaskBloc>(
-        create: (context) => TaskBloc(),
-        child: ListView(
+    return BlocProvider<TaskBloc>(
+      create: (context) {
+        print('object');
+        return TaskBloc();
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text("Tugas Minggu $taskId")),
+        body: ListView(
           padding: EdgeInsets.symmetric(horizontal: 10),
           children: [
             Text(

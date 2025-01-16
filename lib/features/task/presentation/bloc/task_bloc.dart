@@ -57,9 +57,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   // FUNCTION - LOAD QUESTION
   Future<void> _onLoadQuestion(LoadQuestionsEvent event, Emitter<TaskState> emit) async {
     emit(state.copyWith(isLoading: true));
+    print('Masuk Load Question');
     try {
       // load data soal
-      final List<Map<String, dynamic>> response = await SupabaseConfig.client.from('questions').select('questions_text').eq('id_task', event.weekId);
+      final List<Map<String, dynamic>> response = await SupabaseConfig.client.from('questions').select('question_text').eq('id_task', event.weekId);
       // jika response tidak ada isinya
       if (response.isEmpty) {
         print('Tidak ada respon');
