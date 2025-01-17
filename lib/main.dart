@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:ekonseling/features/task/presentation/bloc/task_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -28,7 +29,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     SupabaseConfig.client.auth.onAuthStateChange.listen(
       (event) {
-        if (event.event == AuthChangeEvent.signedOut || event.event == AuthChangeEvent.passwordRecovery) {
+        if (event.event == AuthChangeEvent.signedOut ||
+            event.event == AuthChangeEvent.passwordRecovery) {
           log(name: "Auth", 'Go to Login');
           router.goNamed(Routes.login);
         }
@@ -46,7 +48,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AuthBloc()..add(AuthCheckRequested())),
+        BlocProvider(
+            create: (context) => AuthBloc()..add(AuthCheckRequested())),
+        BlocProvider(create: (context) => TaskBloc()),
       ],
       child: MaterialApp.router(
         routerConfig: router,
@@ -57,7 +61,11 @@ class _MyAppState extends State<MyApp> {
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
             surfaceTintColor: Colors.white,
-            titleTextStyle: TextStyle(color: Colors.black, fontFamily: "Urbanist", fontSize: 15, fontWeight: FontWeight.bold),
+            titleTextStyle: TextStyle(
+                color: Colors.black,
+                fontFamily: "Urbanist",
+                fontSize: 15,
+                fontWeight: FontWeight.bold),
           ),
           useMaterial3: true,
         ),

@@ -8,13 +8,15 @@ class TaskScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<TaskBloc>().add(LoadWeekEvent());
     return Scaffold(
       appBar: AppBar(title: const Text("Tugas")),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
           if (state.isLoading) return Center(child: Text('Memuat data ...'));
-          if (state.error.isNotEmpty) return Center(child: Text(state.error));
-          if (state.week.isEmpty) return Center(child: Text('Admin belum mengunggah tugas'));
+          // if (state.error.isNotEmpty) return Center(child: Text(state.error));
+          if (state.week.isEmpty)
+            return Center(child: Text('Admin belum mengunggah tugas'));
 
           return ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -22,10 +24,13 @@ class TaskScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               return ListTile(
                 onTap: () {
-                  context.pushNamed(Routes.detailTask, extra: state.week[index]['week'].toString());
+                  context.pushNamed(Routes.detailTask,
+                      extra: state.week[index]['week'].toString());
                 },
                 dense: true,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10), side: BorderSide(color: Colors.grey.shade300)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: Colors.grey.shade300)),
                 leading: CircleAvatar(
                   backgroundColor: const Color(0xFF64558E),
                   child: Text(
@@ -40,7 +45,8 @@ class TaskScreen extends StatelessWidget {
                 subtitle: const Text('Isi tugas anda dan akan kami review'),
               );
             },
-            separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 10),
+            separatorBuilder: (BuildContext context, int index) =>
+                const SizedBox(height: 10),
           );
         },
       ),

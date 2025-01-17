@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import '../bloc/home_bloc.dart';
@@ -14,7 +12,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(name: 'Home_Screen', 'Building Home_Screen');
     return BlocProvider(
       create: (context) => HomeBloc(),
       child: ListView(padding: EdgeInsets.symmetric(vertical: 22), children: [
