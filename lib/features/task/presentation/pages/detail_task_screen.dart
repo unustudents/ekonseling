@@ -1,61 +1,70 @@
+import 'package:ekonseling/core/snackbar.dart';
 import 'package:flutter/material.dart';
 
 import '../bloc/task_bloc.dart';
 
 class DetailTaskScreen extends StatelessWidget {
-  final String taskId;
+  final Map<String, dynamic> taskId;
 
   const DetailTaskScreen({super.key, required this.taskId});
 
   @override
   Widget build(BuildContext context) {
-    context.read<TaskBloc>().add(LoadQuestionsEvent(weekId: taskId));
-    return Scaffold(
-      appBar: AppBar(title: Text("Tugas Minggu $taskId")),
-      body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        children: [
-          Text(
-            'Silahkan di unduh soal dibawah ini !',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              backgroundColor: const Color(0xFF64558E),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+    // context.read<TaskBloc>().add(LoadQuestionsEvent(weekId: taskId));
+    print(taskId);
+    return BlocListener<TaskBloc, TaskState>(
+      listener: (context, state) {
+        state.isAlert.isNotEmpty ? AppSnackbar.show(context, message: state.isAlert) : null;
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text("Tugas Minggu ${taskId['week']}")),
+        body: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          children: [
+            Text(
+              'Silahkan di unduh soal dibawah ini !',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            onPressed: () => context
-                .read<TaskBloc>()
-                .add(LoadQuestionsEvent(weekId: taskId)),
-            child: Text(
-              'Klik untuk unduh soal',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                backgroundColor: const Color(0xFF64558E),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () {
+                if (taskId['soal'].isEmpty || taskId['soal'] == null) {
+                  return AppSnackbar.show(context, message: 'Belum ada soal yang diunggah');
+                } else {
+                  context.read<TaskBloc>().add(DownloadSoalEvent(url: taskId['soal'], week: taskId['week'].toString()));
+                }
+              },
+              child: Text(
+                'Klik untuk unduh soal',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Kerjakan soal yang anda unduh sesuai intruksi yang tertera pada soal tersebut !',
-            style: const TextStyle(fontSize: 18),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              backgroundColor: const Color(0xFF64558E),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+            const SizedBox(height: 10),
+            Text(
+              'Kerjakan soal yang anda unduh sesuai intruksi yang tertera pada soal tersebut !',
+              style: const TextStyle(fontSize: 18),
             ),
-            onPressed: () {},
-            child: Text(
-              'Upload jawaban',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                backgroundColor: const Color(0xFF64558E),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () {},
+              child: Text(
+                'Upload jawaban',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

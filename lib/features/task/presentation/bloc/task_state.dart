@@ -3,6 +3,7 @@ part of 'task_bloc.dart';
 
 class TaskState extends Equatable {
   final bool isLoading;
+  final String isAlert;
   final String error;
   final List<Map<String, dynamic>> week;
   final List<String> uploadUrl;
@@ -11,6 +12,7 @@ class TaskState extends Equatable {
 
   const TaskState({
     required this.isLoading,
+    required this.isAlert,
     required this.error,
     required this.week,
     required this.uploadUrl,
@@ -26,11 +28,13 @@ class TaskState extends Equatable {
       uploadUrl: [],
       question: [],
       successUpload: '',
+      isAlert: '',
     );
   }
 
   TaskState copyWith({
     bool? isLoading,
+    String? isAlert,
     String? error,
     List<Map<String, dynamic>>? week,
     List<String>? uploadUrl,
@@ -39,6 +43,7 @@ class TaskState extends Equatable {
   }) {
     return TaskState(
       isLoading: isLoading ?? this.isLoading,
+      isAlert: isAlert ?? this.isAlert,
       error: error ?? this.error,
       week: week ?? this.week,
       uploadUrl: uploadUrl ?? this.uploadUrl,
@@ -48,5 +53,5 @@ class TaskState extends Equatable {
   }
 
   @override
-  List<Object> get props => [isLoading, error, week, uploadUrl, question, successUpload];
+  List<Object> get props => [isLoading, error, week, uploadUrl, question, successUpload, isAlert];
 }

@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'task_bloc.dart';
 
 abstract class TaskEvent extends Equatable {
@@ -22,13 +23,15 @@ class LoadQuestionsEvent extends TaskEvent {
 
 class DownloadSoalEvent extends TaskEvent {
   final String url;
+  final String week;
 
   const DownloadSoalEvent({
     required this.url,
+    required this.week,
   });
 
   @override
-  List<Object> get props => [url];
+  List<Object> get props => [url, week];
 }
 
 class UploadJawabanEvent extends TaskEvent {

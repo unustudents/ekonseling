@@ -38,21 +38,10 @@ final GoRouter router = GoRouter(
                 if (index == 3) context.goNamed(Routes.profile);
               },
               items: [
-                SalomonBottomBarItem(
-                    icon: const Icon(Icons.home_outlined),
-                    title: const Text("Home")),
-                SalomonBottomBarItem(
-                    icon: const Icon(Icons.article),
-                    title: const Text("Artikel"),
-                    selectedColor: Colors.red),
-                SalomonBottomBarItem(
-                    icon: const Icon(Icons.task),
-                    title: const Text("Tugas"),
-                    selectedColor: Colors.green),
-                SalomonBottomBarItem(
-                    icon: const Icon(Icons.person_outline),
-                    title: const Text("Profil"),
-                    selectedColor: Colors.brown),
+                SalomonBottomBarItem(icon: const Icon(Icons.home_outlined), title: const Text("Home")),
+                SalomonBottomBarItem(icon: const Icon(Icons.article), title: const Text("Artikel"), selectedColor: Colors.red),
+                SalomonBottomBarItem(icon: const Icon(Icons.task), title: const Text("Tugas"), selectedColor: Colors.green),
+                SalomonBottomBarItem(icon: const Icon(Icons.person_outline), title: const Text("Profil"), selectedColor: Colors.brown),
               ],
             ),
           );
@@ -125,7 +114,7 @@ final GoRouter router = GoRouter(
       path: '/detail-task',
       name: Routes.detailTask,
       builder: (context, state) {
-        final task = state.extra as String?;
+        final task = state.extra as Map<String, dynamic>?;
         if (task == null || task.isEmpty) {
           throw Exception('Data task harus dikirim melalui extra');
         }
