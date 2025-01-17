@@ -38,10 +38,21 @@ final GoRouter router = GoRouter(
                 if (index == 3) context.goNamed(Routes.profile);
               },
               items: [
-                SalomonBottomBarItem(icon: const Icon(Icons.home_outlined), title: const Text("Home")),
-                SalomonBottomBarItem(icon: const Icon(Icons.article), title: const Text("Artikel"), selectedColor: Colors.red),
-                SalomonBottomBarItem(icon: const Icon(Icons.task), title: const Text("Tugas"), selectedColor: Colors.green),
-                SalomonBottomBarItem(icon: const Icon(Icons.person_outline), title: const Text("Profil"), selectedColor: Colors.brown),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.home_outlined),
+                    title: const Text("Home")),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.article),
+                    title: const Text("Artikel"),
+                    selectedColor: Colors.red),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.task),
+                    title: const Text("Tugas"),
+                    selectedColor: Colors.green),
+                SalomonBottomBarItem(
+                    icon: const Icon(Icons.person_outline),
+                    title: const Text("Profil"),
+                    selectedColor: Colors.brown),
               ],
             ),
           );
@@ -63,10 +74,7 @@ final GoRouter router = GoRouter(
           GoRoute(
             path: '/task',
             name: Routes.task,
-            builder: (context, state) => BlocProvider(
-              create: (context) => TaskBloc(),
-              child: const TaskScreen(),
-            ),
+            builder: (context, state) => const TaskScreen(),
           ),
           GoRoute(
             path: '/profile',

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
@@ -10,10 +8,12 @@ class VideoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(name: 'Home_Screen', 'Building Video_Widget');
     return BlocSelector<HomeBloc, HomeState, List<Map<String, dynamic>>>(
       selector: (state) => state.dataVideo,
       builder: (context, state) {
+        print(state);
+        print(state.length);
+
         return CarouselSlider.builder(
           itemCount: state.length,
           itemBuilder: (context, index, realIndex) {
@@ -42,7 +42,8 @@ class VideoWidget extends StatelessWidget {
                     left: 0,
                     right: 0,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 5, horizontal: 10),
                       height: 52,
                       decoration: const BoxDecoration(color: Colors.white70),
                       child: Column(
@@ -50,12 +51,14 @@ class VideoWidget extends StatelessWidget {
                         children: [
                           Text(
                             data['title'].toString(),
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             data['subtitle'].toString(),
-                            style: TextStyle(fontSize: 12, color: Colors.black87),
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.black87),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
@@ -71,7 +74,7 @@ class VideoWidget extends StatelessWidget {
             height: 160,
             enlargeCenterPage: true,
             aspectRatio: 16 / 9,
-            enableInfiniteScroll: true,
+            enableInfiniteScroll: false,
           ),
         );
       },

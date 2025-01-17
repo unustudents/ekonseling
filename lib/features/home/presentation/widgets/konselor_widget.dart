@@ -57,16 +57,15 @@ class KonselorWidget extends StatelessWidget {
                           state[index]['url_profil'].toString(),
                           // 'assets/images/user.png',
                           width: 90,
+                          height: 90,
                           // height: 50,
                           fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) =>
-                              CircularProgressIndicator(),
                           errorBuilder: (context, error, stackTrace) =>
                               Image.asset('assets/images/user.png',
                                   width: 90, fit: BoxFit.scaleDown),
                         ),
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 10),
                       Text(
                         state[index]['name'].toString(),
                         overflow: TextOverflow.ellipsis,
