@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +9,6 @@ class KonselorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(name: 'Home_Screen', 'Building Konselor_Widget');
     return Column(
       children: [
         Padding(
@@ -26,14 +23,14 @@ class KonselorWidget extends StatelessWidget {
                     fontSize: 16,
                     color: Color(0xFF64558E)),
               ),
-              GestureDetector(
-                onTap: () => AppSnackbar.show(context,
-                    message: 'Sedang dalam pengembangan ...'),
-                child: const Text(
-                  "Lihat semua",
-                  style: TextStyle(color: Color(0xFF64558E), fontSize: 16),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: () => AppSnackbar.show(context,
+              //       message: 'Sedang dalam pengembangan ...'),
+              //   child: const Text(
+              //     "Lihat semua",
+              //     style: TextStyle(color: Color(0xFF64558E), fontSize: 16),
+              //   ),
+              // ),
             ],
           ),
         ),

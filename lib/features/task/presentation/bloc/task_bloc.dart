@@ -33,7 +33,10 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     // pengujian
     try {
       // load data minggu
-      List<Map<String, dynamic>> response = await SupabaseConfig.client.from('tasks').select('week, soal').order('created_at');
+      List<Map<String, dynamic>> response = await SupabaseConfig.client
+          .from('tasks')
+          .select('week, soal')
+          .order('created_at');
       // jika response tidak ada isinya
       // if (response.isEmpty) {
       //   emit(state.copyWith(error: 'Data tidak ditemukan'));
@@ -52,12 +55,16 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   // FUNCTION - LOAD QUESTION
-  Future<void> _onLoadQuestion(LoadQuestionsEvent event, Emitter<TaskState> emit) async {
+  Future<void> _onLoadQuestion(
+      LoadQuestionsEvent event, Emitter<TaskState> emit) async {
     emit(state.copyWith(isLoading: true));
     print('Masuk Load Question');
     try {
       // load data soal
-      final List<Map<String, dynamic>> response = await SupabaseConfig.client.from('questions').select('question_text').eq('id_task', event.weekId);
+      final List<Map<String, dynamic>> response = await SupabaseConfig.client
+          .from('questions')
+          .select('question_text')
+          .eq('id_task', event.weekId);
       // jika response tidak ada isinya
       if (response.isEmpty) {
         print('Tidak ada respon');
@@ -82,10 +89,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     emit(state.copyWith(isLoading: true));
     try {
       // download soal dengan tipe data Uint8List
-      final response = await SupabaseConfig.client.storage.from('jawaban-tugas').download(event.url);
+      final response = await SupabaseConfig.client.storage
+          .from('jawaban-tugas')
+          .download(event.url);
 
-      print('response = $response');
-      print('response byte = $response');
+      // print('response = $response');
+      // print('response byte = $response');
       if (response.isEmpty) {
         emit(state.copyWith(isAlert: 'Data tidak ditemukan'));
         return;
@@ -123,7 +132,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   }
 
   // FUNCTION - UPLOAD FILE
-  Future<void> _onUploadTask(UploadJawabanEvent event, Emitter<TaskState> emit) async {
+  Future<void> _onUploadTask(
+      UploadJawabanEvent event, Emitter<TaskState> emit) async {
     emit(state.copyWith(isLoading: true));
     try {
       // perulangan karena menggunakan multiple file
@@ -131,9 +141,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         // mengambil bytes file
         final fileBytes = file.bytes;
         // membuat path file ke folder submissions/id_user/nama_file
-        final filePath = '/submissions/${SupabaseConfig.client.auth.currentUser!.id}/${file.name}';
+        final filePath =
+            '/submissions/${SupabaseConfig.client.auth.currentUser!.id}/${file.name}';
         // mengunggah file ke storage
-        final uploadResponse = await SupabaseConfig.client.storage.from('jawaban-tugas').uploadBinary(filePath, fileBytes!);
+        final uploadResponse = await SupabaseConfig.client.storage
+            .from('jawaban-tugas')
+            .uploadBinary(filePath, fileBytes!);
         // jika respon upload kosong / tidak sama denga filePath / gagal
         if (uploadResponse.isEmpty) {
           emit(state.copyWith(error: 'Gagal mengunggah file'));
@@ -142,9 +155,12 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
         // jika respon upload sama dengan filePath
         if (uploadResponse.contains(filePath)) {
           // mengambil url file yang diunggah
-          final publicURL = SupabaseConfig.client.storage.from('jawaban-tugas').getPublicUrl(filePath);
+          final publicURL = SupabaseConfig.client.storage
+              .from('jawaban-tugas')
+              .getPublicUrl(filePath);
           // menyimpan url file ke database
-          final response = await SupabaseConfig.client.from('submissions').insert([
+          final response =
+              await SupabaseConfig.client.from('submissions').insert([
             {
               'id_user': SupabaseConfig.client.auth.currentUser!.id,
               'file_uploaded': publicURL,
