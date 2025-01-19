@@ -17,3 +17,4 @@ tambahkan
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 android:requestLegacyExternalStorage="true"
+com.android.application = 8.2.1

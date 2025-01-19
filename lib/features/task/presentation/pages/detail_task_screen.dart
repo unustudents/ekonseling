@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:ekonseling/supabase_config.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as path;
+
 import '../../../../core/path_directory.dart';
 import '../../../../core/permission.dart';
 import '../../../../core/snackbar.dart';
