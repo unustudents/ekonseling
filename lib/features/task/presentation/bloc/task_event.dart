@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'task_bloc.dart';
 
 abstract class TaskEvent extends Equatable {
@@ -35,6 +34,7 @@ class DownloadSoalEvent extends TaskEvent {
 }
 
 class UploadJawabanEvent extends TaskEvent {
+  // final List<PlatformFile> files;
   final List<PlatformFile> files;
 
   const UploadJawabanEvent({

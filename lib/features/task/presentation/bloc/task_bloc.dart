@@ -137,16 +137,22 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     emit(state.copyWith(isLoading: true));
     try {
       // perulangan karena menggunakan multiple file
-      for (var file in event.files) {
+      for (var data in event.files) {
         // mengambil bytes file
-        final fileBytes = file.bytes;
+        // final fileBytes = file.;
+        File file = File(data.path!);
         // membuat path file ke folder submissions/id_user/nama_file
-        final filePath =
-            '/submissions/${SupabaseConfig.client.auth.currentUser!.id}/${file.name}';
+        final String filePath =
+            '/submissions/${SupabaseConfig.client.auth.currentUser!.id}/${data.name}';
         // mengunggah file ke storage
-        final uploadResponse = await SupabaseConfig.client.storage
-            .from('jawaban-tugas')
-            .uploadBinary(filePath, fileBytes!);
+        final uploadResponse =
+            await SupabaseConfig.client.storage.from('jawaban-tugas').upload(
+                  filePath,
+                  file,
+                  fileOptions:
+                      const FileOptions(cacheControl: '3600', upsert: false),
+                );
+        // .uploadBinary(filePath, fileBytes!);
         // jika respon upload kosong / tidak sama denga filePath / gagal
         if (uploadResponse.isEmpty) {
           emit(state.copyWith(error: 'Gagal mengunggah file'));
@@ -167,7 +173,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
               // 'id_question': event.taskId,
             }
           ]);
-          emit(state.copyWith(successUpload: 'Sukses mengunggah ${file.name}'));
+          emit(state.copyWith(successUpload: 'Sukses mengunggah ${data.name}'));
           return;
         }
         // final String fullPath =
@@ -192,8 +198,8 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       allowedExtensions: ['jpg', 'pdf', 'jpeg', 'png'],
     );
     if (result != null) {
-      List<File> files = result.paths.map((path) => File(path!)).toList();
-      print(files);
+      // List<File> files = result.paths.map((path) => File(path!)).toList();
+      print(result.files);
       // final String fullPath = await SupabaseConfig.client.storage
       //     .from('avatars')
       //     .upload(
@@ -203,6 +209,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
       //     );
     } else {
       // User canceled the picker
+      print('Membatalkan file picker');
     }
   }
 }
