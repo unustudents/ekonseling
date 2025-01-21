@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as path;
@@ -37,6 +38,7 @@ class _DetailTaskScreenState extends State<DetailTaskScreen> {
   late String filePath;
   String fileName = '';
   CancelToken cancelToken = CancelToken();
+  List<PlatformFile> fileSelected = [];
 
   checkFileExist() async {
     var file = await getPathFile.getPath();
@@ -70,6 +72,17 @@ class _DetailTaskScreenState extends State<DetailTaskScreen> {
 
   openFile() {
     OpenFile.open(filePath);
+  }
+
+  selectFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'pdf', 'jpeg', 'png'],
+    );
+    if (result != null) {
+      setState(() => fileSelected = result.files);
+    }
   }
 
   @override
@@ -140,6 +153,36 @@ class _DetailTaskScreenState extends State<DetailTaskScreen> {
                     'Kerjakan soal yang anda unduh sesuai intruksi yang tertera pada soal tersebut !',
                     style: const TextStyle(fontSize: 18),
                   ),
+                  SizedBox(height: 20),
+                  if (fileSelected.isNotEmpty) ...{
+                    Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        Text(
+                          'File yang akan diupload :',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(height: 10),
+                        for (var file in fileSelected)
+                          ListTile(
+                            title: Text(file.name),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () {
+                                setState(() => fileSelected.remove(file));
+                              },
+                            ),
+                          ),
+                        TextButton.icon(
+                            onPressed: () {
+                              selectFile();
+                            },
+                            label: Text('Tambah File'),
+                            icon: Icon(Icons.add)),
+                        SizedBox(height: 10),
+                      ],
+                    ),
+                  },
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -148,18 +191,25 @@ class _DetailTaskScreenState extends State<DetailTaskScreen> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      if (fileSelected.isEmpty) {
+                        selectFile();
+                      } else {
+                        AppSnackbar.show(context, message: 'Kirim');
+                      }
+                    },
                     child: Text(
-                      'Upload jawaban',
+                      fileSelected.isEmpty ? 'Upload jawaban' : 'Kirim jawaban',
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ),
+                  // SizedBox(height: 20),
                 ],
               )
             : TextButton(
                 onPressed: () => checkPermission(),
-                child: Text('Ijinkan akses penyimpanan')),
+                child: Center(child: Text('Ijinkan akses penyimpanan'))),
       ),
     );
   }

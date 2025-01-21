@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../bloc/article_bloc.dart';
 
@@ -27,55 +28,65 @@ class VideoTabWidget extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             var data = state.videoDataKategori[index];
 
-            return Container(
-              // height: 350 * 9 / 16,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Stack(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        data['url_video'].toString(),
-                        width: 1000,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(child: CircularProgressIndicator());
-                        },
+            return GestureDetector(
+              onTap: () async {
+                // Fungsi untuk meluncurkan URL di aplikasi YouTube
+                Uri uri = Uri.parse(data['url_video'].toString());
+                if (!await launchUrl(uri, mode: LaunchMode.inAppBrowserView)) {
+                  throw 'Tidak dapat membuka URL';
+                }
+              },
+              child: Padding(
+                // height: 350 * 9 / 16
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Stack(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          data['url_video'].toString(),
+                          width: 1000,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(child: CircularProgressIndicator());
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 10),
-                      // height: 52,
-                      decoration: const BoxDecoration(color: Colors.white70),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            data['title'].toString(),
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            data['subtitle'].toString(),
-                            style:
-                                TextStyle(fontSize: 12, color: Colors.black87),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 10),
+                        // height: 52,
+                        decoration: const BoxDecoration(color: Colors.white70),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              data['title'].toString(),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              data['subtitle'].toString(),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.black87),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },
