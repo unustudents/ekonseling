@@ -47,7 +47,7 @@ class VideoTabWidget extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.network(
-                          data['url_video'].toString(),
+                          data['thumbnail'].toString(),
                           width: 1000,
                           fit: BoxFit.cover,
                           loadingBuilder: (context, child, loadingProgress) {

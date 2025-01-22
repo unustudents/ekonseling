@@ -77,7 +77,8 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       // Membuat stream dari tabel 'video'
       final List<Map<String, dynamic>> response = await SupabaseConfig.client
           .from('videos')
-          .select('title, url_video, created_at, subtitle')
+          .select(
+              'title, url_video, thumbnail, created_at, subtitle, categories(name)')
           .order('created_at');
 
       // Periksa apakah response valid
@@ -92,6 +93,8 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
           'title': video['title'] ?? '-',
           'url_video': video['url_video'] ?? '-',
           'subtitle': video['subtitle'] ?? '-',
+          'thumbnail': video['thumbnail'] ?? '-',
+          'categories': video['categories']?['name'] ?? '',
         };
       }).toList();
 
