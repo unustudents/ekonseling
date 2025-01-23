@@ -96,6 +96,13 @@ class _DetailTaskScreenState extends State<DetailTaskScreen> {
   }
 
   @override
+  void dispose() {
+    fileSelected.clear();
+    startDownload().dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // context.read<TaskBloc>().add(LoadQuestionsEvent(weekId: taskId));
     return BlocListener<TaskBloc, TaskState>(
@@ -103,6 +110,10 @@ class _DetailTaskScreenState extends State<DetailTaskScreen> {
         state.isAlert.isNotEmpty
             ? AppSnackbar.show(context, message: state.isAlert)
             : null;
+        if (state.successUpload.isNotEmpty) {
+          AppSnackbar.show(context, message: state.successUpload);
+          Navigator.pop(context);
+        }
       },
       child: Scaffold(
         appBar: AppBar(title: Text("Tugas Minggu ${widget.taskId['week']}")),
@@ -195,7 +206,10 @@ class _DetailTaskScreenState extends State<DetailTaskScreen> {
                       if (fileSelected.isEmpty) {
                         selectFile();
                       } else {
-                        AppSnackbar.show(context, message: 'Kirim');
+                        context
+                            .read<TaskBloc>()
+                            .add(UploadJawabanEvent(files: fileSelected));
+                        // AppSnackbar.show(context, message: 'Kirim');
                       }
                     },
                     child: Text(
