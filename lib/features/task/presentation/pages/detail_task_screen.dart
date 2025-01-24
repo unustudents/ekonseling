@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as path;
@@ -98,7 +99,7 @@ class _DetailTaskScreenState extends State<DetailTaskScreen> {
   @override
   void dispose() {
     fileSelected.clear();
-    startDownload().dispose();
+    // startDownload().dispose();
     super.dispose();
   }
 
@@ -144,9 +145,6 @@ class _DetailTaskScreenState extends State<DetailTaskScreen> {
                         fileExist && downloading == false
                             ? openFile()
                             : startDownload();
-                        // context.read<TaskBloc>().add(DownloadSoalEvent(
-                        //     url: widget.taskId['soal'],
-                        //     week: widget.taskId['week'].toString()));
                       }
                     },
                     child: Text(

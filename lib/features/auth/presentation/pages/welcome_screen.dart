@@ -40,14 +40,15 @@ class WelcomeScreen extends StatelessWidget {
               // TEKS EKONSELING
               Text.rich(
                 TextSpan(
-                  text: 'E - ',
+                  text: 'Academy - ',
                   style: TextStyle(
-                    fontSize: size.width * 0.06, // Responsif berdasarkan lebar layar
+                    fontSize:
+                        size.width * 0.06, // Responsif berdasarkan lebar layar
                     fontWeight: FontWeight.bold,
                   ),
                   children: [
                     TextSpan(
-                      text: 'Konseling',
+                      text: 'Fun',
                       style: TextStyle(fontWeight: FontWeight.normal),
                     ),
                   ],
