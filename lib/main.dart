@@ -1,8 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'app.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/task/presentation/bloc/task_bloc.dart';
 import 'routes/app_pages.dart';
@@ -30,12 +29,10 @@ class _MyAppState extends State<MyApp> {
       (event) {
         if (event.event == AuthChangeEvent.signedOut ||
             event.event == AuthChangeEvent.passwordRecovery) {
-          log(name: "Auth", 'Go to Login');
           router.goNamed(Routes.login);
         }
 
-        if (event.event == AuthChangeEvent.signedIn) {
-          log(name: "Auth", 'Login Success');
+        if (event.event == AuthChangeEvent.initialSession) {
           router.goNamed(Routes.home);
         }
       },
@@ -51,24 +48,7 @@ class _MyAppState extends State<MyApp> {
             create: (context) => AuthBloc()..add(AuthCheckRequested())),
         BlocProvider(create: (context) => TaskBloc()),
       ],
-      child: MaterialApp.router(
-        routerConfig: router,
-        title: 'E-Konseling',
-        theme: ThemeData(
-          fontFamily: "Urbanist",
-          scaffoldBackgroundColor: Colors.white,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.white,
-            surfaceTintColor: Colors.white,
-            titleTextStyle: TextStyle(
-                color: Colors.black,
-                fontFamily: "Urbanist",
-                fontSize: 15,
-                fontWeight: FontWeight.bold),
-          ),
-          useMaterial3: true,
-        ),
-      ),
+      child: App(),
     );
   }
 }
