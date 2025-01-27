@@ -1,8 +1,9 @@
-part of 'auth_bloc.dart';
+part of 'auth_cubit.dart';
 
 class AuthState extends Equatable {
   final bool isLoading;
   final bool isAuthenticated;
+  final bool isSuccess;
   final String name;
   final String nim;
   final String email;
@@ -13,6 +14,7 @@ class AuthState extends Equatable {
   const AuthState({
     this.isLoading = false,
     this.isAuthenticated = false,
+    this.isSuccess = false,
     this.name = '',
     this.nim = '',
     this.email = '',
@@ -21,22 +23,10 @@ class AuthState extends Equatable {
     this.error = '',
   });
 
-  // factory AuthState.initial() {
-  //   return const AuthState(
-  //     isLoading: false,
-  //     isAuthenticated: false,
-  //     name: '',
-  //     nim: '',
-  //     email: '',
-  //     password: '',
-  //     confirmPassword: '',
-  //     error: '',
-  //   );
-  // }
-
   AuthState copyWith({
     bool? isLoading,
     bool? isAuthenticated,
+    bool? isSuccess,
     String? name,
     String? nim,
     String? email,
@@ -47,6 +37,7 @@ class AuthState extends Equatable {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+      isSuccess: isSuccess ?? this.isSuccess,
       name: name ?? this.name,
       nim: nim ?? this.nim,
       email: email ?? this.email,
@@ -60,6 +51,7 @@ class AuthState extends Equatable {
   List<Object?> get props => [
         isLoading,
         isAuthenticated,
+        isSuccess,
         name,
         nim,
         email,
@@ -67,24 +59,4 @@ class AuthState extends Equatable {
         confirmPassword,
         error,
       ];
-}
-
-class AuthInitial extends AuthState {}
-
-class AuthLoading extends AuthState {}
-
-class AuthSuccess extends AuthState {
-  final User? user;
-
-  const AuthSuccess({required this.user});
-
-  @override
-  List<Object?> get props => [user];
-}
-
-class AuthError extends AuthState {
-  const AuthError({required String error});
-
-  @override
-  List<Object?> get props => [error];
 }

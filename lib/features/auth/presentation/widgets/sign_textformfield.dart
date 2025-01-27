@@ -2,20 +2,16 @@ import 'package:flutter/material.dart';
 
 class SignTextField extends StatelessWidget {
   final String label;
-  final String? hintText;
   final TextInputType keyboardType;
   final bool obscureText;
-  final Function(String) onChanged;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
 
   const SignTextField({
     super.key,
     required this.label,
-    this.hintText,
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
-    required this.onChanged,
     this.validator,
     this.controller,
   });
@@ -23,6 +19,7 @@ class SignTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       controller: controller,
       decoration: InputDecoration(
         filled: true,
@@ -31,13 +28,11 @@ class SignTextField extends StatelessWidget {
         errorBorder: outlineInputBorder,
         border: outlineInputBorder,
         labelText: label,
-        hintText: hintText,
         labelStyle: hintAndLabelStyle,
         hintStyle: hintAndLabelStyle,
       ),
       keyboardType: keyboardType,
       obscureText: obscureText,
-      onChanged: onChanged,
       validator: validator,
     );
   }

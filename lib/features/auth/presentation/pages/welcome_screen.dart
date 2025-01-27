@@ -1,87 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../../../routes/app_pages.dart';
-import '../bloc/auth_bloc.dart';
+import '../cubit/auth_cubit.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Variabel untuk mendapatkan ukuran layar
     final size = MediaQuery.of(context).size;
 
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state is AuthUnauthenticated) {
-          print('AuthUnauthenticated');
+        // Jika sedang loading, maka akan menampilkan indicator loading
+        if (state.isLoading) return;
+        // Jika user belum login, maka akan diarahkan ke halaman login
+        if (!state.isAuthenticated) {
           context.goNamed(Routes.login);
-        }
-        if (state is AuthAuthenticated) {
-          print('AuthAuthenticated');
+        } else {
+          // Jika user sudah login, maka akan diarahkan ke halaman home
           context.goNamed(Routes.home);
         }
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // GAMBAR WELLCOMING
-              Spacer(flex: 2),
-              SvgPicture.asset(
-                'assets/images/undraw_welcoming.svg',
-                fit: BoxFit.contain,
-                height: size.height * 0.3,
-              ),
-              Spacer(flex: 1),
+      child: Material(
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            // GAMBAR WELLCOMING
+            Spacer(flex: 2),
+            SvgPicture.asset(
+              'assets/images/undraw_welcoming.svg',
+              fit: BoxFit.contain,
+              height: size.height * 0.3,
+            ),
+            Spacer(flex: 1),
 
-              // TEKS EKONSELING
-              Text.rich(
-                TextSpan(
-                  text: 'Academy - ',
-                  style: TextStyle(
-                    fontSize:
-                        size.width * 0.06, // Responsif berdasarkan lebar layar
-                    fontWeight: FontWeight.bold,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: 'Fun',
-                      style: TextStyle(fontWeight: FontWeight.normal),
-                    ),
-                  ],
+            // TEKS EKONSELING
+            Text.rich(
+              TextSpan(
+                text: 'Academic - ',
+                style: TextStyle(
+                  fontSize: size.width * 0.06, // Responsif berdasarkan lebar layar
+                  fontWeight: FontWeight.bold,
                 ),
+                children: [
+                  TextSpan(
+                    text: 'Fun',
+                    style: TextStyle(fontWeight: FontWeight.normal),
+                  ),
+                ],
               ),
-              SizedBox(height: size.height * 0.04),
+            ),
+            SizedBox(height: size.height * 0.04),
 
-              // crete progress indicator here
-              CircularProgressIndicator(),
-
-              // TOMBOl MASUK
-              // WelcomeButton(
-              //   text: 'Masuk',
-              //   backgroundColor: const Color(0xFF724778),
-              //   textColor: Colors.white,
-              //   onPressed: () {
-              //     print(SupabaseConfig.client.auth.currentUser);
-              //     context.goNamed(Routes.login);
-              //   },
-              // ),
-              // SizedBox(height: size.height * 0.02),
-
-              // TOMBOL DAFTAR
-              // WelcomeButton(
-              //   text: 'Daftar',
-              //   backgroundColor: Colors.white,
-              //   textColor: const Color(0xFF1E232C),
-              //   borderColor: const Color(0xFF1E232C),
-              //   onPressed: () => context.goNamed(Routes.register),
-              // ),
-              Spacer(flex: 3),
-            ],
-          ),
+            // INDICATOR LOADING
+            LoadingAnimationWidget.progressiveDots(color: Colors.grey, size: 30),
+            Spacer(flex: 3),
+          ],
         ),
       ),
     );

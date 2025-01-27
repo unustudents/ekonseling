@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../../../core/snackbar.dart';
 import '../../../../routes/app_pages.dart';
-import '../bloc/auth_bloc.dart';
+import '../cubit/auth_cubit.dart';
 import '../widgets/sign_button.dart';
 import '../widgets/sign_textformfield.dart';
 
@@ -15,118 +16,122 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   // VARIABEL UNTUK MENAMPUNG INPUTAN NIS DAN PASSWORD
-  final TextEditingController _nisCtrl = TextEditingController();
-
-  final TextEditingController _passCtrl = TextEditingController();
+  final _nisCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
     _nisCtrl.dispose();
     _passCtrl.dispose();
+    _formKey.currentState?.dispose();
+    // Taruh ini di akhir untuk membersihkan sampah
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // MENGAMBIL BLOC DARI PROVIDER
-    return BlocProvider(
-      create: (context) => AuthBloc(),
-      child: Scaffold(
-        appBar: AppBar(),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(22, 0, 22, 22),
-          child: BlocConsumer<AuthBloc, AuthState>(
-            listener: (context, state) {
-              // if (state is AuthSuccess) context.goNamed(Routes.home);
-              if (state is AuthError) AppSnackbar.show(context, message: state.error.toString());
-            },
-            builder: (context, state) {
-              // VARIABEL UNTUK MENAMPUNG BLOC
-              final authBloc = context.read<AuthBloc>();
-
-              return Form(
-                key: context.read<AuthBloc>().formKey,
-                child: Column(
-                  children: [
-                    // TEKS SELAMAT DATANG
-                    const Text(
-                      "Selamat Datang, Senang Bertemu Anda !",
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // FORM INPUT -- NIS
-                    SignTextField(
-                      label: 'Nomor Induk Siswa',
-                      hintText: 'Masukkan NIS',
-                      controller: _nisCtrl,
-                      validator: (value) => authBloc.validateNIS(value),
-                      onChanged: (value) => authBloc.add(NIMChanged(nim: value)),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // FORM INPUT -- KATA SANDI
-                    SignTextField(
-                      label: 'Kata Sandi',
-                      hintText: 'Masukkan kata sandi',
-                      controller: _passCtrl,
-                      obscureText: false,
-                      validator: (value) => authBloc.validatePassword(value),
-                      onChanged: (value) => authBloc.add(PasswordChanged(password: value)),
-                    ),
-                    const SizedBox(height: 5),
-
-                    // TOMBOL LUPA KATA SANDI
-                    SizedBox(
-                      // width: 331,
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: MaterialButton(
-                          onPressed: () => context.pushNamed(Routes.forgotPassword),
-                          child: const Text("Lupa Kata Sandi?"),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // TOMBOL MASUK
-                    SignButton(
-                      text: 'Masuk',
-                      backgroundColor: Color(0xFF724778),
-                      textColor: Colors.white,
-                      onPressed: () {
-                        if (authBloc.formKey.currentState!.validate()) {
-                          context.read<AuthBloc>().add(SubmitSignIn(nis: _nisCtrl.text, password: _passCtrl.text));
-                        }
-                      },
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    // TOMBOL MASUK
-                    TextButton(
-                      onPressed: () => context.goNamed(Routes.register),
-                      child: const Text.rich(
-                        TextSpan(
-                          text: 'Belum punya Akun? ',
-                          style: TextStyle(color: Color(0xFF8391A1), fontSize: 14, fontWeight: FontWeight.w500),
-                          children: [
-                            TextSpan(
-                              text: 'Daftar',
-                              style: TextStyle(color: Color(0xFF724778)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+    return Scaffold(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(22, 0, 22, 22),
+        child: BlocConsumer<AuthCubit, AuthState>(
+          listener: (context, state) {
+            // Menampilkan loading animation
+            if (state.isLoading) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => Center(child: LoadingAnimationWidget.progressiveDots(color: Colors.white, size: 60)),
               );
-            },
-          ),
+            } else {
+              context.pop();
+            }
+            // Menampilkan pesan error jika ada
+            if (state.error.isNotEmpty) AppSnackbar.show(context, message: state.error, isError: true);
+            // Jika user sudah login, maka akan diarahkan ke halaman home
+            if (state.isAuthenticated) context.goNamed(Routes.home);
+          },
+          builder: (context, state) {
+            return Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  SizedBox(height: kToolbarHeight * 2),
+                  // TEKS SELAMAT DATANG
+                  const Text(
+                    "Selamat Datang, Senang Bertemu Anda !",
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // FORM INPUT -- NIS
+                  SignTextField(
+                    label: 'Nomor Induk Siswa',
+                    controller: _nisCtrl,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'NIS tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // FORM INPUT -- KATA SANDI
+                  SignTextField(
+                    label: 'Kata Sandi',
+                    controller: _passCtrl,
+                    obscureText: false,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password tidak boleh kosong';
+                      }
+                      if (value.length < 6) {
+                        return 'Password minimal 6 karakter';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+
+                  // TOMBOL MASUK
+                  SignButton(
+                    text: 'Masuk',
+                    backgroundColor: Color(0xFF724778),
+                    textColor: Colors.white,
+                    onPressed: () {
+                      if (_formKey.currentState!.validate() && state.isLoading == false) {
+                        // context.read<AuthCubit>().add(SubmitSignIn(nis: _nisCtrl.text, password: _passCtrl.text));
+                        context.read<AuthCubit>().onSubmitSignIn(password: _passCtrl.text, nis: _nisCtrl.text);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 25),
+
+                  // TOMBOL DAFTAR
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 3,
+                    children: [
+                      Text(
+                        "Belum punya Akun ?",
+                        style: TextStyle(color: Color(0xFF8391A1), fontWeight: FontWeight.w500),
+                      ),
+                      GestureDetector(
+                        onTap: () => context.goNamed(Routes.register),
+                        child: Text(
+                          " Daftar",
+                          style: TextStyle(color: Color(0xFF724778), fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
-      // Expanded(child: Spacer()),
     );
   }
 }

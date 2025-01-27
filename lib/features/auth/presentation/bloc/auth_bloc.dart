@@ -5,7 +5,6 @@ import 'package:bloc/bloc.dart';
 import 'package:crypto/crypto.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../supabase_config.dart';
 import '../../data/models/user_model.dart';
@@ -16,18 +15,78 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  // final FirebaseAuth _firebaseAuth;
-
-  AuthBloc() : super(AuthInitial()) {
-    // : _firebaseAuth = FirebaseAuth.instance,
+  AuthBloc() : super(AuthState()) {
+    // ketika suatu event di panggil, maka akan memanggil fungsi yang sesuai
+    on<AuthCheckRequested>(_onAuthCheckRequested);
+    on<SubmitSignIn>(_onSubmitSignIn);
     on<NameChanged>(_onNameChanged);
     on<NIMChanged>(_onNIMChanged);
     on<EmailChanged>(_onEmailChanged);
     on<PasswordChanged>(_onPasswordChanged);
     on<ConfirmPasswordChanged>(_onConfirmPasswordChanged);
     on<SubmitRegistration>(_onSubmitRegistration);
-    on<SubmitSignIn>(_onSubmitSignIn);
-    on<AuthCheckRequested>(_onAuthCheckRequested);
+    // event berikut akan dijalankan ketika bloc di inisialisasi
+    add(AuthCheckRequested());
+  }
+
+  @override
+  onChange(change) {
+    print(change);
+    super.onChange(change);
+  }
+
+  // CEK SESSION ----------------------------------------------
+  // Fungsi untuk mengecek session, apakah user sudah login atau belum
+  Future<void> _onAuthCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(isLoading: true));
+    // Mengecek session user
+    final session = SupabaseConfig.client.auth.currentSession;
+    // Menunggu 5 detik
+    await Future.delayed(const Duration(seconds: 5)); // Simulasi Splash
+    // Jika session null, maka user belum login
+    if (session == null) {
+      emit(state.copyWith(isAuthenticated: false));
+    } else {
+      emit(state.copyWith(isAuthenticated: true));
+    }
+    emit(state.copyWith(isLoading: false));
+  }
+
+  // SIGN UP ----------------------------------------------
+
+  // SIGN IN ----------------------------------------------
+  // Fungsi untuk sign in user
+  Future<void> _onSubmitSignIn(SubmitSignIn event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      // encrypt password
+      String hashedPassword = hashPassword(event.password);
+      // query mengambil email berdasarkan nis
+      final Map<String, dynamic>? response = await SupabaseConfig.client.from('users').select('email').eq('nis', event.nis).maybeSingle();
+      // cek apakah response kosong atau tidak ditemukan
+      if (response == null || response.isEmpty) {
+        emit(state.copyWith(isLoading: false, error: 'NIS tidak ditemukan'));
+        return;
+      }
+      // sign in user
+      final authResponse = await SupabaseConfig.client.auth.signInWithPassword(email: response['email'], password: hashedPassword);
+      // cek apakah session ada
+      if (authResponse.session != null) {
+        emit(state.copyWith(isLoading: false, isAuthenticated: true));
+        return;
+      } else {
+        emit(state.copyWith(isLoading: false, error: 'Login gagal, maaf akun tidak ditemukan'));
+        return;
+      }
+    } on AuthException catch (e) {
+      // Penanganan khusus jika terjadi error pada Auth
+      emit(state.copyWith(isLoading: false, error: 'Error autentikasi: ${e.message}'));
+      return;
+    } catch (e) {
+      // Penanganan error lainnya (misalnya kesalahan jaringan)
+      emit(state.copyWith(isLoading: false, error: 'Sepertinya anda belum registrasi atau terjadi kesalahan lainnya'));
+      return;
+    }
   }
 
   final formKey = GlobalKey<FormState>();
@@ -65,47 +124,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       // REGISTRATIONS USER TO DATABASE
       AuthResponse authResponse = await SupabaseConfig.client.auth.signUp(password: hashedPassword, email: 'user${event.nis}@ekonseling.dummy');
-      await SupabaseConfig.client
-          .from('users')
-          .insert(UserModel(name: event.name, email: 'user${event.nis}@ekonseling.dummy', nis: event.nis, passHash: hashedPassword).toJson());
+      await SupabaseConfig.client.from('users').insert(UserModel(name: event.name, email: 'user${event.nis}@ekonseling.dummy', nis: event.nis, passHash: hashedPassword).toJson());
 
       emit(AuthSuccess(user: authResponse.user));
     } catch (e) {
       emit(AuthError(error: e.toString()));
     }
-  }
-
-  Future<void> _onSubmitSignIn(SubmitSignIn event, Emitter<AuthState> emit) async {
-    if (!formKey.currentState!.validate()) {
-      emit(AuthError(error: 'Form tidak valid.'));
-      return;
-    }
-    try {
-      // ENCRYPT PASSWORD
-      String hashedPassword = hashPassword(event.password);
-
-      // QUERY USER FROM DATABASE TO GET EMAIL
-      final Map<String, dynamic>? response = await SupabaseConfig.client.from('users').select('email').eq('nis', event.nis).maybeSingle();
-      if (response!.isEmpty) emit(AuthError(error: 'NIS tidak ditemukan'));
-
-      // SIGN IN USER
-      final authResponse = await SupabaseConfig.client.auth.signInWithPassword(email: response['email'], password: hashedPassword);
-      if (authResponse.session != null) {
-        emit(AuthSuccess(user: authResponse.user));
-      } else {
-        emit(AuthError(error: 'Login gagal, maaf akun tidak ditemukan'));
-      }
-    } catch (e) {
-      emit(AuthError(error: 'Sepertinya anda belum registrasi'));
-    }
-  }
-
-  Future<void> _onAuthCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) async {
-    emit(AuthLoading());
-    final session = SupabaseConfig.client.auth.currentSession;
-
-    await Future.delayed(const Duration(seconds: 2)); // Simulasi Splash
-    session == null ? emit(AuthUnauthenticated()) : emit(AuthAuthenticated());
   }
 
   // Fungsi untuk hash password
@@ -128,9 +152,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   String? validateEmail(String? email) {
     if (email == null || email.isEmpty) return 'Email tidak boleh kosong';
-    if (!RegExp(
-            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-        .hasMatch(email)) return 'Format email tidak valid';
+    if (!RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$').hasMatch(email))
+      return 'Format email tidak valid';
     return null;
   }
 

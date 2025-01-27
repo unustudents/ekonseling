@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'app.dart';
-import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/task/presentation/bloc/task_bloc.dart';
-import 'routes/app_pages.dart';
 import 'supabase_config.dart';
 
 Future<void> main() async {
@@ -15,37 +14,14 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    SupabaseConfig.client.auth.onAuthStateChange.listen(
-      (event) {
-        if (event.event == AuthChangeEvent.signedOut ||
-            event.event == AuthChangeEvent.passwordRecovery) {
-          router.goNamed(Routes.login);
-        }
-
-        if (event.event == AuthChangeEvent.initialSession) {
-          router.goNamed(Routes.home);
-        }
-      },
-    );
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-            create: (context) => AuthBloc()..add(AuthCheckRequested())),
+        BlocProvider(create: (context) => AuthCubit()),
         BlocProvider(create: (context) => TaskBloc()),
       ],
       child: App(),

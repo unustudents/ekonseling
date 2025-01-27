@@ -3,51 +3,40 @@ import 'package:flutter/material.dart';
 import 'routes/app_pages.dart';
 import 'supabase_config.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
 
-  Future<void> _checkSession() async {
-    final session = Supabase.instance.client.auth.currentSession;
+  @override
+  State<App> createState() => _AppState();
+}
 
-    if (session != null) {
-      // Sesi valid, cek apakah token masih berlaku
-      final isTokenValid = await _isTokenStillValid(session);
-
-      if (isTokenValid) {
-        // Token valid, arahkan ke home
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => HomePage()),
-        );
-      } else {
-        // Token kadaluarsa, clear session dan arahkan ke login
-        await Supabase.instance.client.auth.signOut();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => LoginPage()),
-        );
+class _AppState extends State<App> {
+  final _sreaming = SupabaseConfig.client.auth.onAuthStateChange.listen(
+    (event) {
+      if (event.event == AuthChangeEvent.signedOut ||
+          event.event == AuthChangeEvent.passwordRecovery) {
+        router.goNamed(Routes.login);
       }
-    } else {
-      // Tidak ada sesi, arahkan ke login
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => LoginPage()),
-      );
-    }
+    },
+  );
+
+  @override
+  void initState() {
+    _sreaming;
+    super.initState();
   }
 
-  Future<bool> _isTokenStillValid(Session session) async {
-    final expiresAt = session.expiresAt; // Waktu token expired (UTC timestamp)
-    final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-
-    return currentTime < expiresAt!;
+  @override
+  void dispose() {
+    super.dispose();
+    _sreaming.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: router,
-      title: 'E-Konseling',
+      title: 'Academic Fun',
       theme: ThemeData(
         fontFamily: "Urbanist",
         scaffoldBackgroundColor: Colors.white,
@@ -55,10 +44,11 @@ class App extends StatelessWidget {
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
           titleTextStyle: TextStyle(
-              color: Colors.black,
-              fontFamily: "Urbanist",
-              fontSize: 15,
-              fontWeight: FontWeight.bold),
+            color: Colors.black,
+            fontFamily: "Urbanist",
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         useMaterial3: true,
       ),
