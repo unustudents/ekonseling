@@ -24,15 +24,15 @@ class AuthState extends Equatable {
   });
 
   AuthState copyWith({
-    bool? isLoading,
-    bool? isAuthenticated,
-    bool? isSuccess,
-    String? name,
-    String? nim,
-    String? email,
-    String? password,
-    String? confirmPassword,
-    String? error,
+    final bool? isLoading,
+    final bool? isAuthenticated,
+    final bool? isSuccess,
+    final String? name,
+    final String? nim,
+    final String? email,
+    final String? password,
+    final String? confirmPassword,
+    final String? error,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,

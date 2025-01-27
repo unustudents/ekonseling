@@ -1,3 +1,4 @@
+import 'package:ekonseling/core/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -19,12 +20,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final _nisCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _obsecure = ValueNotifier(true);
 
   @override
   void dispose() {
     _nisCtrl.dispose();
     _passCtrl.dispose();
     _formKey.currentState?.dispose();
+    _obsecure.dispose();
     // Taruh ini di akhir untuk membersihkan sampah
     super.dispose();
   }
@@ -69,28 +72,31 @@ class _LoginScreenState extends State<LoginScreen> {
                     label: 'Nomor Induk Siswa',
                     controller: _nisCtrl,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'NIS tidak boleh kosong';
-                      }
+                      if (isValidEmpty(value)) return 'NIS tidak boleh kosong';
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
 
                   // FORM INPUT -- KATA SANDI
-                  SignTextField(
-                    label: 'Kata Sandi',
-                    controller: _passCtrl,
-                    obscureText: false,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Password tidak boleh kosong';
-                      }
-                      if (value.length < 6) {
-                        return 'Password minimal 6 karakter';
-                      }
-                      return null;
-                    },
+
+                  ValueListenableBuilder(
+                    valueListenable: _obsecure,
+                    builder: (context, value, child) => SignTextField(
+                      label: 'Kata Sandi',
+                      controller: _passCtrl,
+                      obscureText: _obsecure.value,
+                      keyboardType: TextInputType.visiblePassword,
+                      suffixIcon: InkWell(
+                        onTap: () => _obsecure.value = !value,
+                        child: Icon(value ? Icons.visibility_off : Icons.visibility),
+                      ),
+                      validator: (value) {
+                        if (isValidEmpty(value)) return 'Password tidak boleh kosong';
+                        if (!isValidPassword(value!)) return 'Password minimal 6 karakter';
+                        return null;
+                      },
+                    ),
                   ),
                   const SizedBox(height: 20),
 
@@ -101,7 +107,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     textColor: Colors.white,
                     onPressed: () {
                       if (_formKey.currentState!.validate() && state.isLoading == false) {
-                        // context.read<AuthCubit>().add(SubmitSignIn(nis: _nisCtrl.text, password: _passCtrl.text));
                         context.read<AuthCubit>().onSubmitSignIn(password: _passCtrl.text, nis: _nisCtrl.text);
                       }
                     },
