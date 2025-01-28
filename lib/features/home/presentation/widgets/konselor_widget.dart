@@ -1,8 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/snackbar.dart';
-import '../bloc/home_bloc.dart';
+import '../cubit/home_cubit.dart';
 
 class KonselorWidget extends StatelessWidget {
   const KonselorWidget({super.key});
@@ -18,10 +17,7 @@ class KonselorWidget extends StatelessWidget {
             children: [
               const Text(
                 "Konselor",
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: Color(0xFF64558E)),
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16, color: Color(0xFF64558E)),
               ),
               // GestureDetector(
               //   onTap: () => AppSnackbar.show(context,
@@ -35,14 +31,13 @@ class KonselorWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        BlocSelector<HomeBloc, HomeState, List<Map<String, dynamic>>>(
+        BlocSelector<HomeCubit, HomeState, List<Map<String, dynamic>>>(
           selector: (state) => state.konselorProfiles,
           builder: (context, state) {
             return CarouselSlider.builder(
               itemCount: state.length,
               itemBuilder: (context, index, realIndex) {
-                if (state.isEmpty)
-                  return Center(child: const Text('Belum ada konselor ...'));
+                if (state.isEmpty) return Center(child: const Text('Belum ada konselor ...'));
 
                 return SizedBox.square(
                   dimension: 120,
@@ -57,9 +52,7 @@ class KonselorWidget extends StatelessWidget {
                           height: 90,
                           // height: 50,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Image.asset('assets/images/user.png',
-                                  width: 90, fit: BoxFit.scaleDown),
+                          errorBuilder: (context, error, stackTrace) => Image.asset('assets/images/user.png', width: 90, fit: BoxFit.scaleDown),
                         ),
                       ),
                       const SizedBox(height: 10),

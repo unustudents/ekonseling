@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 
 import '../../../../core/snackbar.dart';
-import '../bloc/home_bloc.dart';
+import '../cubit/home_cubit.dart';
 
 class ProfileWidget extends StatelessWidget {
   const ProfileWidget({super.key});
@@ -22,19 +22,13 @@ class ProfileWidget extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text('Halo! ',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                  BlocSelector<HomeBloc, HomeState, String>(
+                  Text('Halo! ', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                  BlocSelector<HomeCubit, HomeState, String>(
                     selector: (state) => state.userName,
                     builder: (context, state) {
-                      log(
-                          name: 'Home_Screen',
-                          'Building Profile_Widget - BlocSelector');
+                      log(name: 'Home_Screen', 'Building Profile_Widget - BlocSelector');
                       if (state.isNotEmpty) {
-                        return Text('${state.toUpperCase()} 👋',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16));
+                        return Text('${state.toUpperCase()} 👋', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16));
                       }
                       return Text('....');
                     },
@@ -43,14 +37,12 @@ class ProfileWidget extends StatelessWidget {
               ),
               Text(
                 'Ayo mulai konseling!',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600, height: 2, fontSize: 14),
+                style: TextStyle(fontWeight: FontWeight.w600, height: 2, fontSize: 14),
               )
             ],
           ),
           GestureDetector(
-            onTap: () => AppSnackbar.show(context,
-                message: 'Sedang dalam pengembangan ...'),
+            onTap: () => AppSnackbar.show(context, message: 'Sedang dalam pengembangan ...'),
             child: const Icon(Icons.notifications_none_outlined),
           ),
         ],

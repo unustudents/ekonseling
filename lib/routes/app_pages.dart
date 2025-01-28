@@ -11,6 +11,7 @@ import '../features/auth/presentation/pages/forgot_screen.dart';
 import '../features/auth/presentation/pages/login_screen.dart';
 import '../features/auth/presentation/pages/register_screen.dart';
 import '../features/auth/presentation/pages/welcome_screen.dart';
+import '../features/home/presentation/cubit/home_cubit.dart';
 import '../features/home/presentation/pages/home_screen.dart';
 import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/pages/ganti_password_screen.dart';
@@ -64,7 +65,10 @@ final GoRouter router = GoRouter(
           GoRoute(
             path: '/home',
             name: Routes.home,
-            builder: (context, state) => const HomeScreen(),
+            builder: (context, state) => BlocProvider(
+              create: (context) => HomeCubit(),
+              child: const HomeScreen(),
+            ),
           ),
           GoRoute(
             path: '/article',

@@ -2,19 +2,16 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../bloc/home_bloc.dart';
+import '../cubit/home_cubit.dart';
 
 class VideoWidget extends StatelessWidget {
   const VideoWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<HomeBloc, HomeState, List<Map<String, dynamic>>>(
+    return BlocSelector<HomeCubit, HomeState, List<Map<String, dynamic>>>(
       selector: (state) => state.dataVideo,
       builder: (context, state) {
-        print(state);
-        print(state.length);
-
         return CarouselSlider.builder(
           itemCount: state.length,
           itemBuilder: (context, index, realIndex) {
@@ -25,8 +22,7 @@ class VideoWidget extends StatelessWidget {
                 onTap: () async {
                   // Fungsi untuk meluncurkan URL di aplikasi YouTube
                   Uri uri = Uri.parse(data['url_video'].toString());
-                  if (!await launchUrl(uri,
-                      mode: LaunchMode.inAppBrowserView)) {
+                  if (!await launchUrl(uri, mode: LaunchMode.inAppBrowserView)) {
                     throw 'Tidak dapat membuka URL';
                   }
                 },
@@ -40,12 +36,10 @@ class VideoWidget extends StatelessWidget {
                         fit: BoxFit.cover,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
-                          return const Center(
-                              child: CircularProgressIndicator());
+                          return const Center(child: CircularProgressIndicator());
                         },
                         errorBuilder: (context, error, stackTrace) {
-                          return const Center(
-                              child: Text('Gagal memuat gambar'));
+                          return const Center(child: Text('Gagal memuat gambar'));
                         },
                       ),
                     ),
@@ -54,8 +48,7 @@ class VideoWidget extends StatelessWidget {
                       left: 0,
                       right: 0,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                         height: 52,
                         decoration: const BoxDecoration(color: Colors.white70),
                         child: Column(
@@ -63,14 +56,12 @@ class VideoWidget extends StatelessWidget {
                           children: [
                             Text(
                               data['title'].toString(),
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               data['subtitle'].toString(),
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.black87),
+                              style: TextStyle(fontSize: 12, color: Colors.black87),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],
@@ -87,7 +78,7 @@ class VideoWidget extends StatelessWidget {
             height: 160,
             enlargeCenterPage: true,
             aspectRatio: 16 / 9,
-            enableInfiniteScroll: false,
+            enableInfiniteScroll: true,
           ),
         );
       },

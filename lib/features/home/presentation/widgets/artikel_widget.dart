@@ -1,7 +1,7 @@
-import 'package:ekonseling/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 
-import '../bloc/home_bloc.dart';
+import '../../../../routes/app_pages.dart';
+import '../cubit/home_cubit.dart';
 
 class ArtikelWidget extends StatelessWidget {
   const ArtikelWidget({super.key});
@@ -20,7 +20,7 @@ class ArtikelWidget extends StatelessWidget {
         ),
         Container(
           padding: const EdgeInsets.all(20),
-          child: BlocSelector<HomeBloc, HomeState, Map<String, dynamic>>(
+          child: BlocSelector<HomeCubit, HomeState, Map<String, dynamic>>(
             selector: (state) => state.latestArticle,
             builder: (context, state) {
               return Column(
