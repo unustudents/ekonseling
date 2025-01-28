@@ -1,28 +1,19 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../bloc/article_bloc.dart';
+import '../cubit/article_cubit.dart';
 
 class VideoTabWidget extends StatelessWidget {
   const VideoTabWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ArticleBloc, ArticleState>(
+    return BlocBuilder<ArticleCubit, ArticleState>(
       builder: (context, state) {
-        if (state.videoIsLoading)
-          return const Center(child: CircularProgressIndicator());
-        if (state.videoData.isEmpty)
-          return const Center(child: Text("Admin belum mengunggah video"));
-        if (state.videoDataError.isNotEmpty)
-          return Center(child: Text(state.videoDataError));
-        if (state.videoDataKategori.isEmpty)
-          return const Center(
-              child: Text("Admin belum mengunggah video dalam kategori ini"));
-
-        log('build Video Tab Widget', name: 'Artikel');
+        if (state.videoIsLoading) return const Center(child: CircularProgressIndicator());
+        if (state.videoData.isEmpty) return const Center(child: Text("Admin belum mengunggah video"));
+        if (state.videoDataError.isNotEmpty) return Center(child: Text(state.videoDataError));
+        if (state.videoDataKategori.isEmpty) return const Center(child: Text("Admin belum mengunggah video dalam kategori ini"));
 
         return ListView.separated(
           itemBuilder: (BuildContext context, int index) {
@@ -38,8 +29,7 @@ class VideoTabWidget extends StatelessWidget {
               },
               child: Padding(
                 // height: 350 * 9 / 16
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Stack(
                   children: [
                     AspectRatio(
@@ -62,8 +52,7 @@ class VideoTabWidget extends StatelessWidget {
                       left: 0,
                       right: 0,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 10),
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                         // height: 52,
                         decoration: const BoxDecoration(color: Colors.white70),
                         child: Column(
@@ -71,13 +60,11 @@ class VideoTabWidget extends StatelessWidget {
                           children: [
                             Text(
                               data['title'].toString(),
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             Text(
                               data['subtitle'].toString(),
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.black87),
+                              style: TextStyle(fontSize: 12, color: Colors.black87),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -90,8 +77,7 @@ class VideoTabWidget extends StatelessWidget {
               ),
             );
           },
-          separatorBuilder: (BuildContext context, int index) =>
-              SizedBox.shrink(),
+          separatorBuilder: (BuildContext context, int index) => SizedBox.shrink(),
           itemCount: state.videoDataKategori.length,
         );
       },
