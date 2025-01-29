@@ -1,31 +1,131 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path/path.dart' as path;
 
+import '../../../../core/path_directory.dart';
+import '../../../../core/permission.dart';
 import '../../../../core/snackbar.dart';
-import '../cubit/task_cubit.dart';
+import '../bloc/task_bloc.dart';
 
-class DetailTaskScreen extends StatelessWidget {
+class DetailTaskScreen extends StatefulWidget {
   final Map<String, dynamic> taskId;
 
   const DetailTaskScreen({super.key, required this.taskId});
+
+  @override
+  State<DetailTaskScreen> createState() => _DetailTaskScreenState();
+}
+
+class _DetailTaskScreenState extends State<DetailTaskScreen> {
+  bool isPermission = false;
+  var checkAllPermission = CheckPermission();
+
+  checkPermission() async {
+    var permission = await checkAllPermission.isStoragePermission();
+    if (permission) {
+      setState(() => isPermission = true);
+    }
+  }
+
+  bool downloading = false;
+  bool fileExist = false;
+  double progress = 0;
+  var getPathFile = PathDirectory();
+  late String filePath;
+  String fileName = '';
+  CancelToken cancelToken = CancelToken();
+  List<PlatformFile> fileSelected = [];
+
+  checkFileExist() async {
+    var file = await getPathFile.getPath();
+    filePath = '$file/$fileName';
+    bool fileExistCheck = await File(filePath).exists();
+    setState(() => fileExist = fileExistCheck);
+  }
+
+  startDownload() async {
+    cancelToken = CancelToken();
+    var storPath = await getPathFile.getPath();
+    filePath = '$storPath/$fileName';
+    try {
+      await Dio().download(widget.taskId['soal'], filePath,
+          onReceiveProgress: (count, total) {
+        setState(() => progress = (count / total));
+      }, cancelToken: cancelToken);
+      setState(() {
+        downloading = false;
+        fileExist = true;
+      });
+    } catch (e) {
+      setState(() => downloading = false);
+    }
+  }
+
+  cancelDownload() async {
+    cancelToken.cancel();
+    setState(() => downloading = false);
+  }
+
+  openFile() {
+    OpenFile.open(filePath);
+  }
+
+  selectFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'pdf', 'jpeg', 'png'],
+    );
+    if (result != null) {
+      setState(() => fileSelected = result.files);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkPermission();
+    setState(() {
+      fileName = path.basename(widget.taskId['soal']);
+    });
+    checkFileExist();
+  }
+
+  @override
+  void dispose() {
+    fileSelected.clear();
+    // startDownload().dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TaskCubit, TaskState>(
+    // context.read<TaskBloc>().add(LoadQuestionsEvent(weekId: taskId));
+    return BlocListener<TaskBloc, TaskState>(
       listener: (context, state) {
-        state.isAlert.isNotEmpty ? AppSnackbar.show(context, message: state.isAlert) : null;
+        state.isAlert.isNotEmpty
+            ? AppSnackbar.show(context, message: state.isAlert)
+            : null;
         if (state.successUpload.isNotEmpty) {
           AppSnackbar.show(context, message: state.successUpload);
           Navigator.pop(context);
         }
       },
-      builder: (context, state) => Scaffold(
-        appBar: AppBar(title: Text("Tugas Minggu ${taskId['week']}")),
-        body: state.isPermission
+      child: Scaffold(
+        appBar: AppBar(title: Text("Tugas Minggu ${widget.taskId['week']}")),
+        body: isPermission
             ? ListView(
                 padding: EdgeInsets.symmetric(horizontal: 10),
                 children: [
                   Text(
                     'Silahkan di unduh soal dibawah ini !',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
@@ -33,22 +133,28 @@ class DetailTaskScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       backgroundColor: const Color(0xFF64558E),
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                     onPressed: () {
-                      if (taskId['soal'].isEmpty || taskId['soal'] == null) {
-                        return AppSnackbar.show(context, message: 'Belum ada soal yang diunggah');
+                      if (widget.taskId['soal'].isEmpty ||
+                          widget.taskId['soal'] == null) {
+                        return AppSnackbar.show(context,
+                            message: 'Belum ada soal yang diunggah');
                       } else {
-                        state.fileExist && state.downloading == false ? context.read<TaskCubit>().onOpenFile() : context.read<TaskCubit>().onDownloadQuestion(url: '${taskId['soal']}');
+                        fileExist && downloading == false
+                            ? openFile()
+                            : startDownload();
                       }
                     },
                     child: Text(
-                      state.downloading
-                          ? 'Mendownload ... ${state.progress.toStringAsFixed(2)}%'
-                          : state.fileExist
+                      downloading
+                          ? 'Mendownload ... ${progress.toStringAsFixed(2)}%'
+                          : fileExist
                               ? 'Buka soal'
                               : 'Klik untuk unduh soal',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -57,7 +163,7 @@ class DetailTaskScreen extends StatelessWidget {
                     style: const TextStyle(fontSize: 18),
                   ),
                   SizedBox(height: 20),
-                  if (state.fileSelected.isNotEmpty) ...{
+                  if (fileSelected.isNotEmpty) ...{
                     Column(
                       children: [
                         const SizedBox(height: 10),
@@ -66,21 +172,19 @@ class DetailTaskScreen extends StatelessWidget {
                           style: const TextStyle(fontSize: 18),
                         ),
                         const SizedBox(height: 10),
-                        ...state.fileSelected.map(
-                          (file) => ListTile(
+                        for (var file in fileSelected)
+                          ListTile(
                             title: Text(file.name),
                             trailing: IconButton(
                               icon: Icon(Icons.delete),
                               onPressed: () {
-                                context.read<TaskCubit>().onRemoveFile(file);
+                                setState(() => fileSelected.remove(file));
                               },
                             ),
                           ),
-                        ),
-                        // for (var file in state.fileSelected)
                         TextButton.icon(
                             onPressed: () {
-                              context.read<TaskCubit>().onSelectFile();
+                              selectFile();
                             },
                             label: Text('Tambah File'),
                             icon: Icon(Icons.add)),
@@ -93,25 +197,31 @@ class DetailTaskScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       backgroundColor: const Color(0xFF64558E),
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                     onPressed: () {
-                      if (state.fileSelected.isEmpty) {
-                        context.read<TaskCubit>().onSelectFile();
+                      if (fileSelected.isEmpty) {
+                        selectFile();
                       } else {
-                        context.read<TaskCubit>().onUploadTask(state.fileSelected);
+                        context
+                            .read<TaskBloc>()
+                            .add(UploadJawabanEvent(files: fileSelected));
                         // AppSnackbar.show(context, message: 'Kirim');
                       }
                     },
                     child: Text(
-                      state.fileSelected.isEmpty ? 'Upload jawaban' : 'Kirim jawaban',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      fileSelected.isEmpty ? 'Upload jawaban' : 'Kirim jawaban',
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                   ),
                   // SizedBox(height: 20),
                 ],
               )
-            : TextButton(onPressed: () => context.read<TaskCubit>().onCheckPermission(), child: Center(child: Text('Ijinkan akses penyimpanan'))),
+            : TextButton(
+                onPressed: () => checkPermission(),
+                child: Center(child: Text('Ijinkan akses penyimpanan'))),
       ),
     );
   }
