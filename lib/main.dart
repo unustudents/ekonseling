@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => AuthCubit()),
-        BlocProvider(create: (context) => TaskBloc()),
+        // BlocProvider(create: (context) => TaskBloc()),
       ],
       child: App(),
     );

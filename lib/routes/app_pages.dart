@@ -15,6 +15,8 @@ import '../features/home/presentation/pages/home_screen.dart';
 import '../features/profile/presentation/bloc/profile_bloc.dart';
 import '../features/profile/presentation/pages/ganti_password_screen.dart';
 import '../features/profile/presentation/pages/profile_screen.dart';
+import '../features/task/presentation/cubit/detail_task_cubit.dart';
+import '../features/task/presentation/cubit/task_cubit.dart';
 import '../features/task/presentation/pages/detail_task_screen.dart';
 import '../features/task/presentation/pages/task_screen.dart';
 
@@ -80,7 +82,10 @@ final GoRouter router = GoRouter(
           GoRoute(
             path: '/task',
             name: Routes.task,
-            builder: (context, state) => const TaskScreen(),
+            builder: (context, state) => BlocProvider(
+              create: (context) => TaskCubit(),
+              child: const TaskScreen(),
+            ),
           ),
           GoRoute(
             path: '/profile',
@@ -135,7 +140,10 @@ final GoRouter router = GoRouter(
         if (task == null || task.isEmpty) {
           throw Exception('Data task harus dikirim melalui extra');
         }
-        return DetailTaskScreen(taskId: task);
+        return BlocProvider(
+          create: (context) => DetailTaskCubit(url: '${task['soal']}'),
+          child: DetailTaskScreen(taskId: task),
+        );
       },
     ),
   ],

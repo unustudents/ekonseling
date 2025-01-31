@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../../../../routes/app_pages.dart';
-import '../bloc/task_bloc.dart';
+import '../cubit/task_cubit.dart';
 
 class TaskScreen extends StatelessWidget {
   const TaskScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    context.read<TaskBloc>().add(LoadWeekEvent());
+    // context.read<TaskBloc>().add(LoadWeekEvent());
     return Scaffold(
       appBar: AppBar(title: const Text("Tugas")),
-      body: BlocBuilder<TaskBloc, TaskState>(
+      body: BlocBuilder<TaskCubit, TaskState>(
         builder: (context, state) {
           if (state.isLoading) return Center(child: Text('Memuat data ...'));
           // if (state.error.isNotEmpty) return Center(child: Text(state.error));
