@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 
 import 'app.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
-import 'features/task/presentation/bloc/task_bloc.dart';
 import 'supabase_config.dart';
 
 Future<void> main() async {
@@ -19,11 +18,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => AuthCubit()),
-        // BlocProvider(create: (context) => TaskBloc()),
-      ],
+    return BlocProvider(
+      create: (context) => AuthCubit(),
       child: App(),
     );
   }

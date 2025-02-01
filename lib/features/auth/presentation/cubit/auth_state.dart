@@ -1,62 +1,32 @@
 part of 'auth_cubit.dart';
 
 class AuthState extends Equatable {
-  final bool isLoading;
-  final bool isAuthenticated;
-  final bool isSuccess;
-  final String name;
-  final String nim;
-  final String email;
-  final String password;
-  final String confirmPassword;
+  final AuthStatus status;
   final String error;
 
   const AuthState({
-    this.isLoading = false,
-    this.isAuthenticated = false,
-    this.isSuccess = false,
-    this.name = '',
-    this.nim = '',
-    this.email = '',
-    this.password = '',
-    this.confirmPassword = '',
+    this.status = AuthStatus.initial,
     this.error = '',
   });
 
   AuthState copyWith({
-    final bool? isLoading,
-    final bool? isAuthenticated,
-    final bool? isSuccess,
-    final String? name,
-    final String? nim,
-    final String? email,
-    final String? password,
-    final String? confirmPassword,
+    final AuthStatus? status,
     final String? error,
   }) {
     return AuthState(
-      isLoading: isLoading ?? this.isLoading,
-      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
-      isSuccess: isSuccess ?? this.isSuccess,
-      name: name ?? this.name,
-      nim: nim ?? this.nim,
-      email: email ?? this.email,
-      password: password ?? this.password,
-      confirmPassword: confirmPassword ?? this.confirmPassword,
+      status: status ?? this.status,
       error: error ?? this.error,
     );
   }
 
   @override
-  List<Object?> get props => [
-        isLoading,
-        isAuthenticated,
-        isSuccess,
-        name,
-        nim,
-        email,
-        password,
-        confirmPassword,
-        error,
-      ];
+  List<Object?> get props => [status, error];
+}
+
+enum AuthStatus {
+  initial,
+  loading,
+  success,
+  failure,
+  authenticated,
 }

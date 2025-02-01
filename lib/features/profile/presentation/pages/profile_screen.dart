@@ -14,6 +14,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _nisController = TextEditingController();
+  final _toggleEdit = ValueNotifier(false);
 
   @override
   void dispose() {

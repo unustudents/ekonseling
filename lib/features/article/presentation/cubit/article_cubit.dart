@@ -44,11 +44,13 @@ class ArticleCubit extends Cubit<ArticleState> {
           'read_time_minutes': article['read_time_minutes'] ?? 0,
         };
       }).toList();
+      if (isClosed) return;
       emit(state.copyWith(artikelData: data, artikelDataKategori: data));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(artikelDataError: 'Gagal mengambil data artikel.'));
     } finally {
-      emit(state.copyWith(artikelIsLoading: false));
+      if (!isClosed) emit(state.copyWith(artikelIsLoading: false));
     }
   }
 
@@ -74,11 +76,13 @@ class ArticleCubit extends Cubit<ArticleState> {
           'categories': video['categories']?['name'] ?? '',
         };
       }).toList();
+      if (isClosed) return;
       emit(state.copyWith(videoData: data, videoDataKategori: data));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(videoDataError: 'Gagal mengambil data video.'));
     } finally {
-      emit(state.copyWith(videoIsLoading: false));
+      if (!isClosed) emit(state.copyWith(videoIsLoading: false));
     }
   }
 
@@ -98,9 +102,10 @@ class ArticleCubit extends Cubit<ArticleState> {
       ];
       emit(state.copyWith(kategoriData: mergeData));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(kategoriDataError: 'Gagal mengambil data kategori.'));
     } finally {
-      emit(state.copyWith(kategoriIsLoading: false));
+      isClosed ? null : emit(state.copyWith(kategoriIsLoading: false));
     }
   }
 

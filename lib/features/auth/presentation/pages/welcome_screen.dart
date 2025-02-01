@@ -16,11 +16,14 @@ class WelcomeScreen extends StatelessWidget {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         // Jika sedang loading, maka akan menampilkan indicator loading
-        if (state.isLoading) return;
+        // if (state.isLoading) return;
+        if (state.status == AuthStatus.loading) return;
         // Jika user belum login, maka akan diarahkan ke halaman login
-        if (!state.isAuthenticated) {
+        // if (!state.isAuthenticated) {
+        if (state.status == AuthStatus.failure) {
           context.goNamed(Routes.login);
-        } else {
+        }
+        if (state.status == AuthStatus.authenticated) {
           // Jika user sudah login, maka akan diarahkan ke halaman home
           context.goNamed(Routes.home);
         }

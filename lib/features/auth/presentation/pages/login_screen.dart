@@ -1,8 +1,8 @@
-import 'package:ekonseling/core/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../../../core/snackbar.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../routes/app_pages.dart';
 import '../cubit/auth_cubit.dart';
 import '../widgets/sign_button.dart';
@@ -40,19 +40,21 @@ class _LoginScreenState extends State<LoginScreen> {
         child: BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
             // Menampilkan loading animation
-            if (state.isLoading) {
+            if (state.status == AuthStatus.loading) {
               showDialog(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => Center(child: LoadingAnimationWidget.progressiveDots(color: Colors.white, size: 60)),
               );
             } else {
-              context.pop();
+              if (context.canPop()) context.pop();
             }
             // Menampilkan pesan error jika ada
-            if (state.error.isNotEmpty) AppSnackbar.show(context, message: state.error, isError: true);
+            if (state.error.isNotEmpty) {
+              AppSnackbar.show(context, message: state.error, isError: true);
+            }
             // Jika user sudah login, maka akan diarahkan ke halaman home
-            if (state.isAuthenticated) context.goNamed(Routes.home);
+            if (state.status == AuthStatus.authenticated) context.goNamed(Routes.home);
           },
           builder: (context, state) {
             return Form(
@@ -106,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     backgroundColor: Color(0xFF724778),
                     textColor: Colors.white,
                     onPressed: () {
-                      if (_formKey.currentState!.validate() && state.isLoading == false) {
+                      if (_formKey.currentState!.validate()) {
                         context.read<AuthCubit>().onSubmitSignIn(password: _passCtrl.text, nis: _nisCtrl.text);
                       }
                     },

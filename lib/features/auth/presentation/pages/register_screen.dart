@@ -44,17 +44,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
         child: BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
-            if (state.isLoading) {
+            if (state.status == AuthStatus.loading) {
               showDialog(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => Center(child: LoadingAnimationWidget.progressiveDots(color: Colors.white, size: 60)),
               );
             } else {
-              context.pop();
+              if (context.canPop()) context.pop();
             }
             // Jika isSuccess, maka tampilkan snackbar
-            if (state.isSuccess) {
+            if (state.status == AuthStatus.success) {
               AppSnackbar.show(context, message: "Yeay, Berhasil Daftar. Saatnya Masuk !", isSuccess: true);
               context.goNamed(Routes.login);
             }

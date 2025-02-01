@@ -29,9 +29,10 @@ class TaskCubit extends Cubit<TaskState> {
         return;
       }
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(error: 'Terjadi kesalahan ketika mengambil data'));
     } finally {
-      emit(state.copyWith(isLoading: false));
+      if (!isClosed) emit(state.copyWith(isLoading: false));
     }
   }
 

@@ -15,6 +15,9 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
   final _currentPassController = TextEditingController();
   final _newPassController = TextEditingController();
   final _confirmPassController = TextEditingController();
+  final _obsecureCurrent = ValueNotifier(true);
+  final _obsecureNew = ValueNotifier(true);
+  final _obsecureConfirm = ValueNotifier(true);
 
   @override
   void dispose() {
@@ -22,6 +25,9 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
     _currentPassController.dispose();
     _newPassController.dispose();
     _confirmPassController.dispose();
+    _obsecureCurrent.dispose();
+    _obsecureNew.dispose();
+    _obsecureConfirm.dispose();
     super.dispose();
   }
 
@@ -52,21 +58,25 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: _currentPassController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      suffixIcon: InkWell(
-                          onTap: () => context.read<ProfileBloc>().add(TogglePasswordVisibilityEvent(showPassword: 1)),
-                          child: Icon(state.showCurrentPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined)),
+                  ValueListenableBuilder(
+                    valueListenable: _obsecureCurrent,
+                    builder: (context, value, child) => TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      controller: _currentPassController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                        suffixIcon: InkWell(
+                          onTap: () => _obsecureCurrent.value = !value,
+                          child: Icon(value ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                        ),
+                      ),
+                      obscureText: value,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Kata sandi tidak boleh kosong';
+                        if (value.length < 6) return 'Kata sandi minimal 6 karakter';
+                        return null;
+                      },
                     ),
-                    obscureText: state.showCurrentPassword,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Kata sandi tidak boleh kosong';
-                      if (value.length < 6) return 'Kata sandi minimal 6 karakter';
-                      return null;
-                    },
                   ),
                   const SizedBox(height: 15),
 
@@ -76,21 +86,25 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: _newPassController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      suffixIcon: InkWell(
-                          onTap: () => context.read<ProfileBloc>().add(TogglePasswordVisibilityEvent(showPassword: 2)),
-                          child: Icon(state.showNewPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined)),
+                  ValueListenableBuilder(
+                    valueListenable: _obsecureNew,
+                    builder: (context, value, child) => TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      controller: _newPassController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                        suffixIcon: InkWell(
+                          onTap: () => _obsecureNew.value = !value,
+                          child: Icon(value ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                        ),
+                      ),
+                      obscureText: value,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Kata sandi tidak boleh kosong';
+                        if (value.length < 6) return 'Kata sandi minimal 6 karakter';
+                        return null;
+                      },
                     ),
-                    obscureText: state.showNewPassword,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Kata sandi tidak boleh kosong';
-                      if (value.length < 6) return 'Kata sandi minimal 6 karakter';
-                      return null;
-                    },
                   ),
 
                   const SizedBox(height: 15),
@@ -101,21 +115,25 @@ class _GantiPasswordScreenState extends State<GantiPasswordScreen> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: _confirmPassController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      suffixIcon: InkWell(
-                          onTap: () => context.read<ProfileBloc>().add(TogglePasswordVisibilityEvent(showPassword: 3)),
-                          child: Icon(state.showConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined)),
+                  ValueListenableBuilder(
+                    valueListenable: _obsecureConfirm,
+                    builder: (context, value, child) => TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      controller: _confirmPassController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                        suffixIcon: InkWell(
+                          onTap: () => _obsecureConfirm.value = !value,
+                          child: Icon(value ? Icons.visibility_off_outlined : Icons.visibility_outlined),
+                        ),
+                      ),
+                      obscureText: value,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Kata sandi tidak boleh kosong';
+                        if (value.length < 6) return 'Kata sandi minimal 6 karakter';
+                        return null;
+                      },
                     ),
-                    obscureText: state.showConfirmPassword,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Kata sandi tidak boleh kosong';
-                      if (value.length < 6) return 'Kata sandi minimal 6 karakter';
-                      return null;
-                    },
                   ),
                   const SizedBox(height: 20),
 

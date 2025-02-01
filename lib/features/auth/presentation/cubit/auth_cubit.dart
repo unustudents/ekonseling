@@ -17,27 +17,33 @@ class AuthCubit extends Cubit<AuthState> {
     _onAuthCheckRequested();
   }
 
+  @override
+  void onChange(Change<AuthState> change) {
+    super.onChange(change);
+    print(change);
+  }
+
   // CEK SESSION ----------------------------------------------
   // Fungsi untuk mengecek session, apakah user sudah login atau belum
   Future<void> _onAuthCheckRequested() async {
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(status: AuthStatus.loading));
     // Mengecek session user
     final session = SupabaseConfig.client.auth.currentSession;
     // Menunggu 5 detik
     await Future.delayed(const Duration(seconds: 3)); // Simulasi Splash
     // Jika session null, maka user belum login
     if (session == null) {
-      emit(state.copyWith(isAuthenticated: false));
+      emit(state.copyWith(status: AuthStatus.failure));
     } else {
-      emit(state.copyWith(isAuthenticated: true));
+      emit(state.copyWith(status: AuthStatus.authenticated));
     }
-    emit(state.copyWith(isLoading: false));
   }
 
   // SIGN UP ----------------------------------------------
   // Fungsi untuk sign up user
   Future<void> onSubmitRegistration({required String password, required String nis, required String name}) async {
-    emit(state.copyWith(isLoading: true));
+    emit(AuthState());
+    emit(state.copyWith(status: AuthStatus.loading));
     try {
       // Encrypt password
       String hashedPassword = _hashPassword(password);
@@ -46,13 +52,13 @@ class AuthCubit extends Cubit<AuthState> {
       // Jika berhasil mendaftar, maka simpan data user ke database
       await SupabaseConfig.client.from('users').insert(UserModel(name: name, email: 'user$nis@ekonseling.dummy', nis: nis, passHash: hashedPassword).toJson());
       // Jika berhasil, maka ubah state menjadi isSuccess: true
-      emit(state.copyWith(isLoading: false, isSuccess: true));
+      emit(state.copyWith(status: AuthStatus.success));
       return;
     } on AuthException catch (_) {
-      emit(state.copyWith(isLoading: false, error: 'Error ketika mendaftar'));
+      emit(state.copyWith(status: AuthStatus.initial, error: 'Error ketika mendaftar'));
       return;
     } catch (e) {
-      emit(state.copyWith(isLoading: false, error: 'Sepertinya terjadi kesalahan'));
+      emit(state.copyWith(status: AuthStatus.initial, error: 'Sepertinya terjadi kesalahan'));
       return;
     }
   }
@@ -60,7 +66,8 @@ class AuthCubit extends Cubit<AuthState> {
   // SIGN IN ----------------------------------------------
   // Fungsi untuk sign in user
   Future<void> onSubmitSignIn({required String password, required String nis}) async {
-    emit(state.copyWith(isLoading: true));
+    emit(AuthState());
+    emit(state.copyWith(status: AuthStatus.loading));
     try {
       // encrypt password
       String hashedPassword = _hashPassword(password);
@@ -68,26 +75,22 @@ class AuthCubit extends Cubit<AuthState> {
       final Map<String, dynamic>? response = await SupabaseConfig.client.from('users').select('email').eq('nis', nis).maybeSingle();
       // cek apakah response kosong atau tidak ditemukan
       if (response == null || response.isEmpty) {
-        emit(state.copyWith(isLoading: false, error: 'NIS tidak ditemukan'));
+        emit(state.copyWith(status: AuthStatus.initial, error: 'NIS tidak ditemukan'));
         return;
       }
       // sign in user
       final authResponse = await SupabaseConfig.client.auth.signInWithPassword(email: response['email'], password: hashedPassword);
       // cek apakah session ada
       if (authResponse.session != null) {
-        emit(state.copyWith(isLoading: false, isAuthenticated: true));
+        emit(state.copyWith(status: AuthStatus.authenticated));
         return;
       } else {
-        emit(state.copyWith(isLoading: false, error: 'Login gagal, maaf akun tidak ditemukan'));
+        emit(state.copyWith(status: AuthStatus.initial, error: 'Login gagal, maaf akun tidak ditemukan'));
         return;
       }
-    } on AuthException catch (e) {
-      // Penanganan khusus jika terjadi error pada Auth
-      emit(state.copyWith(isLoading: false, error: 'Error autentikasi: ${e.message}'));
-      return;
     } catch (e) {
       // Penanganan error lainnya (misalnya kesalahan jaringan)
-      emit(state.copyWith(isLoading: false, error: 'Sepertinya anda belum registrasi atau terjadi kesalahan lainnya'));
+      emit(state.copyWith(status: AuthStatus.initial, error: 'Sepertinya anda belum registrasi atau terjadi kesalahan lainnya'));
       return;
     }
   }
