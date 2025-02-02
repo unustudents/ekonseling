@@ -42,7 +42,7 @@ class ProfileWidget extends StatelessWidget {
             ],
           ),
           GestureDetector(
-            onTap: () => AppSnackbar.show(context, message: 'Sedang dalam pengembangan ...'),
+            onTap: () => AppSnackbar.show(context, msg: 'Sedang dalam pengembangan ...'),
             child: const Icon(Icons.notifications_none_outlined),
           ),
         ],

@@ -16,20 +16,16 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _nameCtrl = TextEditingController();
-  final _nisCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
-  final _passConfirmCtrl = TextEditingController();
+  final _controller = List.generate(4, (_) => TextEditingController());
   final _formKey = GlobalKey<FormState>();
   final _obsecurePasswd = ValueNotifier(true);
   final _obsecureConfirmPasswd = ValueNotifier(true);
 
   @override
   void dispose() {
-    _nameCtrl.dispose();
-    _nisCtrl.dispose();
-    _passCtrl.dispose();
-    _passConfirmCtrl.dispose();
+    for (var controller in _controller) {
+      controller.dispose();
+    }
     _formKey.currentState?.dispose();
     _obsecurePasswd.dispose();
     _obsecureConfirmPasswd.dispose();
@@ -55,11 +51,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             }
             // Jika isSuccess, maka tampilkan snackbar
             if (state.status == AuthStatus.success) {
-              AppSnackbar.show(context, message: "Yeay, Berhasil Daftar. Saatnya Masuk !", isSuccess: true);
+              AppSnackbar.show(context, msg: "Yeay, Berhasil Daftar. Saatnya Masuk !", status: Status.success);
               context.goNamed(Routes.login);
             }
             // Jika error, maka tampilkan snackbar
-            if (state.error.isNotEmpty) AppSnackbar.show(context, message: state.error.toString(), isError: true);
+            if (state.error.isNotEmpty) AppSnackbar.show(context, msg: state.error.toString(), status: Status.error);
           },
           builder: (context, state) {
             return Form(
@@ -80,7 +76,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // FORM INPUT -- NAMA LENGKAP
                   SignTextField(
                     label: 'Nama Lengkap',
-                    controller: _nameCtrl,
+                    controller: _controller[0],
                     validator: (value) {
                       if (isValidEmpty(value)) return 'Nama tidak boleh kosong';
                       return null;
@@ -91,7 +87,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   // FORM INPUT -- NIS
                   SignTextField(
                     label: 'Nomor Induk Siswa',
-                    controller: _nisCtrl,
+                    controller: _controller[1],
                     validator: (value) {
                       if (isValidEmpty(value)) return 'NIS tidak boleh kosong';
                       return null;
@@ -105,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     builder: (context, value, child) {
                       return SignTextField(
                         label: 'Kata Sandi',
-                        controller: _passCtrl,
+                        controller: _controller[2],
                         obscureText: value,
                         suffixIcon: InkWell(
                           onTap: () => _obsecurePasswd.value = !value,
@@ -126,7 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     valueListenable: _obsecureConfirmPasswd,
                     builder: (context, value, child) => SignTextField(
                       label: 'Konfirmasi Kata Sandi',
-                      controller: _passConfirmCtrl,
+                      controller: _controller[3],
                       obscureText: value,
                       suffixIcon: InkWell(
                         onTap: () => _obsecureConfirmPasswd.value = !value,
@@ -135,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       validator: (value) {
                         if (isValidEmpty(value)) return 'Konfirmasi kata sandi tidak boleh kosong';
                         if (isValidPassword(value!)) return 'Konfirmasi kata sandi minimal 6 karakter';
-                        if (value != _passCtrl.text) return 'Konfirmasi kata sandi tidak sesuai';
+                        if (value != _controller[2].text) return 'Konfirmasi kata sandi tidak sesuai';
                         return null;
                       },
                     ),
@@ -149,7 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textColor: Colors.white,
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        context.read<AuthCubit>().onSubmitRegistration(name: _nameCtrl.text, nis: _nisCtrl.text, password: _passCtrl.text);
+                        context.read<AuthCubit>().onSubmitRegistration(name: _controller[0].text, nis: _controller[1].text, password: _controller[2].text);
                       }
                     },
                   ),

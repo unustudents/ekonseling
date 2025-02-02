@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
             }
             // Menampilkan pesan error jika ada
             if (state.error.isNotEmpty) {
-              AppSnackbar.show(context, message: state.error, isError: true);
+              AppSnackbar.show(context, msg: state.error, status: Status.error);
             }
             // Jika user sudah login, maka akan diarahkan ke halaman home
             if (state.status == AuthStatus.authenticated) context.goNamed(Routes.home);

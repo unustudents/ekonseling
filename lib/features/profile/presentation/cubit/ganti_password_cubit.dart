@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:crypto/crypto.dart';
 import 'package:ekonseling/supabase_config.dart';
 import 'package:equatable/equatable.dart';
-
+export 'package:flutter_bloc/flutter_bloc.dart';
 part 'ganti_password_state.dart';
 
 class GantiPasswordCubit extends Cubit<GantiPasswordState> {

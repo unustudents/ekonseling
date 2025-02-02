@@ -1,25 +1,36 @@
 import 'package:flutter/material.dart';
 
 class AppSnackbar {
+  static Color _getBackgroundColor(Status status) {
+    switch (status) {
+      case Status.error:
+        return Colors.redAccent;
+      case Status.success:
+        return Colors.green;
+      case Status.info:
+        return Colors.blueAccent;
+    }
+  }
+
+  static IconData? _getIcon(Status status) {
+    switch (status) {
+      case Status.error:
+        return Icons.error_outline;
+      case Status.success:
+        return Icons.check_circle_outline;
+      case Status.info:
+        return Icons.info_outline;
+    }
+  }
+
   static void show(
     BuildContext context, {
-    required String message,
-    bool isError = false,
-    bool isSuccess = false,
+    required String msg,
+    Status status = Status.info,
   }) {
     // Define the background color based on the type
-    final backgroundColor = isError
-        ? Colors.redAccent
-        : isSuccess
-            ? Colors.green
-            : Colors.blueAccent;
-
-    // Define the icon based on the type
-    final icon = isError
-        ? Icons.error_outline
-        : isSuccess
-            ? Icons.check_circle_outline
-            : Icons.info_outline;
+    final backgroundColor = _getBackgroundColor(status);
+    final icon = _getIcon(status);
 
     ScaffoldMessenger.of(context).clearSnackBars(); // Clear existing SnackBars
     ScaffoldMessenger.of(context).showSnackBar(
@@ -30,7 +41,7 @@ class AppSnackbar {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                message,
+                msg,
                 style: const TextStyle(color: Colors.white),
               ),
             ),
@@ -47,3 +58,5 @@ class AppSnackbar {
     );
   }
 }
+
+enum Status { error, success, info }

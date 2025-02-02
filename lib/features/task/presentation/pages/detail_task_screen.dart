@@ -13,7 +13,7 @@ class DetailTaskScreen extends StatelessWidget {
       listener: (context, state) {
         // state.isAlert.isNotEmpty ? AppSnackbar.show(context, message: state.isAlert) : null;
         if (state.success.isNotEmpty) {
-          AppSnackbar.show(context, message: state.success, isSuccess: true);
+          AppSnackbar.show(context, msg: state.success, status: Status.success);
           Navigator.pop(context);
         }
       },
