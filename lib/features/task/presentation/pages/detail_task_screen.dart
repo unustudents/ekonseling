@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../../../core/snackbar.dart';
 import '../cubit/detail_task_cubit.dart';
@@ -12,6 +13,26 @@ class DetailTaskScreen extends StatelessWidget {
     return BlocConsumer<DetailTaskCubit, DetailTaskState>(
       listener: (context, state) {
         // state.isAlert.isNotEmpty ? AppSnackbar.show(context, message: state.isAlert) : null;
+        // Ketika status downloading maka tampilkan loading
+        if (state.status == DetailTaskStatus.loading) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => Center(child: LoadingAnimationWidget.progressiveDots(color: Colors.white, size: 60)),
+          );
+        } else if (state.status != DetailTaskStatus.initial) {
+          if (Navigator.canPop(context)) Navigator.pop(context);
+          // if (state.status != DetailTaskStatus.loading) Navigator.pop(context);
+        }
+        // Ketika error
+        if (state.status == DetailTaskStatus.error) {
+          AppSnackbar.show(context, msg: state.msg, status: Status.error);
+        }
+        // Ketika sukses
+        if (state.status == DetailTaskStatus.success) {
+          AppSnackbar.show(context, msg: state.msg, status: Status.success);
+        }
+        // Ketika file berhasil di download
         if (state.success.isNotEmpty) {
           AppSnackbar.show(context, msg: state.success, status: Status.success);
           Navigator.pop(context);
@@ -38,15 +59,17 @@ class DetailTaskScreen extends StatelessWidget {
                         Expanded(
                           child: InkWell(
                             onTap: () {
-                              state.isFileExist && state.isDownloading == false
-                                  ? context.read<DetailTaskCubit>().onOpenFile()
-                                  : context.read<DetailTaskCubit>().onDownloadQuestion(url: '${taskId['soal']}');
+                              // state.isFileExist && state.isDownloading == false
+                              !state.isFileExist && state.status == DetailTaskStatus.downloading
+                                  ? context.read<DetailTaskCubit>().onDownloadQuestion(url: '${taskId['soal']}')
+                                  : context.read<DetailTaskCubit>().onOpenFile();
                             },
                             borderRadius: BorderRadius.circular(10),
                             child: Padding(
                               padding: const EdgeInsets.all(15),
                               child: Text(
-                                state.isDownloading
+                                // state.isDownloading
+                                state.status == DetailTaskStatus.downloading
                                     ? 'Mendownload ... ${state.progress.toStringAsFixed(2)}%'
                                     : state.isFileExist
                                         ? 'Buka file soal'

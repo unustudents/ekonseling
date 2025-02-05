@@ -1,10 +1,12 @@
 part of 'detail_task_cubit.dart';
 
 class DetailTaskState extends Equatable {
-  final bool isLoading;
-  final bool isDownloading;
+  // final bool isLoading;
+  // final bool isDownloading;
   final bool isFileExist;
   final bool isPermission;
+  final DetailTaskStatus status;
+  final String msg;
   final String error;
   final String success;
   final String filePath;
@@ -13,10 +15,12 @@ class DetailTaskState extends Equatable {
   final List<PlatformFile> fileSelected;
 
   const DetailTaskState({
-    this.isLoading = false,
-    this.isDownloading = false,
+    // this.isLoading = false,
+    // this.isDownloading = false,
     this.isFileExist = false,
     this.isPermission = false,
+    this.status = DetailTaskStatus.initial,
+    this.msg = '',
     this.error = '',
     this.success = '',
     this.filePath = '',
@@ -26,10 +30,12 @@ class DetailTaskState extends Equatable {
   });
 
   DetailTaskState copyWith({
-    bool? isLoading,
-    bool? isDownloading,
+    // bool? isLoading,
+    // bool? isDownloading,
     bool? isFileExist,
     bool? isPermission,
+    DetailTaskStatus? status,
+    String? msg,
     String? error,
     String? success,
     String? filePath,
@@ -38,10 +44,12 @@ class DetailTaskState extends Equatable {
     List<PlatformFile>? fileSelected,
   }) {
     return DetailTaskState(
-      isLoading: isLoading ?? this.isLoading,
-      isDownloading: isDownloading ?? this.isDownloading,
+      // isLoading: isLoading ?? this.isLoading,
+      // isDownloading: isDownloading ?? this.isDownloading,
       isFileExist: isFileExist ?? this.isFileExist,
       isPermission: isPermission ?? this.isPermission,
+      status: status ?? this.status,
+      msg: msg ?? this.msg,
       error: error ?? this.error,
       success: success ?? this.success,
       filePath: filePath ?? this.filePath,
@@ -53,10 +61,12 @@ class DetailTaskState extends Equatable {
 
   @override
   List<Object> get props => [
-        isLoading,
-        isDownloading,
+        // isLoading,
+        // isDownloading,
         isFileExist,
         isPermission,
+        status,
+        msg,
         error,
         success,
         filePath,
@@ -65,3 +75,5 @@ class DetailTaskState extends Equatable {
         fileSelected,
       ];
 }
+
+enum DetailTaskStatus { initial, loading, success, error, downloading }

@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/permission.dart';
 import '../../../../supabase_config.dart';
 
 export 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,11 +10,14 @@ export 'package:flutter_bloc/flutter_bloc.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
+  final CheckPermission checkPermission = CheckPermission();
+
   HomeCubit() : super(HomeState()) {
     _onFetchUserData();
     _onFetchVideoData();
     _onFetchKonselorData();
     _onFetchArtikelData();
+    onCheckPermission();
   }
 
   // Mengambil data user
@@ -78,7 +82,8 @@ class HomeCubit extends Cubit<HomeState> {
   _onFetchArtikelData() async {
     try {
       // Mengambil data artikel
-      final response = await SupabaseConfig.client.from('article').select('title, content, image_url, created_at, read_time_minutes, users_admin(name, profile_url)').order('created_at').limit(1).maybeSingle();
+      final response =
+          await SupabaseConfig.client.from('article').select('title, content, image_url, created_at, read_time_minutes, users_admin(name, profile_url)').order('created_at').limit(1).maybeSingle();
       // Mengubah format tanggal
       String date = DateFormat('d/M/y').format(DateTime.parse(response?['created_at']));
       // Mengubah data response menjadi null safety
@@ -97,5 +102,11 @@ class HomeCubit extends Cubit<HomeState> {
       // Log error
       print('Error _onFetchArtikelData: $e');
     }
+  }
+
+  // FUNCTION - CHECK PERMISSION
+  Future<void> onCheckPermission() async {
+    bool forPermission = await checkPermission.isStoragePermission();
+    emit(state.copyWith(isPermission: forPermission));
   }
 }

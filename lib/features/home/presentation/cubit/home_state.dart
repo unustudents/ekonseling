@@ -7,6 +7,7 @@ class HomeState extends Equatable {
   final List<Map<String, dynamic>> dataVideo;
   final String dataVideoError;
   final String messageError;
+  final bool isPermission;
 
   const HomeState({
     this.userName = '',
@@ -15,6 +16,7 @@ class HomeState extends Equatable {
     this.dataVideo = const [],
     this.dataVideoError = '',
     this.messageError = '',
+    this.isPermission = false,
   });
   HomeState copyWith({
     final String? userName,
@@ -23,6 +25,7 @@ class HomeState extends Equatable {
     final List<Map<String, dynamic>>? dataVideo,
     final String? dataVideoError,
     final String? messageError,
+    final bool? isPermission,
   }) {
     return HomeState(
       userName: userName ?? this.userName,
@@ -31,6 +34,7 @@ class HomeState extends Equatable {
       dataVideo: dataVideo ?? this.dataVideo,
       dataVideoError: dataVideoError ?? this.dataVideoError,
       messageError: messageError ?? this.messageError,
+      isPermission: isPermission ?? this.isPermission,
     );
   }
 
@@ -42,5 +46,6 @@ class HomeState extends Equatable {
         dataVideo,
         dataVideoError,
         messageError,
+        isPermission,
       ];
 }

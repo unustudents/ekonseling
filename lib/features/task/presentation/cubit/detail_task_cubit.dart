@@ -27,6 +27,12 @@ class DetailTaskCubit extends Cubit<DetailTaskState> {
     onFileExist(url);
   }
 
+  @override
+  onChange(Change<DetailTaskState> change) {
+    print(change);
+    super.onChange(change);
+  }
+
   // FUNCTION - CHECK PERMISSION
   Future<void> onCheckPermission() async {
     bool forPermission = await checkPermission.isStoragePermission();
@@ -35,7 +41,15 @@ class DetailTaskCubit extends Cubit<DetailTaskState> {
 
   // FUNCTION - DOWNLOAD FILE
   Future<void> onDownloadQuestion({required String url}) async {
-    emit(state.copyWith(isDownloading: true));
+    // cek perizinan dulu
+    if (!state.isPermission) {
+      await onCheckPermission();
+      emit(state.copyWith(status: DetailTaskStatus.error, msg: 'Izin akses penyimpanan tidak diizinkan'));
+      return;
+    }
+
+    // emit(state.copyWith(isDownloading: true));
+    emit(state.copyWith(status: DetailTaskStatus.downloading));
     forCancelToken = CancelToken();
     try {
       await Dio().download(
@@ -47,16 +61,19 @@ class DetailTaskCubit extends Cubit<DetailTaskState> {
         },
         cancelToken: forCancelToken,
       );
-      emit(state.copyWith(isDownloading: false, isFileExist: true));
+      // emit(state.copyWith(isDownloading: false, isFileExist: true));
+      emit(state.copyWith(status: DetailTaskStatus.success, isFileExist: true, msg: 'Berhasil mengunduh file'));
     } catch (e) {
-      emit(state.copyWith(isDownloading: false, error: 'Gagal mendownload file, coba lagi !'));
+      // emit(state.copyWith(isDownloading: false, error: 'Gagal mendownload file, coba lagi !'));
+      emit(state.copyWith(status: DetailTaskStatus.error, msg: 'Gagal mengunduh file, coba lagi !'));
     }
   }
 
   // FUNCTION - BATALKAN DOWNLOAD
   void onCancelDownload() {
     forCancelToken.cancel();
-    emit(state.copyWith(isDownloading: false));
+    // emit(state.copyWith(isDownloading: false));
+    emit(state.copyWith(status: DetailTaskStatus.initial));
     return;
   }
 
@@ -66,7 +83,9 @@ class DetailTaskCubit extends Cubit<DetailTaskState> {
     String storagePath = await getPathFile.getPath();
     String forFilePath = '$storagePath/$forFileName';
     bool forFileExist = await File(forFilePath).exists();
-    emit(state.copyWith(fileName: forFileName, isFileExist: forFileExist, filePath: forFilePath));
+    if (!isClosed) {
+      emit(state.copyWith(fileName: forFileName, isFileExist: forFileExist, filePath: forFilePath));
+    }
   }
 
   // FUNCTION - OPEN FILE
@@ -95,14 +114,16 @@ class DetailTaskCubit extends Cubit<DetailTaskState> {
 
   // FUNCTION - UPLOAD FILE
   Future<void> onUploadTask(List<PlatformFile> files) async {
-    emit(state.copyWith(isLoading: true));
+    // emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(status: DetailTaskStatus.loading));
     try {
       for (var data in files) {
         File forFile = File(data.path!);
         final String forFilePath = 'submissions/${SupabaseConfig.client.auth.currentUser!.id}/${data.name}';
         final String forUploadResponse = await SupabaseConfig.client.storage.from('jawaban-tugas').upload(forFilePath, forFile);
         if (forUploadResponse.isEmpty) {
-          emit(state.copyWith(error: 'Gagal mengunggah file'));
+          // emit(state.copyWith(error: 'Gagal mengunggah file'));
+          emit(state.copyWith(status: DetailTaskStatus.error, msg: 'Gagal mengunggah file'));
           return;
         }
         if (forUploadResponse.contains(forFilePath)) {
@@ -111,14 +132,16 @@ class DetailTaskCubit extends Cubit<DetailTaskState> {
             'id_user': SupabaseConfig.client.auth.currentUser!.id,
             'file_uploaded': forPublicURL,
           });
-          emit(state.copyWith(success: 'Berhasil mengunggah ${data.name}'));
+          // emit(state.copyWith(success: 'Berhasil mengunggah ${data.name}'));
+          emit(state.copyWith(status: DetailTaskStatus.success, msg: 'Berhasil mengunggah ${data.name}'));
           return;
         }
       }
     } catch (e) {
-      emit(state.copyWith(error: 'Terjadi kesalahan ketika mengunggah file'));
+      // emit(state.copyWith(error: 'Terjadi kesalahan ketika mengunggah file'));
+      emit(state.copyWith(status: DetailTaskStatus.error, msg: 'Terjadi kesalahan ketika mengunggah file'));
     } finally {
-      emit(state.copyWith(isLoading: false));
+      // emit(state.copyWith(isLoading: false));
     }
   }
 }
