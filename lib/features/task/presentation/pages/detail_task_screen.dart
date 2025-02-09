@@ -20,9 +20,9 @@ class DetailTaskScreen extends StatelessWidget {
             barrierDismissible: false,
             builder: (context) => Center(child: LoadingAnimationWidget.progressiveDots(color: Colors.white, size: 60)),
           );
-        } else if (state.status != DetailTaskStatus.initial) {
-          if (Navigator.canPop(context)) Navigator.pop(context);
-          // if (state.status != DetailTaskStatus.loading) Navigator.pop(context);
+          // } else if (state.status != DetailTaskStatus.initial) {
+          //   if (Navigator.canPop(context)) Navigator.pop(context);
+          //   // if (state.status != DetailTaskStatus.loading) Navigator.pop(context);
         }
         // Ketika error
         if (state.status == DetailTaskStatus.error) {
@@ -60,9 +60,9 @@ class DetailTaskScreen extends StatelessWidget {
                           child: InkWell(
                             onTap: () {
                               // state.isFileExist && state.isDownloading == false
-                              !state.isFileExist && state.status == DetailTaskStatus.downloading
-                                  ? context.read<DetailTaskCubit>().onDownloadQuestion(url: '${taskId['soal']}')
-                                  : context.read<DetailTaskCubit>().onOpenFile();
+                              state.isFileExist //? print(state.isFileExist) : print('unduh ${state.isFileExist} ${state.status}');
+                                  ? context.read<DetailTaskCubit>().onOpenFile()
+                                  : context.read<DetailTaskCubit>().onDownloadQuestion(url: '${taskId['soal']}');
                             },
                             borderRadius: BorderRadius.circular(10),
                             child: Padding(
@@ -89,7 +89,7 @@ class DetailTaskScreen extends StatelessWidget {
                           ),
                           IconButton(
                             alignment: Alignment.center,
-                            onPressed: () {},
+                            onPressed: () => context.read<DetailTaskCubit>().onDeleteFileSoal(),
                             icon: Icon(Icons.delete, color: Colors.white),
                           ),
                         ]

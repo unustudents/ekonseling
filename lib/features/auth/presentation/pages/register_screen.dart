@@ -130,7 +130,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       validator: (value) {
                         if (isValidEmpty(value)) return 'Konfirmasi kata sandi tidak boleh kosong';
-                        if (isValidPassword(value!)) return 'Konfirmasi kata sandi minimal 6 karakter';
+                        if (!isValidPassword(value!)) return 'Konfirmasi kata sandi minimal 6 karakter';
                         if (value != _controller[2].text) return 'Konfirmasi kata sandi tidak sesuai';
                         return null;
                       },

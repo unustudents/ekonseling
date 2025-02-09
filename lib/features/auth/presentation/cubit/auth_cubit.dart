@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:crypto/crypto.dart';
@@ -19,8 +20,8 @@ class AuthCubit extends Cubit<AuthState> {
 
   @override
   void onChange(Change<AuthState> change) {
+    log(change.toString());
     super.onChange(change);
-    print(change);
   }
 
   // CEK SESSION ----------------------------------------------

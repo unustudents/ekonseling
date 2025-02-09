@@ -7,9 +7,9 @@ class DetailArticleScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: ListView(
+    return Scaffold(
+      body: SafeArea(
+        child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           children: [
             Row(
@@ -56,25 +56,15 @@ class DetailArticleScreen extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.justify,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "${articleMap['created_at']} - ${articleMap['read_time_minutes']} menit",
-                  style: TextStyle(color: Colors.grey),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.bookmark_border),
-                  onPressed: () {
-                    // Add your save article logic here
-                  },
-                ),
-                const Spacer(),
-              ],
+            Text(
+              "${articleMap['created_at']} - ${articleMap['read_time_minutes']} menit",
+              style: TextStyle(color: Colors.grey, fontSize: 13),
             ),
+            const SizedBox(height: 20),
             Text(
               articleMap['content'].toString(),
               textAlign: TextAlign.justify,
+              style: TextStyle(fontSize: 16),
             )
           ],
         ),

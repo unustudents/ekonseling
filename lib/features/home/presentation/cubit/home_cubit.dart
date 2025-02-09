@@ -45,7 +45,7 @@ class HomeCubit extends Cubit<HomeState> {
       // Mengubah data response menjadi null safety
       final List<Map<String, dynamic>> data = response
           .map((video) => {
-                'urlVideo': video['url_video'] ?? '',
+                'url_video': video['url_video'] ?? '',
                 'title': video['title'] ?? '',
                 'subtitle': video['subtitle'] ?? 'Tidak ada keterangan',
                 'thumbnail': video['thumbnail'] ?? '',

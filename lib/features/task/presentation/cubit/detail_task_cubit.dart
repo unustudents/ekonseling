@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -16,6 +17,7 @@ export 'package:flutter_bloc/flutter_bloc.dart';
 part 'detail_task_state.dart';
 
 class DetailTaskCubit extends Cubit<DetailTaskState> {
+  // variabel
   CancelToken forCancelToken = CancelToken();
   final PathDirectory getPathFile = PathDirectory();
   final CheckPermission checkPermission = CheckPermission();
@@ -29,13 +31,15 @@ class DetailTaskCubit extends Cubit<DetailTaskState> {
 
   @override
   onChange(Change<DetailTaskState> change) {
-    print(change);
+    log(change.toString());
     super.onChange(change);
   }
 
   // FUNCTION - CHECK PERMISSION
   Future<void> onCheckPermission() async {
+    // cek perizinan
     bool forPermission = await checkPermission.isStoragePermission();
+    // perbarui state
     emit(state.copyWith(isPermission: forPermission));
   }
 
@@ -47,42 +51,53 @@ class DetailTaskCubit extends Cubit<DetailTaskState> {
       emit(state.copyWith(status: DetailTaskStatus.error, msg: 'Izin akses penyimpanan tidak diizinkan'));
       return;
     }
-
-    // emit(state.copyWith(isDownloading: true));
+    // perbarui state -- status downloading
     emit(state.copyWith(status: DetailTaskStatus.downloading));
+    // buat cancel token
     forCancelToken = CancelToken();
+    // coba download file
     try {
+      // menunggu download file
       await Dio().download(
-        url,
-        state.filePath,
+        url, // url file
+        state.filePath, // path penyimpanan
         onReceiveProgress: (count, total) {
+          // hitung progress
           double forProgress = count / total;
+          // perbarui state -- progress persentase download
           emit(state.copyWith(progress: forProgress));
         },
+        // cancel token
         cancelToken: forCancelToken,
       );
-      // emit(state.copyWith(isDownloading: false, isFileExist: true));
+      // perbarui state -- status sukses
       emit(state.copyWith(status: DetailTaskStatus.success, isFileExist: true, msg: 'Berhasil mengunduh file'));
     } catch (e) {
-      // emit(state.copyWith(isDownloading: false, error: 'Gagal mendownload file, coba lagi !'));
+      // perbarui state -- status error
       emit(state.copyWith(status: DetailTaskStatus.error, msg: 'Gagal mengunduh file, coba lagi !'));
     }
   }
 
   // FUNCTION - BATALKAN DOWNLOAD
   void onCancelDownload() {
+    // batal download
     forCancelToken.cancel();
-    // emit(state.copyWith(isDownloading: false));
+    // perbarui state -- batalkan download
     emit(state.copyWith(status: DetailTaskStatus.initial));
     return;
   }
 
   // FUNCTION - CHECK FILE EXIST
   Future<void> onFileExist(String url) async {
-    String forFileName = path.basename(url);
+    // mengambil nama file dari url
+    String forFileName = path.basename(Uri.parse(url).path);
+    // mendapatkan path tempat penyimpanan
     String storagePath = await getPathFile.getPath();
+    // menggabungkan path dengan nama file
     String forFilePath = '$storagePath/$forFileName';
+    // cek apakah file sudah ada atau belum berdasarkan path yang sudah digabung
     bool forFileExist = await File(forFilePath).exists();
+    // jika function ini dipanggil dari luar, maka tidak akan mengembalikan nilai
     if (!isClosed) {
       emit(state.copyWith(fileName: forFileName, isFileExist: forFileExist, filePath: forFilePath));
     }
@@ -90,24 +105,29 @@ class DetailTaskCubit extends Cubit<DetailTaskState> {
 
   // FUNCTION - OPEN FILE
   void onOpenFile() {
+    // buka file
     OpenFile.open(state.filePath);
     return;
   }
 
   // FUNCTION - SELECT FILE
   Future<void> onSelectFile() async {
+    // pilih file
     FilePickerResult? forResult = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'],
+      allowMultiple: true, // memilih banyak file
+      type: FileType.custom, // tipe file yang diizinkan
+      allowedExtensions: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'], // ekstensi file yang diizinkan
     );
+    // jika forResult tidak kosong / null, perbarui state
     if (forResult != null) emit(state.copyWith(fileSelected: forResult.files));
     return;
   }
 
-  // FUNCTION - REMOVE FILE
+  // FUNCTION - REMOVE FILE SELECTED
   void onRemoveFile(PlatformFile file) {
+    // hapus file
     final List<PlatformFile> updatedFiles = List<PlatformFile>.from(state.fileSelected)..remove(file);
+    // perbarui state
     emit(state.copyWith(fileSelected: updatedFiles));
     return;
   }
@@ -143,5 +163,14 @@ class DetailTaskCubit extends Cubit<DetailTaskState> {
     } finally {
       // emit(state.copyWith(isLoading: false));
     }
+  }
+
+  // FUNCTION - DELETE FILE SOAL
+  void onDeleteFileSoal() {
+    // hapus file soal
+    File(state.filePath).delete();
+    // perbarui state
+    emit(state.copyWith(status: DetailTaskStatus.success, isFileExist: false, msg: 'Berhasil menghapus file'));
+    return;
   }
 }
