@@ -12,8 +12,8 @@ This project is licensed under the Apache License 2.0. See the [LICENSE](./LICEN
 - Dart version 3.6.0
 - DevTools version 2.40.2
 
-## tambahkan
-Tambahkan ke android/app/src/main/Androidmanifest.xml di dalam tag <manifest ...>
+## Tambahkan
+Tambahkan ke **android/app/src/main/Androidmanifest.xml** di dalam tag `<manifest ...>`
 ```xml
 <!-- Internet permissions do not affect the `permission_handler` plugin, but are required if your app needs access to the internet. -->
 <uses-permission android:name="android.permission.INTERNET"/>
@@ -26,21 +26,38 @@ See https://developer.android.com/about/versions/13/behavior-changes-13#granular
 <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 <!-- Permissions options for the `manage external storage` group -->
 <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-
 ```
+#
+Ubah `com.android.application` didalam **andorid/settings.gradle** menjadi 8.2.1:
 ```gradle
-# ubah com.android.application di andorid/settings.gradle
-{
+plugins {
     id "com.android.application" version "8.2.1"
 }
-
-# ubah compileSdk (minimal 34) di android/app/build.gradle
-android{
+```
+# 
+Ubah `compileSdk` (minimal 34) di **android/app/build.gradle**
+```gradle
+android {
     ...
     compileSdk=34
 }
-
-android:requestLegacyExternalStorage="true"
-tambahkan [minifyEnabled true, proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'] di android/app/build.gradle pada bagian buildTypes/release
-tambahkan [org.gradle.parallel=true, org.gradle.caching=true] di android/gradle.properties
 ```
+# 
+Tambahkan kode berikut di **android/app/build.gradle**
+```gradle
+buildTypes {
+    release {
+        ...
+        minifyEnabled true, 
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    }
+}
+```
+#
+Tambahkan di **android/gradle.properties**
+```properties
+org.gradle.parallel=true, 
+org.gradle.caching=true
+```
+#
+android:requestLegacyExternalStorage="true"

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../cubit/article_cubit.dart';
-// import '../bloc/article_bloc.dart';
 import '../widgets/artikel_tab_widget.dart';
 import '../widgets/video_tab_widget.dart';
 
@@ -30,8 +30,6 @@ class _ArticleScreenState extends State<ArticleScreen> with SingleTickerProvider
         selectedChoice.value = "Semua";
         context.read<ArticleCubit>().onFilterArtikelData(selectedChoice.value);
         context.read<ArticleCubit>().onFilterVideoData(selectedChoice.value);
-        // context.read<ArticleBloc>().add(LoadKategoriDataArtikelEvent(kategori: selectedChoice.value));
-        // context.read<ArticleBloc>().add(LoadKategoriDataVideoEvent(kategori: selectedChoice.value));
       } // Reset filter ke default
     });
   }
@@ -45,10 +43,6 @@ class _ArticleScreenState extends State<ArticleScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    // final List<String> choices = ["Semua", "MI - ICBT", "Semangat", "Dedikasi", "Keterlibatan"];
-    // var selectedChoice = ValueNotifier<String>(choices[0]);
-    // var selectedChoice = ValueNotifier<String>("Semua");
-
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -65,12 +59,12 @@ class _ArticleScreenState extends State<ArticleScreen> with SingleTickerProvider
             preferredSize: const Size.fromHeight(50),
             child: BlocBuilder<ArticleCubit, ArticleState>(
               builder: (context, state) {
-                if (state.kategoriIsLoading) return Center(child: const CircularProgressIndicator());
+                if (state.kategoriIsLoading) return Center(child: LoadingAnimationWidget.progressiveDots(color: Colors.white, size: 60));
                 if (state.kategoriDataError.isNotEmpty) return const Center(child: Text("Gagal memuat kategori"));
                 return ValueListenableBuilder(
                   valueListenable: selectedChoice,
                   builder: (BuildContext context, String value, Widget? child) {
-                    /* SIzeBox wajib digunakan untuk membungkus dan menentukan ketinggian ListView dengan scroll Horizontal */
+                    /* SizeBox wajib digunakan untuk membungkus dan menentukan ketinggian ListView dengan scroll Horizontal */
                     return SizedBox(
                       height: 50,
                       child: ListView.separated(

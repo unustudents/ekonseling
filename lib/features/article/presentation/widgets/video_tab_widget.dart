@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../cubit/article_cubit.dart';
@@ -10,7 +11,7 @@ class VideoTabWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ArticleCubit, ArticleState>(
       builder: (context, state) {
-        if (state.videoIsLoading) return const Center(child: CircularProgressIndicator());
+        if (state.videoIsLoading) return Center(child: LoadingAnimationWidget.progressiveDots(color: Colors.white, size: 60));
         if (state.videoData.isEmpty) return const Center(child: Text("Admin belum mengunggah video"));
         if (state.videoDataError.isNotEmpty) return Center(child: Text(state.videoDataError));
         if (state.videoDataKategori.isEmpty) return const Center(child: Text("Admin belum mengunggah video dalam kategori ini"));

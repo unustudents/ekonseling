@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../../../../routes/app_pages.dart';
 import '../cubit/article_cubit.dart';
@@ -10,12 +11,11 @@ class ArtikelTabWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ArticleCubit, ArticleState>(
       builder: (context, state) {
-        if (state.artikelIsLoading) return const Center(child: CircularProgressIndicator());
+        if (state.artikelIsLoading) return Center(child: LoadingAnimationWidget.progressiveDots(color: Colors.white, size: 60));
         if (state.artikelData.isEmpty) return Center(child: Text("Admin belum mengunggah artikel"));
         if (state.artikelDataError.isNotEmpty) return Center(child: Text(state.artikelDataError));
         if (state.artikelDataKategori.isEmpty) return Center(child: Text("Admin belum mengunggah artikel dalam kategori ini"));
 
-        // return Text(state.artikelData.toString());
         return ListView.separated(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           itemBuilder: (BuildContext context, int index) {
