@@ -1,7 +1,7 @@
 name: academyfun
 description: "Application Conseling"
 publish_to: "none"
-version: 0.1.14
+version: 0.1.4
 
 environment:
   sdk: ^3.5.3
@@ -31,9 +31,11 @@ dependencies:
   url_launcher: ^6.3.1
 
 dev_dependencies:
+  bloc_test: ^10.0.0
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
+  mocktail: ^1.0.4
 
 flutter:
   uses-material-design: true

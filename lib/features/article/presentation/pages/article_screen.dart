@@ -12,7 +12,8 @@ class ArticleScreen extends StatefulWidget {
   State<ArticleScreen> createState() => _ArticleScreenState();
 }
 
-class _ArticleScreenState extends State<ArticleScreen> with SingleTickerProviderStateMixin {
+class _ArticleScreenState extends State<ArticleScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late ValueNotifier<String> selectedChoice;
 
@@ -59,8 +60,14 @@ class _ArticleScreenState extends State<ArticleScreen> with SingleTickerProvider
             preferredSize: const Size.fromHeight(50),
             child: BlocBuilder<ArticleCubit, ArticleState>(
               builder: (context, state) {
-                if (state.kategoriIsLoading) return Center(child: LoadingAnimationWidget.progressiveDots(color: Colors.white, size: 60));
-                if (state.kategoriDataError.isNotEmpty) return const Center(child: Text("Gagal memuat kategori"));
+                if (state.kategoriIsLoading) {
+                  return Center(
+                      child: LoadingAnimationWidget.progressiveDots(
+                          color: Colors.white, size: 60));
+                }
+                if (state.kategoriDataError.isNotEmpty) {
+                  return const Center(child: Text("Gagal memuat kategori"));
+                }
                 return ValueListenableBuilder(
                   valueListenable: selectedChoice,
                   builder: (BuildContext context, String value, Widget? child) {
@@ -68,15 +75,21 @@ class _ArticleScreenState extends State<ArticleScreen> with SingleTickerProvider
                     return SizedBox(
                       height: 50,
                       child: ListView.separated(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.symmetric(horizontal: 15),
                         scrollDirection: Axis.horizontal,
                         itemCount: state.kategoriData.length,
                         itemBuilder: (BuildContext context, int index) {
-                          String kategori = state.kategoriData[index]['name'].toString();
+                          String kategori =
+                              state.kategoriData[index]['name'].toString();
                           return ChoiceChip(
+                            showCheckmark: false,
                             label: Text(
                               kategori.toString(),
                               style: TextStyle(
-                                color: value == kategori ? Colors.white : Colors.black,
+                                color: value == kategori
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                             ),
                             selected: value == kategori,
@@ -85,12 +98,19 @@ class _ArticleScreenState extends State<ArticleScreen> with SingleTickerProvider
                               if (selected) {
                                 /* selectedChoice.value harus di taruh di atas sebelum context.read (event) dipanggil. jika dibalik, mka error */
                                 selectedChoice.value = kategori;
-                                _tabController.index == 0 ? context.read<ArticleCubit>().onFilterArtikelData(kategori) : context.read<ArticleCubit>().onFilterVideoData(kategori);
+                                _tabController.index == 0
+                                    ? context
+                                        .read<ArticleCubit>()
+                                        .onFilterArtikelData(kategori)
+                                    : context
+                                        .read<ArticleCubit>()
+                                        .onFilterVideoData(kategori);
                               }
                             },
                           );
                         },
-                        separatorBuilder: (BuildContext context, int index) => const SizedBox(width: 8),
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const SizedBox(width: 8),
                       ),
                     );
                   },
