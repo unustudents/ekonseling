@@ -12,7 +12,7 @@ class SupabaseConfig {
         anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
       );
     } catch (e) {
-      print("Error initializing Supabase: $e");
+      // print("Error initializing Supabase: $e");
     }
   }
 

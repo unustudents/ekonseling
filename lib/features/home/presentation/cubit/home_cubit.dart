@@ -26,16 +26,11 @@ class HomeCubit extends Cubit<HomeState> {
       // Mendapatkan user ID
       final String userId = SupabaseConfig.client.auth.currentUser!.id;
       // Mengambil data user berdasarkan ID
-      final Map<String, dynamic> userResponse = await SupabaseConfig.client
-          .from('users')
-          .select('name')
-          .eq('id', userId)
-          .single();
+      final Map<String, dynamic> userResponse = await SupabaseConfig.client.from('users').select('name').eq('id', userId).single();
       // Mengubah state dengan nama user
       emit(state.copyWith(userName: userResponse['name'].toString()));
     } catch (e) {
       // Log error
-      print('Error _onFetchUserData: $e');
       // Emit state untuk menangani error
       // emit(state.copyWith(messageError: e.toString()));
     }
@@ -45,9 +40,7 @@ class HomeCubit extends Cubit<HomeState> {
   void _onFetchVideoData() async {
     try {
       // Mengambil data video
-      final List<Map<String, dynamic>> response = await SupabaseConfig.client
-          .from('videos')
-          .select('url_video, title, subtitle, thumbnail, categories(name)');
+      final List<Map<String, dynamic>> response = await SupabaseConfig.client.from('videos').select('url_video, title, subtitle, thumbnail, categories(name)');
       // Mengubah data response menjadi null safety
       final List<Map<String, dynamic>> data = response
           .map((video) => {
@@ -62,16 +55,13 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(dataVideo: data));
     } catch (e) {
       // Log error
-      print('Error _onFetchVideoData: $e');
     }
   }
 
   _onFetchKonselorData() async {
     try {
       // Mengambil data konselor
-      final response = await SupabaseConfig.client
-          .from('users_admin')
-          .select('name, profile_url');
+      final response = await SupabaseConfig.client.from('users_admin').select('name, profile_url');
       // Mengubah data response menjadi null safety
       final data = response
           .map((profile) => {
@@ -83,23 +73,15 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(konselorProfiles: data));
     } catch (e) {
       // Log error
-      print('Error _onFetchKonselorData: $e');
     }
   }
 
   _onFetchArtikelData() async {
     try {
       // Mengambil data artikel
-      final response = await SupabaseConfig.client
-          .from('article')
-          .select(
-              'title, content, image_url, created_at, read_time_minutes, users_admin(name, profile_url)')
-          .order('created_at')
-          .limit(1)
-          .maybeSingle();
+      final response = await SupabaseConfig.client.from('article').select('title, content, image_url, created_at, read_time_minutes, users_admin(name, profile_url)').order('created_at').limit(1).maybeSingle();
       // Mengubah format tanggal
-      String date =
-          DateFormat('d/M/y').format(DateTime.parse(response?['created_at']));
+      String date = DateFormat('d/M/y').format(DateTime.parse(response?['created_at']));
       // Mengubah data response menjadi null safety
       final data = {
         'title': response?['title'],
@@ -114,7 +96,6 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(latestArticle: data));
     } catch (e) {
       // Log error
-      print('Error _onFetchArtikelData: $e');
     }
   }
 

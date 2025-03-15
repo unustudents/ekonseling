@@ -39,7 +39,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       await SupabaseConfig.client.auth.signOut();
       // Tambahkan navigasi jika diperlukan
     } catch (e) {
-      print('Error signing out: $e');
+      // Tambahkan error handling jika diperlukan
     }
   }
 
@@ -49,12 +49,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     // langkah pengujian
     try {
       // update data profile sekaligus menarik data setelah di update
-      final response = await SupabaseConfig.client
-          .from('users')
-          .update(event.dataEdit)
-          .eq('id', SupabaseConfig.client.auth.currentUser!.id)
-          .select('name, nis, profile_url')
-          .single();
+      final response = await SupabaseConfig.client.from('users').update(event.dataEdit).eq('id', SupabaseConfig.client.auth.currentUser!.id).select('name, nis, profile_url').single();
       // jika respon tidak ada isinya
       if (response.isEmpty) emit(state.copyWith(error: 'Profile tidak ditemukan'));
       // jika respon ada isinya
@@ -72,8 +67,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     // langkah pengujian
     try {
       // tarik data profile
-      final response =
-          await SupabaseConfig.client.from('users').select('name, nis, profile_url').eq('id', SupabaseConfig.client.auth.currentUser!.id).single();
+      final response = await SupabaseConfig.client.from('users').select('name, nis, profile_url').eq('id', SupabaseConfig.client.auth.currentUser!.id).single();
       // jika respon tidak ada isinya
       if (response.isEmpty) emit(state.copyWith(error: 'Profile tidak ditemukan'));
       // jika respon ada isinya
@@ -118,8 +112,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     // langkah pengujian
     try {
       // tarik data pass_hass atau password dari database
-      Map<String, dynamic>? passHass =
-          await SupabaseConfig.client.from('users').select('pass_hash').eq('id', SupabaseConfig.client.auth.currentUser!.id).maybeSingle();
+      Map<String, dynamic>? passHass = await SupabaseConfig.client.from('users').select('pass_hash').eq('id', SupabaseConfig.client.auth.currentUser!.id).maybeSingle();
 
       // jika pass_hass tidak ada isinya
       if (passHass == null || passHass.isEmpty) emit(state.copyWith(error: 'Error ketika load password: $passHass'));

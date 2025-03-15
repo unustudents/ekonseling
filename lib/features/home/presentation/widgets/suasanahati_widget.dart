@@ -14,9 +14,22 @@ class _SuasanaHatiWidgetState extends State<SuasanaHatiWidget> {
   String? message;
 
   final List<Map<String, dynamic>> suasana = [
-    {"icon": Icons.sentiment_dissatisfied_outlined, "teks": "Sedih", "msg": "Sepertinya kamu sedang tidak baik - baik saja, Yuk mulai bicara dengan konselor"},
-    {"icon": Icons.sentiment_neutral_outlined, "teks": "Netral", "msg": "Terimakasih telah menjawab"},
-    {"icon": Icons.sentiment_very_satisfied_outlined, "teks": "Bahagia", "msg": "Semoga harimu menyenangkan"},
+    {
+      "icon": Icons.sentiment_dissatisfied_outlined,
+      "teks": "Sedih",
+      "msg":
+          "Sepertinya kamu sedang tidak baik - baik saja, Yuk mulai bicara dengan konselor"
+    },
+    {
+      "icon": Icons.sentiment_neutral_outlined,
+      "teks": "Netral",
+      "msg": "Terimakasih telah menjawab"
+    },
+    {
+      "icon": Icons.sentiment_very_satisfied_outlined,
+      "teks": "Bahagia",
+      "msg": "Semoga harimu menyenangkan"
+    },
   ];
 
   void _onIconPressed(int index) {
@@ -49,7 +62,10 @@ class _SuasanaHatiWidgetState extends State<SuasanaHatiWidget> {
               borderRadius: BorderRadius.circular(10),
               color: Colors.white,
               boxShadow: const [
-                BoxShadow(color: Colors.grey, blurRadius: 2.0, offset: Offset(0.8, 0.8)),
+                BoxShadow(
+                    color: Colors.grey,
+                    blurRadius: 2.0,
+                    offset: Offset(0.8, 0.8)),
               ],
             ),
             constraints: const BoxConstraints(minHeight: 100),
@@ -75,7 +91,8 @@ class _SuasanaHatiWidgetState extends State<SuasanaHatiWidget> {
                 : Center(
                     child: Text(
                       message!,
-                      style: const TextStyle(color: Color(0xFF64558E), fontSize: 16),
+                      style: const TextStyle(
+                          color: Color(0xFF64558E), fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
                   ),
